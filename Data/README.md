@@ -1,0 +1,1 @@
+The folder contains offline json data.

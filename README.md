@@ -12,6 +12,7 @@ You will get information by `*.json` file and show the information on the interf
 
 ```python
 {
+    "time": us
     "tag": i
     "phase": [phase0, phase1,..., phase15],
     "rss": [rss0, rss1, ..., rss15],
@@ -21,6 +22,10 @@ You will get information by `*.json` file and show the information on the interf
 ```
 
 the python dictionary is converted to JSON data. Each element in the dictionary is as follows:
+
+- `"time": us`
+
+  The value of `"time"` is an integer. It denotes the timestamp of the data.
 
 - `"tag": i`
 
