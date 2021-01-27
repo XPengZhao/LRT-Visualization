@@ -108,6 +108,7 @@ Scatter the value of spatial spectrum on the corresponding plane based on grids.
 #### Filter
 
 - Tag filter: choose which tag related to the information to show on the chart
+- Position Range: adjust the `xlim` and `ylim` of the localization plot figure.
 
 #### Figure
 
