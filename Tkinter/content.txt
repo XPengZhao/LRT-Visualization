@@ -1,0 +1,7 @@
+2/8/21
+The first attempt to use Tkinter to merge the four images together.
+#Currently only two images (localization and phase) are added.
+There are currently problems:
+  1. The filter of the phase map is too long, try to use double rows.
+  2. RSS needs to add dynamic tags.
+  3. The spectrum has not been completed yet.
