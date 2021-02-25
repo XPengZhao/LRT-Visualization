@@ -9,40 +9,10 @@ class Viewer:
     def __init__(self, tk_root,tag_var):
         self.root = tk_root
         self.tag_var = tag_var
-        # self.tag_var = tag_var
-        # self.root.wm_title('Demo Interface')
-        # self.root.iconphoto(True, tk.PhotoImage(file='../pic/icon.png'))
-        # self.root.protocol('WM_DELETE_WINDOW', self.root.quit)
-        # self.image = tk.PhotoImage(file='../pic/button.png')
-        # self.selectimage = tk.PhotoImage(file='../pic/button2.png')
-
         self.setup_ui()
 
     def setup_ui(self):
-        # self.filter_frame = tk.LabelFrame(self.root,
-        #                                   text='Tag Filter', bg='white', bd=0,
-        #                                   font=('Times New Roman', 12, 'bold'), labelanchor='n')
-        # self.filter_frame.pack(side=tk.LEFT, fill=tk.BOTH)
 
-        # self.tag_var = tk.IntVar()
-        # button-tags
-        # for tag in sorted(new_tags):
-        #     button = tk.Radiobutton(self.filter_frame,
-        #                             text=tag,
-        #                             variable=self.tag_var,
-        #                             value=int(tag[-1]),
-        #                             indicatoron=False,
-        #                             width=100,
-        #                             height=30,
-        #                             compound=tk.CENTER,
-        #                             image=self.image,
-        #                             selectimage=self.selectimage,
-        #                             bg="#AEDDF2",
-        #                             bd=0,
-        #                             font=('Times New Roman', 12, 'bold'),
-        #                             command=command)
-        #     button.pack(anchor='w', fill=tk.BOTH)
-        # fig_frame
         self.fig = Figure(figsize=(5, 5), tight_layout=True)
         self.ax = self.fig.add_subplot(111)
         self.ax.set_axis_off()
@@ -51,22 +21,6 @@ class Viewer:
         self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
         self.init_fig(range(16))
 
-    # def add_tag(self, tag, command):
-    #     button = tk.Radiobutton(self.filter_frame,
-    #                             text=tag,
-    #                             variable=self.tag_var,
-    #                             value=int(tag[-1]),
-    #                             indicatoron=False,
-    #                             width=100,
-    #                             height=30,
-    #                             compound=tk.CENTER,
-    #                             image=self.image,
-    #                             selectimage=self.selectimage,
-    #                             bg="#AEDDF2",
-    #                             bd=0,
-    #                             font=('Times New Roman', 12, 'bold'),
-    #                             command=command)
-    #     button.pack(anchor='w', fill=tk.BOTH)
 
     def init_fig(self, num):
         self.spots = []
@@ -98,21 +52,13 @@ class Viewer:
         self.spots = self.ax.add_collection(collection)
         self.spots.set_facecolors('white')
         self.spots.set_edgecolors('gray')
-    #
-    # def update_fig(self,data):
-    #     print(data[self.tag_var.get()]['rss'])
-    #     self.fig_animation = animation.FuncAnimation(self.fig,
-    #                                                  self.update_fig_method,
-    #                                                  frames=data[self.tag_var.get()]['rss'],
-    #                                                  interval=500,
-    #                                                  blit=False)
+
 
     def update_fig(self,data):
         self.ax.cla()
         self.ax.set_axis_off()
         self.ax.set_facecolor("white")
         self.init_fig(range(16))
-        # print()
         f_colors = []
         e_colors = []
         for i in range(16):
@@ -131,50 +77,5 @@ class Viewer:
 
 class Controller:
     def __init__(self, root,tag_var):
-        # data structure {'tag1':[[rss],[rss],...],
-        #                 'tag2':[[rss],[rss],...],
-        #                  ...
-        #                }
-        # self.data = {}
-        # self.file_index = 550
 
         self.view = Viewer(root,tag_var)
-
-        # animation
-
-
-    # def yield_fig_data(self):
-    #     self.file_index += 1
-    #     try:
-    #         # print('json/t%d.json' % (self.file_index))
-    #         with open('../data/t%d.json' % (self.file_index)) as f:
-    #             temp = json.load(f)
-    #         tag = 'tag{}'.format(temp['tag'])
-    #         if tag in self.data.keys():
-    #             self.data[tag].append(temp['rss'])
-    #         else:
-    #             # add new tag button
-    #             self.view.add_tag(tag, self.change_tag)
-    #             # add new key to data
-    #     #         self.data.update({tag: [temp['rss']]})
-    #     except:
-    #         self.file_index -= 1
-    #         yield []
-    #
-    #     k = list(self.data.keys())[self.selected_tag]
-    #     if self.current_index >= len(self.data[k]):
-    #         self.current_index = 0
-    #         yield []
-    #     else:
-    #         yield [k, self.data[k][self.current_index]]
-    #         self.current_index += 1
-    #
-    # def change_tag(self):
-    #     self.current_index = 0
-    #     self.selected_tag = self.view.tag_var.get()-1
-
-
-if __name__ == "__main__":
-    gui = tk.Tk()
-    ctl = Controller(gui)
-    gui.mainloop()

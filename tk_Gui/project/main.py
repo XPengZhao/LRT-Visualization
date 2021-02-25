@@ -114,7 +114,7 @@ class Program:
                         tag['spectrum'][i].append(raw_data['spectrum'][i][j])
 
         finally:
-            # self.tag_filter.update_filter(list(self.data.keys()))
+            self.tag_filter.update_filter(list(self.data.keys()))
             self.localization_plot.update_plot(self.data)
             self.phase_plot.update_plot(self.data)
             self.spectrum_plot.update_plot(self.data)

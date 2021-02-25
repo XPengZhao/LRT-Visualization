@@ -29,41 +29,9 @@ class CheckFilter:
             button.pack(anchor='w', fill=tk.BOTH)
 
 
-# class RadioFilter:
-#     def __init__(self, frame, var):
-#         self.frame = frame
-#         self.var = var
-#         self.counter = 0
-#         self.image = tk.PhotoImage(file='../pic/button.png')
-#         self.selectimage = tk.PhotoImage(file='../pic/button2.png')
-#
-#     def update_filter(self, tags):
-#         if self.counter == len(tags):
-#             return
-#
-#         new_tags = tags[self.counter:]
-#         self.counter += len(new_tags)
-#
-#         for num in new_tags:
-#             button = tk.Radiobutton(
-#                 self.frame, text='Tag %d' % num, variable=self.var, value=num, indicatoron=False,
-#                 width=100, height=30, compound=tk.CENTER,
-#                 image=self.image, selectimage=self.selectimage,
-#                 bg="#AEDDF2", bd=0,
-#                 font=('Times New Roman', 12, 'bold'))
-#             button.pack(anchor='w', fill=tk.BOTH)
-
-
 class PhasePlot:
     def __init__(self, frame, tag_filter, tag_var):
 
-        # tk.Label(frame, text='Phase Plot', font=('times', 20)).pack()
-
-        # filter_frame = tk.LabelFrame(frame, text='Tag Filter', bg='white', bd=0,
-        #                              font=('Times New Roman', 12, 'bold'), labelanchor='n')
-        # filter_frame.pack(side=tk.LEFT, fill=tk.BOTH)
-        # self.tag_var = tk.IntVar()
-        # self.tag_filter = RadioFilter(filter_frame, self.tag_var)
         self.tag_filter = tag_filter
         self.tag_var = tag_var
 
@@ -91,15 +59,8 @@ class PhasePlot:
         self.ax.set(xlabel='time (s)', ylabel='phase (cm)',
                     title='Phase Plot')
         self.ax.axis([0, 400, -6, 6])
-        #self.ax.set_xlim(0, 400)
-        #self.ax.set_ylim(-6, 6)
 
-        try:
-            ys = data[self.tag_var.get()]['phase']
-        except:
-            self.tag_var.set(list(data.keys())[0])
-            ys = data[self.tag_var.get()]['phase']
-        # print(data[self.tag_var.get()]['phase'])
+        ys = data[self.tag_var.get()]['phase']
         ls = []
         labels = []
         # print(self.tag_var.get())
