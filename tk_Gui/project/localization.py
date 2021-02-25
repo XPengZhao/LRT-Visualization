@@ -34,15 +34,9 @@ class LocalizationPlot:
 
         xs = []
         ys = []
-        try:
-            for i in range(self.tag_filter.counter):
-                xs.append(data[self.tag_var.get()]['pos'][0])
-                ys.append(data[self.tag_var.get()]['pos'][1])
-        except:
-            self.tag_var.set(list(data.keys())[0])
-            for i in range(self.tag_filter.counter):
-                xs.append(data[self.tag_var.get()]['pos'][0])
-                ys.append(data[self.tag_var.get()]['pos'][1])
+        for i in range(self.tag_filter.counter):
+            xs.append(data[self.tag_var.get()]['pos'][0])
+            ys.append(data[self.tag_var.get()]['pos'][1])
 
         self.ax.cla()
         self.ax.set(xlabel='x Axis (m)', ylabel='y Axis (m)',

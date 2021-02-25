@@ -115,6 +115,7 @@ class Program:
 
         finally:
             self.tag_filter.update_filter(list(self.data.keys()))
+            self.tag_var.set(list(self.data.keys())[0])
             self.localization_plot.update_plot(self.data)
             self.phase_plot.update_plot(self.data)
             self.spectrum_plot.update_plot(self.data)
