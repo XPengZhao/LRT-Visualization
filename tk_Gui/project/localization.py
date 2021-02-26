@@ -26,11 +26,9 @@ class LocalizationPlot:
         toolbar.update()
         self.canvas._tkcanvas.pack(side=tk.TOP, fill=tk.X, expand=1)
 
-
-
     # We only want the latest 80 plot
     # update and cancel the previous one
-    def update_plot(self, data):
+    def update_plot(self, data, ran):
 
         xs = []
         ys = []
@@ -41,7 +39,7 @@ class LocalizationPlot:
         self.ax.cla()
         self.ax.set(xlabel='x Axis (m)', ylabel='y Axis (m)',
                     title='Position Estimation Result')
-        self.ax.axis([-1, 1, -1, 1])
+
         # # Update the right label
         ls = []
         # labels = []
@@ -51,6 +49,8 @@ class LocalizationPlot:
                               visible=self.tag_var.get())
             if l.get_visible():
                 ls.append(l)
+        self.ax.set_xlim(ran[0], ran[1])
+        self.ax.set_ylim(ran[2], ran[3])
         self.canvas.draw()
 
 #

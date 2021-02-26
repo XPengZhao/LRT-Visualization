@@ -1,10 +1,14 @@
 import json
+from tkinter import messagebox
+from tkinter import Button
 
 import localization as lz
 import phase as ph
 import rss as rs
 import spectrum as sp
 import tkinter as tk
+import local_input as lp
+
 class CheckFilter:
     def __init__(self, frame, var):
         self.frame = frame
@@ -48,26 +52,57 @@ class Program:
         self.data = {}
 
         self.lf_lz = tk.LabelFrame(self.root,text="Localization", labelanchor = "n")
-        self.lf_lz.place(relx=0.1, rely=0, relwidth=0.4, relheight=0.5)
+        self.lf_lz.place(relx=0.2, rely=0, relwidth=0.4, relheight=0.5)
         self.lf_ph = tk.LabelFrame(self.root, text="Phase", labelanchor="n")
-        self.lf_ph.place(relx=0.51, rely=0, relwidth=0.4, relheight=0.5)
+        self.lf_ph.place(relx=0.6, rely=0, relwidth=0.4, relheight=0.5)
         self.lf_rs = tk.LabelFrame(self.root, text="RSS", labelanchor="n")
-        self.lf_rs.place(relx=0.51, rely=0.5, relwidth=0.4, relheight=0.5)
+        self.lf_rs.place(relx=0.6, rely=0.5, relwidth=0.4, relheight=0.5)
         self.lf_sp = tk.LabelFrame(self.root, text="SPECTRUM", labelanchor="n")
-        self.lf_sp.place(relx=0.1, rely=0.5, relwidth=0.4, relheight=0.5)
+        self.lf_sp.place(relx=0.2, rely=0.5, relwidth=0.4, relheight=0.5)
 
 
         self.tag_var = tk.IntVar()
 
         filter_frame = tk.LabelFrame(self.root, text='Tag', labelanchor='n', bg="white")
-        filter_frame.place(relx=0, rely=0, relwidth=0.08, relheight=0.92)
+        filter_frame.place(relx=0, rely=0, relwidth=0.08, relheight=0.5)
         self.tag_filter = CheckFilter(filter_frame, self.tag_var)
+
+        self.ran = [-1, 1, -1, 1]
+        Local_set = tk.LabelFrame(self.root, text='Local Set', labelanchor='n', bg="white")
+        Local_set.place(relx=0, rely=0.5, relwidth=0.15, relheight=0.5)
+
+        b1 = Button(Local_set, text='Zoom in', command=self.getuser).grid(row=5, column=1)
+        b2 = Button(Local_set, text='Zoom out', command=self.backplot).grid(row=6, column=1)
 
         self.phase_plot = ph.PhasePlot(self.lf_ph, self.tag_filter, self.tag_var)
         self.localization_plot = lz.LocalizationPlot(self.lf_lz, self.tag_filter, self.tag_var)
         self.rss_plot = rs.Controller(self.lf_rs, self.tag_var)
         self.spectrum_plot = sp.SpectrumPlot(self.lf_sp, self.tag_var, self.tag_filter)
+        self.local_set = lp.local_input(Local_set)
 
+    def inputCheck(self,word):
+        valid_char = [str(i) for i in range(10)]
+        valid_char.extend(['-', '.'])
+        for c in word:
+            if c not in valid_char:
+                messagebox.showwarning('Warning', 'Please enter the real number!')
+                break
+        else:
+            return word
+    def backplot(self):
+        self.ran = [-1, 1, -1, 1]
+        self.local_set.e1.delete(0,'end')
+        self.local_set.e2.delete(0,'end')
+        self.local_set.e3.delete(0,'end')
+        self.local_set.e4.delete(0,'end')
+
+    def getuser(self):
+        xlimL = self.inputCheck(self.local_set.e1.get())
+        xlimR = self.inputCheck(self.local_set.e2.get())
+        ylimL = self.inputCheck(self.local_set.e3.get())
+        ylimR = self.inputCheck(self.local_set.e4.get())
+
+        self.ran = [xlimL,xlimR,ylimL,ylimR]
 
     def load_data(self):
         self.file_index += 1
@@ -116,7 +151,7 @@ class Program:
         finally:
             self.tag_filter.update_filter(list(self.data.keys()))
             self.tag_var.set(list(self.data.keys())[0])
-            self.localization_plot.update_plot(self.data)
+            self.localization_plot.update_plot(self.data,self.ran)
             self.phase_plot.update_plot(self.data)
             self.spectrum_plot.update_plot(self.data)
             self.rss_plot.view.update_fig(self.data)
