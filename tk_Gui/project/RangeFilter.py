@@ -1,12 +1,6 @@
-from tkinter import *
-
-import localization as lz
-
-# master = Tk()
-# var = IntVar()
-# master.title("LIM")
-
-class local_input:
+from tkinter import Label
+from tkinter import Entry
+class RangeFilter:
     def __init__(self, master):
         l1=Label(master, text="XL:").grid(row=0,column=0)
         l2=Label(master, text="XR:").grid(row=1,column=0)
@@ -29,6 +23,7 @@ class local_input:
         # label.grid(row=0, column=2, columnspan=2, rowspan=4, sticky=W+E+N+S, padx=10, pady=10)
 
         Label(master, text="Please only enter the number \n (ie.0.8,-1)").grid(row=4, column=1)
+
 
 
 

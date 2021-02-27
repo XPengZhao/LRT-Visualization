@@ -7,7 +7,7 @@ import phase as ph
 import rss as rs
 import spectrum as sp
 import tkinter as tk
-import local_input as lp
+import RangeFilter as rf
 
 class CheckFilter:
     def __init__(self, frame, var):
@@ -78,17 +78,8 @@ class Program:
         self.localization_plot = lz.LocalizationPlot(self.lf_lz, self.tag_filter, self.tag_var)
         self.rss_plot = rs.Controller(self.lf_rs, self.tag_var)
         self.spectrum_plot = sp.SpectrumPlot(self.lf_sp, self.tag_var, self.tag_filter)
-        self.local_set = lp.local_input(Local_set)
+        self.local_set = rf.RangeFilter(Local_set)
 
-    def inputCheck(self,word):
-        valid_char = [str(i) for i in range(10)]
-        valid_char.extend(['-', '.'])
-        for c in word:
-            if c not in valid_char:
-                messagebox.showwarning('Warning', 'Please enter the real number!')
-                break
-        else:
-            return word
     def backplot(self):
         self.ran = [-1, 1, -1, 1]
         self.local_set.e1.delete(0,'end')
@@ -102,7 +93,26 @@ class Program:
         ylimL = self.inputCheck(self.local_set.e3.get())
         ylimR = self.inputCheck(self.local_set.e4.get())
 
-        self.ran = [xlimL,xlimR,ylimL,ylimR]
+        if xlimL == "bad_guy" or xlimR == "bad_guy":
+            xlimL = -1
+            xlimR = 1
+        if ylimL == "bad_guy" or ylimR == "bad_guy":
+            ylimL = -1
+            ylimR = 1
+
+        self.ran = [xlimL,xlimR, ylimL, ylimR]
+
+    def inputCheck(self, word):
+        valid_char = [str(i) for i in range(10)]
+        valid_char.extend(['-', '.'])
+        if not word:
+            return "bad_guy"
+        for c in word:
+            if c not in valid_char:
+                messagebox.showwarning('Warning', 'Please enter the real number!')
+                break
+            else:
+                return word
 
     def load_data(self):
         self.file_index += 1

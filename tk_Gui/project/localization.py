@@ -2,7 +2,6 @@ import json
 import tkinter as tk
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from matplotlib.backends.backend_tkagg import NavigationToolbar2Tk as tkagg
 
 class LocalizationPlot:
     def __init__(self, frame, tag_filter, tag_var):
@@ -21,10 +20,6 @@ class LocalizationPlot:
         self.canvas = FigureCanvasTkAgg(self.fig, master=frame)
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
-
-        toolbar = tkagg(self.canvas, self.frame)
-        toolbar.update()
-        self.canvas._tkcanvas.pack(side=tk.TOP, fill=tk.X, expand=1)
 
     # We only want the latest 80 plot
     # update and cancel the previous one
@@ -51,6 +46,7 @@ class LocalizationPlot:
                 ls.append(l)
         self.ax.set_xlim(ran[0], ran[1])
         self.ax.set_ylim(ran[2], ran[3])
+        # self.ax.set_yticks((ran[3] - ran[2]) / 20)
         self.canvas.draw()
 
 #
