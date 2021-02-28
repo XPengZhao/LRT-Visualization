@@ -44,6 +44,7 @@ class Program:
         height = self.root.winfo_screenheight()
         self.root.geometry('%sx%s' % (width, height))
         self.root.attributes("-topmost",True)
+        self.var_NumP = tk.StringVar()
 
 
         self.file_index = 0
@@ -63,14 +64,18 @@ class Program:
         self.ran = ran
         self.p_num = p_num
 
-        self.lf_lz = tk.LabelFrame(self.root,text="Localization", labelanchor = "n")
-        self.lf_lz.place(relx=0.2, rely=0.05, relwidth=0.4, relheight=0.4)
+        self.var_NumP.set("Number: "+str(self.p_num))
+
+        self.num_lab = tk.Label(self.root,textvariable=self.var_NumP)
+        self.num_lab.place(relx=0.1, rely=0,relwidth=0.4, relheight=0.01)
+        self.lf_lz = tk.LabelFrame(self.root,text="Localization", labelanchor = "n",cursor="hand2")
+        self.lf_lz.place(relx=0.1, rely=0.02, relwidth=0.4, relheight=0.48)
         self.lf_ph = tk.LabelFrame(self.root, text="Phase", labelanchor="n")
-        self.lf_ph.place(relx=0.6, rely=0.05, relwidth=0.4, relheight=0.4)
+        self.lf_ph.place(relx=0.5, rely=0.02, relwidth=0.4, relheight=0.48)
         self.lf_rs = tk.LabelFrame(self.root, text="RSS", labelanchor="n")
-        self.lf_rs.place(relx=0.6, rely=0.5, relwidth=0.4, relheight=0.4)
+        self.lf_rs.place(relx=0.5, rely=0.5, relwidth=0.4, relheight=0.4)
         self.lf_sp = tk.LabelFrame(self.root, text="SPECTRUM", labelanchor="n")
-        self.lf_sp.place(relx=0.2, rely=0.5, relwidth=0.4, relheight=0.4)
+        self.lf_sp.place(relx=0.1, rely=0.5, relwidth=0.4, relheight=0.4)
 
 
 
@@ -90,6 +95,7 @@ class Program:
         self.p_num = int(tk.simpledialog.askstring(title = 'Set Number',
                                                    prompt='Number：',
                                                    initialvalue = str(self.p_num)))
+        self.var_NumP.set("Number: "+str(self.p_num))
 
 
     def load_data(self):

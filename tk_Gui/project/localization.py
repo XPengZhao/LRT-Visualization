@@ -22,10 +22,12 @@ class LocalizationPlot:
         # Hollow out
         self.canvas = FigureCanvasTkAgg(self.fig, master=frame)
         self.canvas.draw()
-        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+        self.canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=False)
         self.canvas.mpl_connect("button_press_event", self.input_Motionx_y)
         self.canvas.mpl_connect("button_release_event", self.output_Motionx_y)
         self.canvas.mpl_connect("scroll_event", self.zoom)
+
+
 
     # We only want the latest 80 plot
     # update and cancel the previous one
@@ -38,17 +40,13 @@ class LocalizationPlot:
             ys.append(data[self.tag_var.get()]['pos'][1])
 
         self.ax.cla()
-        self.ax.set(xlabel='x Axis (m)', ylabel='y Axis (m)',
-                    title='Position Estimation Result')
+        self.ax.set(xlabel='x Axis (m)', ylabel='y Axis (m)')
 
         # # Update the right label
-        ls = []
-        # labels = []
         for i in range(len(xs)):
-            l, = self.ax.plot(xs[i], ys[i], '.',   color='#00BFFF',
+            self.ax.plot(xs[i], ys[i], '.',   color='#00BFFF',
                               visible=self.tag_var.get())
-            if l.get_visible():
-                ls.append(l)
+
         self.ax.set_xlim(self.ran[0], self.ran[1])
         self.ax.set_ylim(self.ran[2], self.ran[3])
         self.canvas.draw()
@@ -56,33 +54,13 @@ class LocalizationPlot:
     def input_Motionx_y(self,event):
         self.mid_x_1 = event.x
         self.mid_y_1 = event.y
+        self.move_f = self.canvas.mpl_connect("motion_notify_event", self.moveon)
+
     def output_Motionx_y(self,event):
-        res_x = self.mid_x_1-event.x
-        res_y = self.mid_y_1-event.y
-        print(res_x,res_y)
-        if abs(res_y)<=20 and abs(res_x)<=20:
-            pass
-        elif abs(res_x)<=20 and abs(res_y)>20:
-            y_c = eval(str(self.ran[3])+"-"+str(self.ran[2]))/10
-            self.ran[2] += (res_y/100)*y_c
-            self.ran[3] += (res_y/100)*y_c
-            self.ax.set_xlim(self.ran[0], self.ran[1])
-            self.ax.set_ylim(self.ran[2], self.ran[3])
-        elif abs(res_y)<=20 and abs(res_x)>20:
-            x_c = eval(str(self.ran[1]) + "-" + str(self.ran[0])) / 10
-            self.ran[0] += (res_x / 100) * x_c
-            self.ran[1] += (res_x / 100) * x_c
-            self.ax.set_xlim(self.ran[0], self.ran[1])
-            self.ax.set_ylim(self.ran[2], self.ran[3])
-        else:
-            x_c = eval(str(self.ran[1]) + "-" + str(self.ran[0])) / 10
-            self.ran[0] += (res_x / 100) * x_c
-            self.ran[1] += (res_x / 100) * x_c
-            y_c = eval(str(self.ran[3]) + "-" + str(self.ran[2])) / 10
-            self.ran[2] += (res_y / 100) * y_c
-            self.ran[3] += (res_y / 100) * y_c
-            self.ax.set_xlim(self.ran[0], self.ran[1])
-            self.ax.set_ylim(self.ran[2], self.ran[3])
+        self.canvas.mpl_disconnect(self.move_f)
+        self.mid_y_1 = 0
+        self.mid_x_1 = 0
+
     def zoom(self,event):
         if event.button == "up":
             self.ran[0] += 0.05
@@ -100,6 +78,32 @@ class LocalizationPlot:
             self.ax.set_ylim(self.ran[2], self.ran[3])
     def getrange(self):
         return self.ran
+
+    def moveon(self,event):
+        if event.x > self.mid_x_1:
+            res_x = event.xdata
+            x_c = eval(str(self.ran[1]) + "-" + str(self.ran[0])) / 200
+            self.ran[0] -= (res_x) * x_c
+            self.ran[1] -= (res_x) * x_c
+        else:
+            res_x = event.xdata
+            x_c = eval(str(self.ran[1]) + "-" + str(self.ran[0])) / 200
+            self.ran[0] -= (res_x) * x_c
+            self.ran[1] -= (res_x) * x_c
+        if event.ydata>0.75:
+            res_y = event.ydata
+            y_c = eval(str(self.ran[3]) + "-" + str(self.ran[2])) / 200
+            self.ran[2] -= (res_y) * y_c
+            self.ran[3] -= (res_y) * y_c
+            self.ax.set_xlim(self.ran[0], self.ran[1])
+            self.ax.set_ylim(self.ran[2], self.ran[3])
+        elif event.ydata<0.5:
+            res_y = event.ydata
+            y_c = eval(str(self.ran[3]) + "-" + str(self.ran[2])) / 80
+            self.ran[2] += (res_y) * y_c
+            self.ran[3] += (res_y) * y_c
+            self.ax.set_xlim(self.ran[0], self.ran[1])
+            self.ax.set_ylim(self.ran[2], self.ran[3])
 
 
 
