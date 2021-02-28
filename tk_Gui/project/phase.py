@@ -56,7 +56,7 @@ class PhasePlot:
 
 
         self.ax.cla()
-        self.ax.set(xlabel='time (s)', ylabel='phase (cm)',
+        self.ax.set(xlabel='sample (#)', ylabel='phase (rad)',
                     title='Phase Plot')
         self.ax.axis([0, 400, -6, 6])
 

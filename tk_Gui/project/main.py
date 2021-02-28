@@ -1,13 +1,11 @@
 import json
-from tkinter import messagebox
-from tkinter import Button
-
 import localization as lz
 import phase as ph
 import rss as rs
 import spectrum as sp
 import tkinter as tk
-import RangeFilter as rf
+import threading
+# import RangeFilter as rf
 
 class CheckFilter:
     def __init__(self, frame, var):
@@ -38,7 +36,7 @@ class CheckFilter:
         data[num]["spec_chang"] = True
 
 class Program:
-    def __init__(self):
+    def __init__(self,ran,p_num):
         self.root = tk.Tk()
         self.root.wm_title('Demo Interface')
         self.root.iconphoto(True, tk.PhotoImage(file='../pic/icon.png'))
@@ -51,68 +49,48 @@ class Program:
         self.file_index = 0
         self.data = {}
 
+        menubar = tk.Menu(self.root)
+        setMenu = tk.Menu(menubar,tearoff = False)
+        menubar.add_cascade(label="Setting",menu=setMenu)
+        setMenu.add_command(label="Num of Point",command=self.setPointNum)
+        setMenu.add_command(label="Time")
+        processMenu = tk.Menu(menubar, tearoff = False)
+        menubar.add_cascade(label="Process",menu=processMenu)
+        processMenu.add_command(label="Pause")
+        processMenu.add_command(label="Start")
+        self.root.config(menu=menubar)
+
+        self.ran = ran
+        self.p_num = p_num
+
         self.lf_lz = tk.LabelFrame(self.root,text="Localization", labelanchor = "n")
-        self.lf_lz.place(relx=0.2, rely=0, relwidth=0.4, relheight=0.5)
+        self.lf_lz.place(relx=0.2, rely=0.05, relwidth=0.4, relheight=0.4)
         self.lf_ph = tk.LabelFrame(self.root, text="Phase", labelanchor="n")
-        self.lf_ph.place(relx=0.6, rely=0, relwidth=0.4, relheight=0.5)
+        self.lf_ph.place(relx=0.6, rely=0.05, relwidth=0.4, relheight=0.4)
         self.lf_rs = tk.LabelFrame(self.root, text="RSS", labelanchor="n")
-        self.lf_rs.place(relx=0.6, rely=0.5, relwidth=0.4, relheight=0.5)
+        self.lf_rs.place(relx=0.6, rely=0.5, relwidth=0.4, relheight=0.4)
         self.lf_sp = tk.LabelFrame(self.root, text="SPECTRUM", labelanchor="n")
-        self.lf_sp.place(relx=0.2, rely=0.5, relwidth=0.4, relheight=0.5)
+        self.lf_sp.place(relx=0.2, rely=0.5, relwidth=0.4, relheight=0.4)
+
+
 
 
         self.tag_var = tk.IntVar()
 
         filter_frame = tk.LabelFrame(self.root, text='Tag', labelanchor='n', bg="white")
-        filter_frame.place(relx=0, rely=0, relwidth=0.08, relheight=0.5)
+        filter_frame.place(relx=0, rely=0.05, relwidth=0.08, relheight=0.5)
         self.tag_filter = CheckFilter(filter_frame, self.tag_var)
 
-        self.ran = [-1, 1, -1, 1]
-        Local_set = tk.LabelFrame(self.root, text='Local Set', labelanchor='n', bg="white")
-        Local_set.place(relx=0, rely=0.5, relwidth=0.15, relheight=0.5)
-
-        b1 = Button(Local_set, text='Zoom in', command=self.getuser).grid(row=5, column=1)
-        b2 = Button(Local_set, text='Zoom out', command=self.backplot).grid(row=6, column=1)
-
         self.phase_plot = ph.PhasePlot(self.lf_ph, self.tag_filter, self.tag_var)
-        self.localization_plot = lz.LocalizationPlot(self.lf_lz, self.tag_filter, self.tag_var)
+        self.localization_plot = lz.LocalizationPlot(self.lf_lz, self.tag_filter, self.tag_var, self.ran)
         self.rss_plot = rs.Controller(self.lf_rs, self.tag_var)
         self.spectrum_plot = sp.SpectrumPlot(self.lf_sp, self.tag_var, self.tag_filter)
-        self.local_set = rf.RangeFilter(Local_set)
 
-    def backplot(self):
-        self.ran = [-1, 1, -1, 1]
-        self.local_set.e1.delete(0,'end')
-        self.local_set.e2.delete(0,'end')
-        self.local_set.e3.delete(0,'end')
-        self.local_set.e4.delete(0,'end')
+    def setPointNum(self):
+        self.p_num = int(tk.simpledialog.askstring(title = 'Set Number',
+                                                   prompt='Number：',
+                                                   initialvalue = str(self.p_num)))
 
-    def getuser(self):
-        xlimL = self.inputCheck(self.local_set.e1.get())
-        xlimR = self.inputCheck(self.local_set.e2.get())
-        ylimL = self.inputCheck(self.local_set.e3.get())
-        ylimR = self.inputCheck(self.local_set.e4.get())
-
-        if xlimL == "bad_guy" or xlimR == "bad_guy":
-            xlimL = -1
-            xlimR = 1
-        if ylimL == "bad_guy" or ylimR == "bad_guy":
-            ylimL = -1
-            ylimR = 1
-
-        self.ran = [xlimL,xlimR, ylimL, ylimR]
-
-    def inputCheck(self, word):
-        valid_char = [str(i) for i in range(10)]
-        valid_char.extend(['-', '.'])
-        if not word:
-            return "bad_guy"
-        for c in word:
-            if c not in valid_char:
-                messagebox.showwarning('Warning', 'Please enter the real number!')
-                break
-            else:
-                return word
 
     def load_data(self):
         self.file_index += 1
@@ -143,8 +121,9 @@ class Program:
 
             for i in range(2):
                 tag['pos'][i].append(raw_data['pos'][i])
-                if len(tag['pos'][i]) > 80:
+                if len(tag['pos'][i]) > self.p_num:
                     tag['pos'][i] = tag['pos'][i][1:]
+                    #动态设置数量
 
             tag['rss'] = [[] for j in range(16)]
             for i in range(16):
@@ -161,24 +140,50 @@ class Program:
         finally:
             self.tag_filter.update_filter(list(self.data.keys()))
             self.tag_var.set(list(self.data.keys())[0])
-            self.localization_plot.update_plot(self.data,self.ran)
+            self.localization_plot.update_plot(self.data)
             self.phase_plot.update_plot(self.data)
             self.spectrum_plot.update_plot(self.data)
             self.rss_plot.view.update_fig(self.data)
 
-
-
-
-            self.root.after(1, self.load_data)
+            self.root.after(500, self.load_data)
 
     def refresh(self):
         self.spectrum_plot.update_plot(self.data)
 
     def run(self):
         self.load_data()
-
-        self.root.protocol('WM_DELETE_WINDOW', self.root.quit)
+        self.root.protocol('WM_DELETE_WINDOW', self.savedata)
         self.root.mainloop()
+
+
+    def savedata(self):
+        f = open("../user_data/lrtdata.txt","r+")
+        f.seek(0)
+        f.truncate()
+        ran = self.localization_plot.getrange()
+        word = ''
+        for i in range(3):
+            word += str(ran[i])+","
+        word += str(ran[3])+"\n"+str(self.p_num)
+        f.write(word)
+        f.close()
+        self.root.quit()
+
+
+def readata():
+    f = open("../user_data/lrtdata.txt","r+")
+    data = f.readlines()
+    ran = data[0].replace('\n','').split(",")
+    for i in range(4):
+        ran[i] = float(ran[i])
+    p_num = int(data[1])
+    return ran,p_num
+
+
+
 if __name__ == '__main__':
-    program = Program()
+    ran ,p_num = readata()
+    program = Program(ran,p_num)
     program.run()
+
+
