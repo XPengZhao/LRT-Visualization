@@ -20,12 +20,10 @@ class CheckFilter:
 
         for num in new_tags:
             button = tk.Checkbutton(
-                self.frame, text='Antenna %d' % (num + 1), variable=self.vars[num], indicatoron=False,
+                self.frame, text='ANT %d' % (num + 1), variable=self.vars[num], indicatoron=False,
                 # justify=tk.CENTER,
-                width=67, height=16, compound=tk.CENTER,
-                image=self.image, selectimage=self.selectimage,
-                bg='white', bd=0,
-                font=('Times New Roman', 12, 'bold'))
+                width=10, height=1, compound=tk.CENTER,
+                font=('Times New Roman', 8, 'bold'))
             button.pack(anchor='w', fill=tk.BOTH)
 
 
@@ -41,26 +39,39 @@ class PhasePlot:
         self.phase_vars = [tk.IntVar() for i in range(16)]
         self.phase_filter = CheckFilter(filter_frame2, self.phase_vars)
 
+        self.x_start = 0
+        self.x_end = 400
         self.frame = frame
 
         self.fig = plt.figure()
         self.ax = self.fig.add_subplot(111)
 
+
+
         self.canvas = FigureCanvasTkAgg(self.fig, master=frame)
         self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+
+        self.canvas.mpl_connect("scroll_event", self.zoom)
+        self.canvas.mpl_connect("button_press_event", self.input_Motionx_y)
+        self.canvas.mpl_connect("button_release_event", self.output_Motionx_y)
 
     def update_plot(self, data):
 
         self.phase_filter.update_filter([i for i in range(16)])
-        self.tag_filter.update_filter(list(data.keys()))
-
 
         self.ax.cla()
         self.ax.set(xlabel='sample (#)', ylabel='phase (rad)',
                     title='Phase Plot')
-        self.ax.axis([0, 400, -6, 6])
-
         ys = data[self.tag_var.get()]['phase']
+        self.data_len = len(ys[0])
+        if self.data_len > 400 and self.x_end == self.data_len-1:
+            self.x_start +=1
+            self.x_end += 1
+        if self.x_end - self.x_start <400 and self.x_end == self.data_len-1:
+            self.x_start += 1
+            self.x_end += 1
+
+
         ls = []
         labels = []
         # print(self.tag_var.get())
@@ -70,57 +81,67 @@ class PhasePlot:
             if l.get_visible():
                 ls.append(l)
                 labels.append(l.get_label())
+        self.ax.set_ylim(-6, 6)
+        self.ax.set_xlim(self.x_start, self.x_end)
         self.ax.legend(ls, labels, loc=1)
+
+
+
+
         self.canvas.draw()
 
-        # self.frame.after(20, self.update_plot)
+    def zoom(self,event):
+        if event.button == "up":
+            if self.x_end-self.x_start >50:
+                self.x_end -= 50
+                self.ax.set_xlim(self.x_start, self.x_end)
+        else:
+            if self.x_end-self.x_start <400:
+                if self.x_start <= 25:
+                    mid = self.x_start
+                    self.x_start = 0
+                    self.x_end += 25+abs(mid)
+                    self.ax.set_xlim(self.x_start, self.x_end)
+                elif self.x_end >=400:
+                    mid = self.x_end - 400
+                    self.x_end = self.data_len - 1
+                    self.x_start += 25 + mid
+                    self.ax.set_xlim(self.x_start, self.x_end)
+                else:
+                    self.x_start -= 25
+                    self.x_end += 25
+                    self.ax.set_xlim(self.x_start, self.x_end)
+            elif self.x_end-self.x_start >= 400:
+                pass
 
 
-# class Program:
-#     def __init__(self):
-#         self.root = tk.Tk()
-#         self.root.wm_title('Demo Interface')
-#         self.root.iconphoto(True, tk.PhotoImage(file='../pic/icon.png'))
-#
-#         self.file_index = 0
-#         self.data = {}
-#
-#         self.phase_plot = PhasePlot(self.root)
-#
-#     def load_data(self):
-#         self.file_index += 1
-#         try:
-#             with open('../data/t%d.json' % (self.file_index)) as f:
-#                 raw_data = json.load(f)
-#         except:
-#             self.file_index -= 1
-#             return
-#         else:
-#             try:
-#                 tag = self.data[raw_data['tag']]
-#             except:
-#                 tag = {'phase': [[] for i in range(16)]}
-#                 self.data[raw_data['tag']] = tag
-#
-#             for i in range(16):
-#                 tag['phase'][i].append(raw_data['phase'][i])
-#                 if len(tag['phase'][i]) > 400:
-#                     tag['phase'][i] = tag['phase'][i][1:]
-#         finally:
-#             # self.phase_plot.update_plot(self.data,self.tag_filter)
-#             self.root.after(1, self.load_data)
-#
-#     def run(self):
-#         self.load_data()
-#
-#         self.root.protocol('WM_DELETE_WINDOW', self.root.quit)
-#         self.root.mainloop()
-#
-#
-# def main():
-#     program = Program()
-#     program.run()
+    def input_Motionx_y(self,event):
+        self.c_list_x = []
+        self.c_list_y = []
+        self.c_list_x.append(event.x)
+        self.c_list_y.append(event.y)
+        self.move_f = self.canvas.mpl_connect("motion_notify_event", self.moveon)
+
+    def output_Motionx_y(self,event):
+        self.canvas.mpl_disconnect(self.move_f)
+
+    def moveon(self,event):
+        self.c_list_x.append(event.x)
+
+        if self.c_list_x[-1]-self.c_list_x[-2] >0:
+            if self.x_start >= 0:
+                self.x_start -= 1
+                self.x_end -= 1
+            if self.x_start <= 0:
+                mid = self.x_start
+                self.x_start =0
+                self.x_end += abs(mid)
+
+        else:
+            if self.data_len > self.x_end:
+                self.x_start += 1
+                self.x_end += 1
+
+        self.ax.set_xlim(self.x_start, self.x_end)
 
 
-# if __name__ == '__main__':
-#     main()
