@@ -11,9 +11,7 @@ class LocalizationPlot:
         self.tag_var = tag_var
         self.ran = ran
 
-        self.fig = plt.figure()
-
-
+        self.fig = plt.figure(figsize=(20,10))
 
         self.ax = self.fig.add_subplot(111)
 
@@ -22,7 +20,7 @@ class LocalizationPlot:
         # Hollow out
         self.canvas = FigureCanvasTkAgg(self.fig, master=frame)
         self.canvas.draw()
-        self.canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=False)
+        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=False)
         self.canvas.mpl_connect("button_press_event", self.input_Motionx_y)
         self.canvas.mpl_connect("button_release_event", self.output_Motionx_y)
         self.canvas.mpl_connect("scroll_event", self.zoom)
@@ -31,7 +29,7 @@ class LocalizationPlot:
 
     # We only want the latest 80 plot
     # update and cancel the previous one
-    def update_plot(self, data):
+    def update_plot(self, data, p_num):
 
         xs = []
         ys = []
@@ -46,7 +44,7 @@ class LocalizationPlot:
                 ys.append(data[self.tag_var.get()]['pos'][1])
 
         self.ax.cla()
-        self.ax.set(xlabel='x Axis (m)', ylabel='y Axis (m)')
+        self.ax.set(xlabel='x Axis (m)', ylabel='y Axis (m)', title = "Number: %d" % p_num)
 
         # # Update the right label
         for i in range(len(xs)):

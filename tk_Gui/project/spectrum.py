@@ -2,6 +2,7 @@
 import tkinter as tk
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.gridspec import GridSpec
 from mpl_toolkits.mplot3d import Axes3D
 
 
@@ -16,7 +17,9 @@ class SpectrumPlot:
         self.signal = tk.IntVar()
 
         self.fig = plt.figure()
-        self.ax = self.fig.add_subplot(111, projection='3d')
+        gs = GridSpec(3, 5, figure=self.fig)
+        self.ax = self.fig.add_subplot(gs[0:3, 1:4], projection='3d')
+        # self.ax = self.fig.add_subplot(111, projection='3d')
 
         self.canvas = FigureCanvasTkAgg(self.fig, master=frame)
         self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)

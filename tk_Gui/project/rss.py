@@ -3,6 +3,7 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.patches as mpatches
 from matplotlib.collections import PatchCollection
+from matplotlib.gridspec import GridSpec
 
 
 class Viewer:
@@ -14,7 +15,9 @@ class Viewer:
     def setup_ui(self):
 
         self.fig = Figure(figsize=(5, 5), tight_layout=True)
-        self.ax = self.fig.add_subplot(111)
+
+        gs = GridSpec(3, 4, figure=self.fig)
+        self.ax = self.fig.add_subplot(gs[0:3,1:3])
         self.ax.set_axis_off()
         self.ax.set_facecolor("white")
         self.canvas = FigureCanvasTkAgg(self.fig, self.root)
@@ -29,14 +32,14 @@ class Viewer:
         v_interval = 0.2
 
         for i in range(16):
-            x = 0.05 + int(i % 4) * h_interval
-            y = 0.65 - int(i // 4) * v_interval
+            x = 0.03 + int(i % 4) * h_interval
+            y = 0.64 - int(i // 4) * v_interval
             s = mpatches.FancyBboxPatch([x, y],
-                                        0.1,
-                                        0.1,
+                                        0.15,
+                                        0.15,
                                         facecolor="white",
-                                        boxstyle=mpatches.BoxStyle("Round",
-                                                                   pad=0.02))
+                                        boxstyle=mpatches.BoxStyle("square",
+                                                                   pad=0.01))
 
             self.spots.append(s)
             t = self.ax.text(x + 0.02,

@@ -8,8 +8,6 @@ class CheckFilter:
         self.frame = frame
         self.vars = vars
         self.counter = 0
-        self.image = tk.PhotoImage(file='../pic/button.png')
-        self.selectimage = tk.PhotoImage(file='../pic/button2.png')
 
     def update_filter(self, tags):
         if self.counter == len(tags):
@@ -19,25 +17,27 @@ class CheckFilter:
         self.counter += len(new_tags)
 
         for num in new_tags:
-            button = tk.Checkbutton(
-                self.frame, text='ANT %d' % (num + 1), variable=self.vars[num], indicatoron=False,
-                # justify=tk.CENTER,
-                width=10, height=1, compound=tk.CENTER,
-                font=('Times New Roman', 8, 'bold'))
-            button.pack(anchor='w', fill=tk.BOTH)
+            # button = tk.Checkbutton(
+            #     self.frame, text='ANT %d' % (num + 1), variable=self.vars[num], indicatoron=False,
+            #     # justify=tk.CENTER,
+            #     width=10, height=1, compound=tk.CENTER,
+            #     font=('Times New Roman', 8, 'bold'))
+            # button.pack(anchor='w', fill=tk.BOTH)
+            self.frame.add_checkbutton(label="ANT %d" % (num+1), variable=self.vars[num])
 
 
 class PhasePlot:
-    def __init__(self, frame, tag_filter, tag_var):
+    def __init__(self, frame, tag_filter, tag_var, menubar):
 
         self.tag_filter = tag_filter
         self.tag_var = tag_var
+        self.menubar = menubar
 
-        filter_frame2 = tk.LabelFrame(frame, text='Phase Filter', bg='white', bd=0,
-                                      font=('Times New Roman', 12, 'bold'), labelanchor='n')
-        filter_frame2.pack(side=tk.LEFT, fill=tk.BOTH)
+        # filter_frame2 = tk.LabelFrame(frame, text='Phase Filter', bg='white', bd=0,
+        #                               font=('Times New Roman', 12, 'bold'), labelanchor='n')
+        # filter_frame2.pack(side=tk.LEFT, fill=tk.BOTH)
         self.phase_vars = [tk.IntVar() for i in range(16)]
-        self.phase_filter = CheckFilter(filter_frame2, self.phase_vars)
+        self.phase_filter = CheckFilter(self.menubar, self.phase_vars)
 
         self.x_start = 0
         self.x_end = 400
