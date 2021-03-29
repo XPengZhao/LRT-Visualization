@@ -8,12 +8,21 @@ Several tags are located by an antenna array with 16 antenna elements as shown i
 
 You will get information by `*.json` file and show the information on the interface according to requirements as follows.
 
-## 2. Data format
+## 2. System Architecture
+
+<img src="img/structure.png" style="zoom:70%;" />
+
+### 2.1 Gateway
+
+- Upload time stamp, phase, rss, tag id
+
+#### 2.1.1 Data format
 
 ```python
 {
+  	"atnid": i
     "time": us
-    "tag": i
+    "tagid": i
     "phase": [phase0, phase1,..., phase15],
     "rss": [rss0, rss1, ..., rss15],
     "spectrum": [[a0_0,a0_1,..a0_199],[a1_0,a1_1,...,a1_199], ..., [a199_0, a199_1, ..., a199_199]],
@@ -61,57 +70,84 @@ data
 
 
 
-## 3. Requirement for each part of the interface
+### 4.2 Server
 
-The explanations and pictures are meant to give you straightforward description for the different 4 parts of information, and it would be great if you add your own creativity and ideas to make it fancy and eye-catching.
+#### 4.2.1 Basic function
 
-### 3.1 Phase Plot
+- [ ] A web frontend
+- [ ] Deploy localization algorithm
+- [ ] Remote update/edit the config file of gateways
+- [ ] Start/Stop the gateways
+- [ ] Add logs/figures of a specific experiment
+- [ ] After start the gateways, save data in the MongoDB
+- [ ] Update the ground truth file(.csv) offline to the MongoDB
+- [ ] Log in/out
+- [ ] Query
 
-#### Filter
+### 4.3 GUI
+
+- [ ] List all
+- [ ] Replay(queue)
+
+#### 4.3.1 Basic function
+
+#### 4.3.2 Phase Plot
+
+##### Filter
 
 - Tag filter: choose which tag related to the information to show on the chart
-
 - Antenna element filter: choose which antenna element related to the information to show on the chart
 
-#### Figure
+##### Figure
 
 keep the latest K (e.g. 2000) numbers of latest phase values of the corresponding one antenna element (or multiple antenna elements) and plotting them in time series.
 
-<img src="img/phase.png" style="zoom:50%;" />
+![img](file:///Users/xpzhao/Documents/GitHub/LRT-Visualization/img/phase.png?lastModify=1617008887)
 
-### 3.2 RSS Estimate
+#### 3.2 RSS Estimate
 
-#### Filter
+##### Filter
 
 - Tag filter: choose which tag related to the information to show on the chart
 
-#### Figure
+##### Figure
 
 16 squares indicate 16 different antenna elements in the array, with red/green color indicates bad or good RSS status (with color bar) respectively and show the value of RSS on these colorful squares.
 
-<img src="img/rss.png" style="zoom:67%;" />
+![img](file:///Users/xpzhao/Documents/GitHub/LRT-Visualization/img/rss.png?lastModify=1617008887)
 
-### 3.3 Spectrum Plot
+#### 3.3 Spectrum Plot
 
-#### Filter
+##### Filter
 
 - Tag filter: choose which tag related to the information to show on the chart
 
-#### Figure
+##### Figure
 
 Scatter the value of spatial spectrum on the corresponding plane based on grids. Plot at 1 time/second. 
 
-![](img/pspectrum.jpg)
+![img](file:///Users/xpzhao/Documents/GitHub/LRT-Visualization/img/pspectrum.jpg?lastModify=1617008887)
 
-### 3.4 Localization Plot
+#### 3.4 Localization Plot
 
-#### Filter
+##### Filter
 
 - Tag filter: choose which tag related to the information to show on the chart
 - Position Range: adjust the `xlim` and `ylim` of the localization plot figure.
 
-#### Figure
+##### Figure
 
 Plot position on a 2D/3D grid keeping the latest M points (e.g. M=100). Position are (x,y) lists.
 
-<img src="img/position.png" style="zoom:50%;" />
+![img](file:///Users/xpzhao/Documents/GitHub/LRT-Visualization/img/position.png?lastModify=1617008887)
+
+
+
+## 3. Requirement for each part of the interface
+
+The explanations and pictures are meant to give you straightforward description for the different 4 parts of information, and it would be great if you add your own creativity and ideas to make it fancy and eye-catching.
+
+### 
+
+### 
+

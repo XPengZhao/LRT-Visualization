@@ -82,9 +82,7 @@ class Program:
 
     def setPointNum(self):
         try:
-            self.p_num = int(tk.simpledialog.askstring(title = 'Set Number',
-                                                   prompt='Number：',
-                                                   initialvalue = str(self.p_num)))
+            self.p_num = int(tk.simpledialog.askstring(title = 'Set Number',prompt='Number：', initialvalue = str(self.p_num)))
         except:
             pass
 
@@ -141,7 +139,7 @@ class Program:
             self.spectrum_plot.update_plot(self.data)
             self.rss_plot.view.update_fig(self.data)
 
-            self.root.after(500, self.load_data)
+            self.root.after(30, self.load_data)
 
     def refresh(self):
         self.spectrum_plot.update_plot(self.data)
