@@ -74,15 +74,15 @@ data
 
 #### 4.2.1 Basic function
 
-- [ ] A web frontend
-- [ ] Deploy localization algorithm
-- [ ] Remote update/edit the config file of gateways
-- [ ] Start/Stop the gateways
-- [ ] Add logs/figures of a specific experiment
-- [ ] After start the gateways, save data in the MongoDB
-- [ ] Update the ground truth file(.csv) offline to the MongoDB
-- [ ] Log in/out
-- [ ] Query
+- [ ] A web frontend. This web controls basic functions oon this server. For example, users can start an experiment via webpage by entering the experiment name. Also, Lists of experiments will be shown on the webpage and users can delete experiment records.
+- [ ] Deploy localization algorithm. Data from gateways is not the information of the location. So a  localization algorithm  will be deployed on the server and then it will convert raw data to location information.
+- [ ] Remote update/edit the config file of gateways. Users can edit and update config files of connetced gateways so that it is convinient for users to debug.
+- [ ] Start/Stop the gateways. Users can start/stop gateways.
+- [ ] Add logs/figures of a specific experiment. Via the frontend of the server, users are able to upload some logs and images to a specific experiment record. For instance, a image of the experiment scene could be uploaded to the record.
+- [ ] After start the gateways, save data in the MongoDB. Aftering starting gateways, the server will save all data sent by gateways in a MongoDB. And when the GUI reqiures location data, the server would send data in the MongoDB.
+- [ ] Update the ground truth file(.csv) offline to the MongoDB. For each experiment record, there would be a csv file which contains groudtruth data of this experiment. And users can upload this file to each experiment on the webpage.
+- [ ] Log in/out. Users need username and password to log in to operate experiment records, like deleting an experiment record in the MongoDB.
+- [ ] Query. On the frontend webpage, users can search/add/remove the experiment records after login.
 
 ### 4.3 GUI
 
