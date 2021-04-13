@@ -46,8 +46,12 @@ class PhasePlot(FigureCanvas):
                     title='Phase Plot')
         ls = []
         labels = []
+        x_len = len(self.xs[tag])
         for i in range(16):
-            l, = self.axes.plot(self.xs[tag][time_num:time_num+400],self.data[tag][i][time_num:time_num+400], visible=ant[i])
+            if len(self.xs[tag][time_num:])>400:
+                l, = self.axes.plot(self.xs[tag][time_num:time_num+400],self.data[tag][i][time_num:time_num+400], visible=ant[i])
+            else:
+                l, = self.axes.plot(self.xs[tag][-400:-1], self.data[tag][i][-400:-1],visible=ant[i])
 
             if int(ant[i]) == 1:
                 ls.append(l)
@@ -55,7 +59,10 @@ class PhasePlot(FigureCanvas):
 
         self.axes.set_ylim(-6, 6)
         self.axes.legend(ls, labels,loc=1)
-        self.axes.set_xlim([time_num,time_num+self.ran])
+        if len(self.xs[tag][time_num:]) > 400:
+            self.axes.set_xlim([time_num,time_num+self.ran])
+        else:
+            self.axes.set_xlim([x_len-400, x_len])
         del l
         self.draw()
 
