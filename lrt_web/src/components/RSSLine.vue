@@ -59,22 +59,23 @@ name: "RSSLine",
       for(let i=0;i<16;i++){
         if(state.antselect[i]){
           state.rsslineOpition.series[i]={
-            name: 'ANT'+String(i+1),
+            name: 'RSS'+String(i+1),
             type: 'line',
             symbol: 'none',
-            stack: 'rss',
+            // stack: 'rss',
             data: this.rss[i]
           }
         }else {
           state.rsslineOpition.series[i]={
-            name: 'ANT'+String(i+1),
+            name: 'RSS'+String(i+1),
             type: 'line',
             symbol: 'none',
-            stack: 'phase',
+            // stack: 'rss',
             data: []
           }
         }
       }
+      console.log(this.rss)
       state.rsslineOpition.xAxis.data=this.timearray
       this.RSSLineChart.setOption(state.rsslineOpition,100)
       this.num ++

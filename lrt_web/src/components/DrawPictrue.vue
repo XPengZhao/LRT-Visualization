@@ -131,7 +131,10 @@ name: "DrawPictrue",
       }
     },
     uploader_online() {
-      this.$refs.radar.connect = true
+      if(this.subclient){
+        this.subclient.unsubscribe()
+      }
+
       const API = localStorage.getItem('ApiUrl')
       const ws = new WebSocket(API)
       // const ws = new WebSocket('ws://192.168.0.100:15674/ws')
@@ -144,6 +147,7 @@ name: "DrawPictrue",
       console.log('error')
     },
     onconnect() {
+      let radar = this.$refs.radar
       let rss =this.$refs.rss
       let local = this.$refs.localization
       let phase = this.$refs.phase
@@ -160,7 +164,7 @@ name: "DrawPictrue",
            }
          }
          let rssdata = middata.map(function (item) {
-           return [item[1], item[0], item[2] || '-'];
+           return [item[1], item[0], Number(item[2]) || '-'];
          })
          rss.upDateRSS(rssdata)
          let x = localData.pos[0]
@@ -168,6 +172,7 @@ name: "DrawPictrue",
          local.upDateLocalization([x, y], localData.tagid)
          phase.upDatePhase(localData.phase)
          rssline.upDateRSSline(localData.rss)
+         radar.upDateRadar([localData.aoa])
          let spectrumList = []
          if (localData.spectrum) {
            for (let i = 0; i < 100; i++) {

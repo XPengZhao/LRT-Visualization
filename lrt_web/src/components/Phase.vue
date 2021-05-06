@@ -60,7 +60,7 @@ export default {
             name: 'ANT'+String(i+1),
             type: 'line',
             symbol: 'none',
-            stack: 'phase',
+            // stack: 'phase',
             data: this.phase[i]
           }
         }else {
@@ -68,7 +68,7 @@ export default {
             name: 'ANT'+String(i+1),
             type: 'line',
             symbol: 'none',
-            stack: 'phase',
+            // stack: 'phase',
             data: []
           }
         }

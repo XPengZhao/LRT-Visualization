@@ -51,14 +51,14 @@ name: "Localization",
         this.tagList.push('Tag'+tag)
       }
       for(let i in this.pos){
-        if(this.pos[i].length>1)
+        if(this.pos[i].length>100)
           this.pos[i].shift()
       }
       for(let i in this.pos){
         posData.push({
           name:'Tag'+i,
-          type: 'effectScatter',
-          symbolSize: 20,
+          type: 'scatter',
+          symbolSize: 30,
           data: this.pos[i]
         })
 

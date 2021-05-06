@@ -3,6 +3,7 @@ import { reactive } from "vue";
 export const state = reactive({
     antselect:[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,],
     localOpition:{
+        animation:false,
         title: {text: 'Localization', textStyle: {color: "#fff"}, left: "center"},
         tooltip: {
             formatter:'{a}<br/>{c}',
@@ -25,12 +26,12 @@ export const state = reactive({
         xAxis: {
             scale: true,
             min: 0,
-            max: 500
+            max: 200
         },
         yAxis: {
             scale: true,
             min: 0,
-            max: 500
+            max: 200
 
         },
         series: []},
@@ -214,7 +215,6 @@ export const state = reactive({
             splitArea: {
             show: true
         },
-        show:true
 
     },
     yAxis: {
@@ -223,6 +223,7 @@ export const state = reactive({
             splitArea: {
             show: true
         }
+
     },
     visualMap: {
         show:false,
@@ -274,7 +275,7 @@ export const state = reactive({
             y: 'center',
             x: 'right',
             min: 0,
-            max: 1,
+            max: 255,
             calculable: true,
             realtime: false,
             inRange: {
@@ -283,7 +284,7 @@ export const state = reactive({
             }
         },
         series: [{
-            // progressiveThreshold: 300000,
+            progressiveThreshold: 20000,
             name: 'Gaussian',
             type: 'heatmap',
             data: [],
@@ -293,7 +294,7 @@ export const state = reactive({
                     borderWidth: 1
                 }
             },
-            progressive: 1000,
+            progressive:2000,
             animation: false
         }]
     },
@@ -308,8 +309,8 @@ export const state = reactive({
         },
         legend: {
             type: 'scroll',
-            data: ['ANT1', 'ANT2', 'ANT3', 'ANT4', 'ANT5','ANT6', 'ANT7', 'ANT8', 'ANT9', 'ANT10','ANT11', 'ANT12', 'ANT13'
-                , 'ANT14', 'ANT15','ANT16'],
+            data: ['RSS1', 'RSS2', 'RSS3', 'RSS4', 'RSS5','RSS6', 'RSS7', 'RSS8', 'RSS9', 'RSS10','RSS11', 'RSS12', 'RSS13'
+                , 'RSS14', 'RSS15','RSS16'],
             orient: 'vertical',
             y: 'center',
             x: 'right',
@@ -330,14 +331,18 @@ export const state = reactive({
         xAxis: {
             type: 'category',
             boundaryGap: false,
-            data: []
+            data: [],
+            show:false
         },
         yAxis: {
-            type: 'value'
+            type: 'value',
+            show: true,
+            min:-90,
+            max:-50
         },
         series: [
             {
-                name: 'ANT1',
+                name: 'RSS1',
                 smooth:true,
                 symbol: 'none',
                 type: 'line',
@@ -345,105 +350,105 @@ export const state = reactive({
                 data: []
             },
             {
-                name: 'ANT2',
+                name: 'RSS2',
                 type: 'line',
                 smooth:true,
                 symbol: 'none',
                 stack: 'rss',
                 data: []
             },{
-                name: 'ANT3',
+                name: 'RSS3',
                 type: 'line',
                 smooth:true,
                 symbol: 'none',
                 stack: 'rss',
                 data: []
             },{
-                name: 'ANT4',
+                name: 'RSS4',
                 type: 'line',
                 smooth:true,
                 symbol: 'none',
                 stack: 'rss',
                 data: []
             },{
-                name: 'ANT5',
+                name: 'RSS5',
                 type: 'line',
                 smooth:true,
                 symbol: 'none',
                 stack: 'rss',
                 data: []
             },{
-                name: 'ANT6',
+                name: 'RSS6',
                 type: 'line',
                 smooth:true,
                 symbol: 'none',
                 stack: 'rss',
                 data: []
             },{
-                name: 'ANT7',
+                name: 'RSS7',
                 type: 'line',
                 smooth:true,
                 symbol: 'none',
                 stack: 'rss',
                 data: []
             },{
-                name: 'ANT8',
+                name: 'RSS8',
                 type: 'line',
                 smooth:true,
                 symbol: 'none',
                 stack: 'rss',
                 data: []
             },{
-                name: 'ANT9',
+                name: 'RSS9',
                 type: 'line',
                 smooth:true,
                 symbol: 'none',
                 stack: 'rss',
                 data: []
             },{
-                name: 'ANT10',
+                name: 'RSS10',
                 type: 'line',
                 smooth:true,
                 symbol: 'none',
                 stack: 'rss',
                 data: []
             },{
-                name: 'ANT11',
+                name: 'RSS11',
                 type: 'line',
                 smooth:true,
                 symbol: 'none',
                 stack: 'rss',
                 data: []
             },{
-                name: 'ANT12',
+                name: 'RSS12',
                 type: 'line',
                 smooth:true,
                 symbol: 'none',
                 stack: 'rss',
                 data: []
             },{
-                name: 'ANT13',
+                name: 'RSS13',
                 type: 'line',
                 smooth:true,
                 symbol: 'none',
                 stack: 'rss',
                 data: []
             },{
-                name: 'ANT14',
+                name: 'RSS14',
                 type: 'line',
                 smooth:true,
                 symbol: 'none',
                 stack: 'rss',
                 data: []
             },{
-                name: 'ANT15',
+                name: 'RSS15',
                 type: 'line',
                 smooth:true,
                 symbol: 'none',
                 stack: 'rss',
                 data: []
             },{
-                name: 'ANT16',
+                name: 'RSS16',
                 type: 'line',
                 smooth:true,
                 symbol: 'none',

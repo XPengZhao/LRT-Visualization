@@ -1,4 +1,5 @@
 <template>
+  <div style="background-color: black">
     <div class=" panels" style="height: 400px">
       <div class="radar-body" style="height: 400px;background-color: #1c7430">
         <div class="radar" style="background-color: pink;width: 100%;height: 100%;"></div>
@@ -6,6 +7,7 @@
       <div style="height:405px;width:100%"  ref="radarchart"></div>
       <div class="panels-foot"></div>
     </div>
+  </div>
 
 
 </template>
@@ -45,6 +47,7 @@ name: "radar",
       })
     },
     upDateRadar(data){
+      console.log(data)
 
       state.radarOpition.series[0].data=data
       this.radarChart.setOption(state.radarOpition,500)
