@@ -2,6 +2,7 @@ import { reactive } from "vue";
 // const trainImg = "image://"+require('@/assets/train.png')
 export const state = reactive({
     antselect:[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,],
+    connected:false,
     localOpition:{
         animation:false,
         title: {text: 'Localization', textStyle: {color: "#fff"}, left: "center"},
@@ -194,63 +195,732 @@ export const state = reactive({
         ]
     },
     rssOpition:{
-    // title: {
-    //     text: 'RSS',
-    //         textStyle:{color:"#fff"},
-    //     left: "center"
-    // },
-    tooltip: {
-        position: 'top'
-    },
-    grid: {
-            height: '90%',
-            width: '90%',
-            top: '5%',
-            left: '5%'
-            // left:"center",
-    },
-    xAxis: {
-        type: 'category',
-            data: [0,1,2,3],
-            splitArea: {
-            show: true
-        },
+        series: [{
+            min:-90,
+            max:-50,
+            type: 'gauge',
+            radius: '20%',
+            center: ['10%', '15%'],
+            axisTick:{
+                show:false
+            },
+            axisLine: {
+                lineStyle: {
+                    width: 5,
+                    color: [
+                        [0.25, '#fd666d'],
+                        [0.5, '#D7B599'],
+                        [0.75, '#67e0e3'],
+                        [1, '#17C37B']
+                    ]
+                }
+            },
+            pointer: {
+                itemStyle: {
+                    color: 'inherit'
+                },
+            },
+            splitLine: {
+                show:false
+            },
+            axisLabel: {
+                show:false
+            },
+            detail:{
+                show:false
+            },
+            data: [-70]
+        },{
+            min:-90,
+            max:-50,
+            name:'rss1',
+            type: 'gauge',
+            radius: '20%',
+            center: ['10%', '40%'],
+            axisTick:{
+                show:false
+            },
+            axisLine: {
+                lineStyle: {
+                    width: 5,
+                    color: [
+                        [0.25, '#fd666d'],
+                        [0.5, '#D7B599'],
+                        [0.75, '#67e0e3'],
+                        [1, '#17C37B']
+                    ]
+                }
+            },
+            pointer: {
+                itemStyle: {
+                    color: 'inherit'
+                }
 
-    },
-    yAxis: {
-        type: 'category',
-            data: [0,1,2,3],
-            splitArea: {
-            show: true
-        }
+            },
+            splitLine: {
+                distance: -30,
+                length: 30,
+                lineStyle: {
+                    color: '#fff',
+                    width: 4
+                },
+                show:false
+            },
+            axisLabel: {
+                color: 'auto',
+                distance: 40,
+                fontSize: 20,
+                show:false
+            },
+            detail:{
+                show:false
+            },
+            data: [-70]
+        },{
+            min:-90,
+            max:-50,
+            name:'rss1',
+            type: 'gauge',
+            radius: '20%',
+            center: ['10%', '65%'],
+            axisTick:{
+                show:false
+            },
+            axisLine: {
+                lineStyle: {
+                    width: 5,
+                    color: [
+                        [0.25, '#fd666d'],
+                        [0.5, '#D7B599'],
+                        [0.75, '#67e0e3'],
+                        [1, '#17C37B']
+                    ]
+                }
+            },
+            pointer: {
+                itemStyle: {
+                    color: 'inherit'
+                }
 
-    },
-    visualMap: {
-        show:false,
-        min: -90,
-            max: -50,
-            calculable: true,
-            orient: 'vertical',
-            left: 'right',
-            bottom: 'center',
-            inRange: {
-            color: ['#D92139','#10A44A']
-        }
-    },
-    series: [{
-        name: 'ANT',
-        type: 'heatmap',
-        data: [],
-        // label: {
-        //     show: true
-        // },
-        emphasis: {
-            itemStyle: {
-                shadowBlur: 10,
-                shadowColor: 'rgba(0, 0, 0, 0.5)'
-            }
-        }
-    }]
+            },
+            splitLine: {
+                distance: -30,
+                length: 30,
+                lineStyle: {
+                    color: '#fff',
+                    width: 4
+                },
+                show:false
+            },
+            axisLabel: {
+                color: 'auto',
+                distance: 40,
+                fontSize: 20,
+                show:false
+            },
+            detail:{
+                show:false
+            },
+            data: [-70]
+        },{
+            min:-90,
+            max:-50,
+            name:'rss1',
+            type: 'gauge',
+            radius: '20%',
+            center: ['10%', '90%'],
+            axisTick:{
+                show:false
+            },
+            axisLine: {
+                lineStyle: {
+                    width: 5,
+                    color: [
+                        [0.25, '#fd666d'],
+                        [0.5, '#D7B599'],
+                        [0.75, '#67e0e3'],
+                        [1, '#17C37B']
+                    ]
+                }
+            },
+            pointer: {
+                itemStyle: {
+                    color: 'inherit'
+                }
+
+            },
+            splitLine: {
+                distance: -30,
+                length: 30,
+                lineStyle: {
+                    color: '#fff',
+                    width: 4
+                },
+                show:false
+            },
+            axisLabel: {
+                color: 'auto',
+                distance: 40,
+                fontSize: 20,
+                show:false
+            },
+            detail:{
+                show:false
+            },
+            data: [-70]
+        },{
+            min:-90,
+            max:-50,
+            name:'rss1',
+            type: 'gauge',
+            radius: '20%',
+            center: ['38%', '15%'],
+            axisTick:{
+                show:false
+            },
+            axisLine: {
+                lineStyle: {
+                    width: 5,
+                    color: [
+                        [0.25, '#fd666d'],
+                        [0.5, '#D7B599'],
+                        [0.75, '#67e0e3'],
+                        [1, '#17C37B']
+                    ]
+                }
+            },
+            pointer: {
+                itemStyle:{
+                    color:'inherit'
+                }
+
+            },
+            splitLine: {
+                distance: -30,
+                length: 30,
+                lineStyle: {
+                    color: '#fff',
+                    width: 4
+                },
+                show:false
+            },
+            axisLabel: {
+                color: 'auto',
+                distance: 40,
+                fontSize: 20,
+                show:false
+            },
+            detail:{
+                show:false
+            },
+            data: [-70]
+        },{
+            min:-90,
+            max:-50,
+            name:'rss1',
+            type: 'gauge',
+            radius: '20%',
+            center: ['38%', '40%'],
+            axisTick:{
+                show:false
+            },
+            axisLine: {
+                lineStyle: {
+                    width: 5,
+                    color: [
+                        [0.25, '#fd666d'],
+                        [0.5, '#D7B599'],
+                        [0.75, '#67e0e3'],
+                        [1, '#17C37B']
+                    ]
+                }
+            },
+            pointer: {
+                itemStyle: {
+                    color: 'inherit'
+                }
+
+            },
+            splitLine: {
+                distance: -30,
+                length: 30,
+                lineStyle: {
+                    color: '#fff',
+                    width: 4
+                },
+                show:false
+            },
+            axisLabel: {
+                color: 'auto',
+                distance: 40,
+                fontSize: 20,
+                show:false
+            },
+            detail:{
+                show:false
+            },
+            data: [-70]
+        },{
+            min:-90,
+            max:-50,
+            name:'rss1',
+            type: 'gauge',
+            radius: '20%',
+            center: ['38%', '65%'],
+            axisTick:{
+                show:false
+            },
+            axisLine: {
+                lineStyle: {
+                    width: 5,
+                    color: [
+                        [0.25, '#fd666d'],
+                        [0.5, '#D7B599'],
+                        [0.75, '#67e0e3'],
+                        [1, '#17C37B']
+                    ]
+                }
+            },
+            pointer: {
+                itemStyle: {
+                    color: 'inherit'
+                }
+
+            },
+            splitLine: {
+                distance: -30,
+                length: 30,
+                lineStyle: {
+                    color: '#fff',
+                    width: 4
+                },
+                show:false
+            },
+            axisLabel: {
+                color: 'auto',
+                distance: 40,
+                fontSize: 20,
+                show:false
+            },
+            detail:{
+                show:false
+            },
+            data: [-70]
+        },{
+            min:-90,
+            max:-50,
+            name:'rss1',
+            type: 'gauge',
+            radius: '20%',
+            center: ['38%', '90%'],
+            axisTick:{
+                show:false
+            },
+            axisLine: {
+                lineStyle: {
+                    width: 5,
+                    color: [
+                        [0.25, '#fd666d'],
+                        [0.5, '#D7B599'],
+                        [0.75, '#67e0e3'],
+                        [1, '#17C37B']
+                    ]
+                }
+            },
+            pointer: {
+                itemStyle: {
+                    color: 'inherit'
+                }
+
+            },
+            splitLine: {
+                distance: -30,
+                length: 30,
+                lineStyle: {
+                    color: '#fff',
+                    width: 4
+                },
+                show:false
+            },
+            axisLabel: {
+                color: 'auto',
+                distance: 40,
+                fontSize: 20,
+                show:false
+            },
+            detail:{
+                show:false
+            },
+            data: [-70]
+        },{
+            min:-90,
+            max:-50,
+            name:'rss1',
+            type: 'gauge',
+            radius: '20%',
+            center: ['64%', '15%'],
+            axisTick:{
+                show:false
+            },
+            axisLine: {
+                lineStyle: {
+                    width: 5,
+                    color: [
+                        [0.25, '#fd666d'],
+                        [0.5, '#D7B599'],
+                        [0.75, '#67e0e3'],
+                        [1, '#17C37B']
+                    ]
+                }
+            },
+            pointer: {
+                itemStyle: {
+                    color: 'inherit'
+                }
+
+            },
+            splitLine: {
+                distance: -30,
+                length: 30,
+                lineStyle: {
+                    color: '#fff',
+                    width: 4
+                },
+                show:false
+            },
+            axisLabel: {
+                color: 'auto',
+                distance: 40,
+                fontSize: 20,
+                show:false
+            },
+            detail:{
+                show:false
+            },
+            data: [-70]
+        },{
+            min:-90,
+            max:-50,
+            name:'rss1',
+            type: 'gauge',
+            radius: '20%',
+            center: ['64%', '40%'],
+            axisTick:{
+                show:false
+            },
+            axisLine: {
+                lineStyle: {
+                    width: 5,
+                    color: [
+                        [0.25, '#fd666d'],
+                        [0.5, '#D7B599'],
+                        [0.75, '#67e0e3'],
+                        [1, '#17C37B']
+                    ]
+                }
+            },
+            pointer: {
+                itemStyle: {
+                    color: 'inherit'
+                }
+
+            },
+            splitLine: {
+                distance: -30,
+                length: 30,
+                lineStyle: {
+                    color: '#fff',
+                    width: 4
+                },
+                show:false
+            },
+            axisLabel: {
+                color: 'auto',
+                distance: 40,
+                fontSize: 20,
+                show:false
+            },
+            detail:{
+                show:false
+            },
+            data: [-70]
+        },{
+            min:-90,
+            max:-50,
+            name:'rss1',
+            type: 'gauge',
+            radius: '20%',
+            center: ['64%', '65%'],
+            axisTick:{
+                show:false
+            },
+            axisLine: {
+                lineStyle: {
+                    width: 5,
+                    color: [
+                        [0.25, '#fd666d'],
+                        [0.5, '#D7B599'],
+                        [0.75, '#67e0e3'],
+                        [1, '#17C37B']
+                    ]
+                }
+            },
+            pointer: {
+                itemStyle: {
+                    color: 'inherit'
+                }
+
+            },
+            splitLine: {
+                distance: -30,
+                length: 30,
+                lineStyle: {
+                    color: '#fff',
+                    width: 4
+                },
+                show:false
+            },
+            axisLabel: {
+                color: 'auto',
+                distance: 40,
+                fontSize: 20,
+                show:false
+            },
+            detail:{
+                show:false
+            },
+            data: [-70]
+        },{
+            min:-90,
+            max:-50,
+            name:'rss1',
+            type: 'gauge',
+            radius: '20%',
+            center: ['64%', '90%'],
+            axisTick:{
+                show:false
+            },
+            axisLine: {
+                lineStyle: {
+                    width: 5,
+                    color: [
+                        [0.25, '#fd666d'],
+                        [0.5, '#D7B599'],
+                        [0.75, '#67e0e3'],
+                        [1, '#17C37B']
+                    ]
+                }
+            },
+            pointer: {
+                itemStyle: {
+                    color: 'inherit'
+                }
+
+            },
+            splitLine: {
+                distance: -30,
+                length: 30,
+                lineStyle: {
+                    color: '#fff',
+                    width: 4
+                },
+                show:false
+            },
+            axisLabel: {
+                color: 'auto',
+                distance: 40,
+                fontSize: 20,
+                show:false
+            },
+            detail:{
+                show:false
+            },
+            data: [-70]
+        },{
+            min:-90,
+            max:-50,
+            name:'rss1',
+            type: 'gauge',
+            radius: '20%',
+            center: ['90%', '15%'],
+            axisTick:{
+                show:false
+            },
+            axisLine: {
+                lineStyle: {
+                    width: 5,
+                    color: [
+                        [0.25, '#fd666d'],
+                        [0.5, '#D7B599'],
+                        [0.75, '#67e0e3'],
+                        [1, '#17C37B']
+                    ]
+                }
+            },
+            pointer: {
+                itemStyle: {
+                    color: 'inherit'
+                }
+
+            },
+            splitLine: {
+                distance: -30,
+                length: 30,
+                lineStyle: {
+                    color: '#fff',
+                    width: 4
+                },
+                show:false
+            },
+            axisLabel: {
+                color: 'auto',
+                distance: 40,
+                fontSize: 20,
+                show:false
+            },
+            detail:{
+                show:false
+            },
+            data: [-70]
+        },{
+            min:-90,
+            max:-50,
+            name:'rss1',
+            type: 'gauge',
+            radius: '20%',
+            center: ['90%', '40%'],
+            axisTick:{
+                show:false
+            },
+            axisLine: {
+                lineStyle: {
+                    width: 5,
+                    color: [
+                        [0.25, '#fd666d'],
+                        [0.5, '#D7B599'],
+                        [0.75, '#67e0e3'],
+                        [1, '#17C37B']
+                    ]
+                }
+            },
+            pointer: {
+                itemStyle: {
+                    color: 'inherit'
+                }
+
+            },
+            splitLine: {
+                distance: -30,
+                length: 30,
+                lineStyle: {
+                    color: '#fff',
+                    width: 4
+                },
+                show:false
+            },
+            axisLabel: {
+                color: 'auto',
+                distance: 40,
+                fontSize: 20,
+                show:false
+            },
+            detail:{
+                show:false
+            },
+            data: [-70]
+        },{
+            min:-90,
+            max:-50,
+            name:'rss1',
+            type: 'gauge',
+            radius: '20%',
+            center: ['90%', '65%'],
+            axisTick:{
+                show:false
+            },
+            axisLine: {
+                lineStyle: {
+                    width: 5,
+                    color: [
+                        [0.25, '#fd666d'],
+                        [0.5, '#D7B599'],
+                        [0.75, '#67e0e3'],
+                        [1, '#17C37B']
+                    ]
+                }
+            },
+            pointer: {
+                itemStyle: {
+                    color: 'inherit'
+                }
+
+            },
+            splitLine: {
+                distance: -30,
+                length: 30,
+                lineStyle: {
+                    color: '#fff',
+                    width: 4
+                },
+                show:false
+            },
+            axisLabel: {
+                color: 'auto',
+                distance: 40,
+                fontSize: 20,
+                show:false
+            },
+            detail:{
+                show:false
+            },
+            data: [-70]
+        },{
+            min:-90,
+            max:-50,
+            name:'rss1',
+            type: 'gauge',
+            radius: '20%',
+            center: ['90%', '90%'],
+            axisTick:{
+                show:false
+            },
+            axisLine: {
+                lineStyle: {
+                    width: 5,
+                    color: [
+                        [0.25, '#fd666d'],
+                        [0.5, '#D7B599'],
+                        [0.75, '#67e0e3'],
+                        [1, '#17C37B']
+                    ]
+                }
+            },
+            pointer: {
+                itemStyle: {
+                    color: 'inherit'
+                }
+
+            },
+            splitLine: {
+                distance: -30,
+                length: 30,
+                lineStyle: {
+                    color: '#fff',
+                    width: 4
+                },
+                show:false
+            },
+            axisLabel: {
+                color: 'auto',
+                distance: 40,
+                fontSize: 20,
+                show:false
+            },
+            detail:{
+                show:false
+            },
+            data: [-70]
+        },]
     },
     spectrumOpition:{
         title: {text: 'Spectrum', textStyle: {color: "#fff"}, left: "center"},
@@ -457,7 +1127,6 @@ export const state = reactive({
             }
         ]
     },
-    connected:false,
     radarOpition: {
         animation:false,
         backgroundColor: 'rgba(0,0,0,0)',
@@ -518,6 +1187,7 @@ export const state = reactive({
             color:'red'
 
         }]
-    }
+    },
+
     // tagList: [],
 })

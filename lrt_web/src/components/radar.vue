@@ -47,13 +47,14 @@ name: "radar",
       })
     },
     upDateRadar(data){
-      console.log(data)
-
       state.radarOpition.series[0].data=data
       this.radarChart.setOption(state.radarOpition,500)
+    },
+    refreshChart(){
+      state.radarOpition.series[0].data=[]
+      this.radarChart.setOption(state.radarOpition,500)
+    },
 
-
-    }
   }
 
 }

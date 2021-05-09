@@ -61,6 +61,12 @@ name: "Panel",
         state.antselect[data-1]=true
         this.pic[data] = require('../assets/sign.png')
       }
+    },
+    refreshCharts(){
+      for(let i=0;i<16;i++){
+        state.antselect[i] = false
+        this.pic[i] = require('../assets/unsign.png')
+      }
     }
   }
 }

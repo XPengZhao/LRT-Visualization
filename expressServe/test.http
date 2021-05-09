@@ -1,0 +1,11 @@
+POST http://localhost:3000/lrt/insert
+Content-Type: application/json
+
+{
+  "Time": 1,
+  "tagid": 1,
+  "antid":1,
+  "phase": 1,
+  "rss": 1,
+  "pos": 1
+}

@@ -76,6 +76,11 @@ export default {
       state.phaseOpition.xAxis.data=this.timearray
       this.PhaseChart.setOption(state.phaseOpition,100)
       this.num ++
+    },
+    refreshChart(){
+      state.phaseOpition.xAxis.data=[]
+      this.PhaseChart.setOption(state.phaseOpition,100)
+      this.num = 0
     }
   }
 }

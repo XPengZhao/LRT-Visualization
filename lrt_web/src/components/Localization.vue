@@ -63,12 +63,14 @@ name: "Localization",
         })
 
       }
-
       state.localOpition.series=posData
       state.localOpition.legend.data = this.tagList
       this.LocalizationChart.setOption(state.localOpition,500)
-
-
+    },
+    refreshChart(){
+      state.localOpition.series=[]
+      state.localOpition.legend.data = []
+      this.LocalizationChart.setOption(state.localOpition,500)
     }
   }
 }

@@ -12,14 +12,21 @@
             Connect
           </button>
           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <a class="dropdown-item" href="#" v-on:click="uploader_online()">Now</a>
+            <a class="dropdown-item" id="onlineButton" href="#" v-on:click="uploader_online()">Now</a>
             <hr>
             <a class="dropdown-item" href="#" v-on:click="callUpArea()">Local</a>
-            <hr>
-            <a class="dropdown-item" href="#" v-on:click="test()">test</a>
           </div>
         </div>
+        <button type="button" id="recordButton" class="ml-3 btn" style="background-color: #04254E;color: white"  data-toggle="button" aria-pressed="false" @click="recording()">
+          <img :src="recordimg" style="height: 20px">
+          Recording
+        </button>
+        <button type="button" id="stopButton" class="ml-3 btn" style="background-color: #04254E;color: white"  data-toggle="button" aria-pressed="false" @click="stopConnect()">
+          <img :src="stopimg" style="height: 20px">
+          Stop
+        </button>
       </div>
+
     </div>
 
   </nav>
@@ -40,15 +47,39 @@
       </div>
     </div>
     <div class="col-2 ">
-      <Panel></Panel>
+      <Panel ref="panel"></Panel>
       <RSS class="mt-2" ref="rss"></RSS>
       <radar class="mt-2" ref="radar"></radar>
 
     </div>
+
+  </div>
+  <div id="createTable" class="createTable">
+    <div class="tableCard animate__animated animate__backInLeft" id = 'tableCard'>
+      <div class="card" style="border: 2px solid #151515">
+        <div class="card-header" id="experimentID" style="background-color: #3c415c;color: white;">
+          Experiment ID:
+        </div>
+        <div class="card-body" style="background-color: #b4a5a5;color: #3c415c">
+          <div class="row" >
+            <input type="file" accept="image/*" v-on:change="uploadImg($event)" v-show="false" id="describeImgArea"/>
+            <div class="ml-3 uploadLabel">Upload</div>
+            <label id="describeImgPath" class="col-8 uploadPath" style="color: #3c415c"></label>
+            <button class="btn uploadButton" v-on:click="callUpImg()">Choose</button>
+          </div>
+          <hr>
+          <div style="width: 100%">
+            <h5 class="card-title">Describe</h5>
+            <textarea id="describeWord" style="width: 80%;color: black;background-color: rgba(255,255,255,0.17)" rows="5" cols="33" ></textarea>
+          </div>
+          <hr>
+          <button class="btn sendButton" v-on:click="sendTable()">Send</button>
+      </div>
+    </div>
+    </div>
   </div>
 
 </template>
-
 <script>
 import $ from "jquery"
 let echarts = require("echarts/lib/echarts");
@@ -71,6 +102,7 @@ import { EffectScatterChart } from 'echarts/charts';
 echarts.use([EffectScatterChart]);
 import { CustomChart } from 'echarts/charts';
 echarts.use([CustomChart]);
+import axios from "axios";
 import { TimelineComponent } from 'echarts/components';
 import Localization from "@/components/Localization";
 import Phase from "@/components/Phase";
@@ -87,9 +119,12 @@ name: "DrawPictrue",
   data(){
     return{
       connectimg:require('@/assets/connect.png'),
+      recordimg:require('@/assets/recordWhite.png'),
+      stopimg:require('@/assets/stop.png'),
       files: {},
       num : 0,
-      webpath: 'ws://10.11.15.93:15674/ws'
+      webpath: 'ws://10.11.15.93:15674/ws',
+      createTable:false,
     }
 
   },
@@ -100,28 +135,15 @@ name: "DrawPictrue",
     this.$refs.spectrum.initSpectrumCharts()
     this.$refs.rssline.initRSSLineCharts()
     this.$refs.radar.initRadarCharts()
+    sessionStorage.setItem('record',0)
+    sessionStorage.setItem('createTable',0)
+    $('#createTable').hide()
+    $('#stopButton').prop('disabled',true)
+    $('#recordButton').prop('disabled',true)
     },
   methods:{
-    testradar(r,t){
-      let radar = this.$refs.radar
-      radar.upDateRadar([[r, t]])
-    },
-    test(){
-      for (var i = 0; i <= 100; i++) {
-        var theta = Math.random();
-        var r = theta*50
-        setTimeout(this.testradar,(i+1)*1000,theta,r)
-      }
-
-    },
     callUpArea(){
-      if(this.subclient){
-        this.subclient.unsubscribe()
-      }
       $("#uparea").click()
-      // location.reload()
-      // this.subclient.unsubscribe()
-
     },
     uploader(es) {
       this.files = es.target.files
@@ -131,10 +153,9 @@ name: "DrawPictrue",
       }
     },
     uploader_online() {
-      if(this.subclient){
-        this.subclient.unsubscribe()
-      }
-
+      $('#stopButton').prop('disabled',false)
+      $('#onlineButton').addClass('disabled')
+      $('#recordButton').prop('disabled',false)
       const API = localStorage.getItem('ApiUrl')
       const ws = new WebSocket(API)
       // const ws = new WebSocket('ws://192.168.0.100:15674/ws')
@@ -154,19 +175,27 @@ name: "DrawPictrue",
       let spectrum = this.$refs.spectrum
       let rssline = this.$refs.rssline
      this.subclient = this.client.subscribe('/queue/oss.url_test',function (data){
-       let middata = []
        let word = data.body
        let localData = parse(word).value
-         for (let i = 0; i < 4; i++) {
-           for (let j = 0; j < 4; j++) {
-             let num = Number(localData.rss[i * 4 + j])
-             middata.push([i, j, num.toFixed(2)])
+       if(sessionStorage.getItem('record')==='1'){
+         axios.post('http://localhost:3000/lrt/insert',{
+           table:sessionStorage.getItem('tableName'),
+           time: localData.time,
+           tagid: localData.tagid,
+           atnid: localData.atnid,
+           phase: localData.phase,
+           rss: localData.rss,
+           pos: localData.pos,
+           // rn16:Array,
+         }).then(function (){
+           if(sessionStorage.getItem('createTable')==='0'){
+             sessionStorage.setItem('createTable','1')
            }
-         }
-         let rssdata = middata.map(function (item) {
-           return [item[1], item[0], Number(item[2]) || '-'];
-         })
-         rss.upDateRSS(rssdata)
+         }).catch(function () {
+           sessionStorage.setItem('createTable','0')
+         });
+       }
+         rss.upDateRSS(localData.rss)
          let x = localData.pos[0]
          let y = localData.pos[1]
          local.upDateLocalization([x, y], localData.tagid)
@@ -184,8 +213,7 @@ name: "DrawPictrue",
          }
      })
 
-    }
-    ,
+    },
     loadfile(num){
       let rss =this.$refs.rss
       let local = this.$refs.localization
@@ -223,15 +251,70 @@ name: "DrawPictrue",
         }
       })
     }
-
     },
-
-
-
-
-
-
-
+    recording(){
+      if(sessionStorage.getItem('record')==='1'){
+        $('#recordButton').css({
+          'background-color':'#04254E',
+          'border':''
+        })
+        sessionStorage.setItem('record','0')
+        $('#experimentID').html('Experiment ID: '+sessionStorage.getItem('tableName'))
+        // $('#createTable').addClass('animate__animated','animate__backInLeft')
+        $('#tableCard').removeClass('animate__backOutDown')
+       $('#createTable').show()
+      }else {
+        $('#recordButton').css({
+          'background-color':'red',
+          'border':'2px solid white'
+        })
+        let time = new Date()
+        sessionStorage.setItem('tableName',time.toLocaleString('chinese', { hour12: false }))
+        sessionStorage.setItem('record','1')
+      }
+    },
+    sendTable(){
+      const that = this
+      $('#tableCard').addClass('animate__backOutDown')
+      let a = that.valueURL
+      axios.post('http://localhost:3000/lrt/insertTable',{
+        tableName:sessionStorage.getItem('tableName'),
+        antPos:[],
+        Describe:$('#describeWord').val(),
+        img:a,
+      }).then(function (){
+        that.valueURL = ''
+        sessionStorage.setItem('tableName','')
+      });
+    },
+    stopConnect(){
+      $('#stopButton').prop('disabled',true)
+      $('#recordButton').prop('disabled',true)
+      $('#onlineButton').removeClass('disabled')
+      if(this.subclient){
+        this.subclient.unsubscribe()
+      }
+      this.$refs.localization.refreshChart()
+      this.$refs.panel.refreshCharts()
+      this.$refs.phase.refreshChart()
+      this.$refs.radar.refreshChart()
+      this.$refs.rss.refreshCharts()
+      this.$refs.rssline.refreshRssline()
+      this.$refs.spectrum.refreshSpectrum()
+    },
+    callUpImg(){
+      $('#describeImgArea').click()
+    },
+    uploadImg(e){
+      const that = this
+      let file = e.target.files[0]
+      var reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = function (){
+        that.valueURL = this.result
+      }
+      $('#describeImgPath').html(file.name)
+    },
   }
 }
 
@@ -245,10 +328,49 @@ name: "DrawPictrue",
   position:relative;
   z-index:5;
   top:0;
+
 }
+.createTable{
+  overflow: hidden;
+  font-family: 'Ubuntu', sans-serif;
+  width: 600px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  z-index: 999;
 
-
-
-
-
+}
+.tableCard{
+  font-weight: 700;
+  text-align: center;
+}
+.uploadLabel{
+  height:40px;
+  width:80px;
+  text-align: center;
+  line-height:40px;
+  background-color: #3c415c;
+  border-radius: 5px;
+  color: white
+}
+.uploadButton{
+  background-color: #3c415c;
+  border-radius: 5px;
+  color: white;
+  height:40px;
+}
+.uploadPath{
+  color: #3c415c;
+  height:40px;
+  text-align: center;
+  line-height:40px;
+  border-bottom: 1px solid #151515;
+}
+.sendButton{
+  width: 100px;
+  color: white;
+  background-color: #3c415c;
+  border-radius: 5px;
+}
 </style>

@@ -75,10 +75,14 @@ name: "RSSLine",
           }
         }
       }
-      console.log(this.rss)
       state.rsslineOpition.xAxis.data=this.timearray
       this.RSSLineChart.setOption(state.rsslineOpition,100)
       this.num ++
+    },
+    refreshRssline(){
+      state.rsslineOpition.xAxis.data=[]
+      this.RSSLineChart.setOption(state.rsslineOpition,100)
+      this.num=0
     }
   }
 }
