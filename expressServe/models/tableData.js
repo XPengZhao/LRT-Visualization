@@ -4,7 +4,7 @@ var tabledata = new mongoose.Schema({
     antPos:Array,
     Describe:String,
     img: String,
-    tablename: String
+    tableName: String
 })
 tableDataModle = mongoose.model('tableData',tabledata)
 module.exports = tableDataModle

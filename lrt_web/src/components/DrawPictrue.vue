@@ -278,10 +278,10 @@ name: "DrawPictrue",
       $('#tableCard').addClass('animate__backOutDown')
       let a = that.valueURL
       axios.post('http://localhost:3000/lrt/insertTable',{
-        tableName:sessionStorage.getItem('tableName'),
         antPos:[],
         Describe:$('#describeWord').val(),
         img:a,
+        tableName:sessionStorage.getItem('tableName'),
       }).then(function (){
         that.valueURL = ''
         sessionStorage.setItem('tableName','')

@@ -25,6 +25,7 @@ router.post('/insert', function(req, res, next) {
 
 });
 router.post('/insertTable', function(req, res, next) {
+    console.log(req.body.tableName)
     let tableData = new tableDataModel({
         antPos:req.body.antPos,
         Describe:req.body.Describe,
