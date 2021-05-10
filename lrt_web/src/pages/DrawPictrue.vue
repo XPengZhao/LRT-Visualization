@@ -1,20 +1,25 @@
 <template>
   <nav class="navbar navbar-expand-lg" style="background-color: #04254E;">
-    <a class="navbar-brand" href="#"  style=" color: white;">LRT</a>
+    <a class="navbar-brand" href="#"  style=" color: white;" @click="toHome()">
+      <img :src="flowerimg" style="height: 30px">
+      Chrysanth LRT
+    </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav">
         <div class="dropdown">
-          <button class="btn dropdown-toggle" style="background-color: #04254E;color: white" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <button class="btn dropdown-toggle" style="background-color: #04254E;color: white;min-width: 160px" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <img :src="connectimg" style="height: 20px;">
             Connect
           </button>
           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <a class="dropdown-item" id="onlineButton" href="#" v-on:click="uploader_online()">Now</a>
+            <a class="dropdown-item" data-disabled="true" data-toggle="dropdown" id="onlineButton" href="#" v-on:click="uploader_online()">Now</a>
             <hr>
-            <a class="dropdown-item" href="#" v-on:click="callUpArea()">Local</a>
+            <a class="dropdown-item" data-disabled="true" data-toggle="dropdown" href="#" v-on:click="callUpArea()">Local</a>
+            <hr>
+            <a class="dropdown-item" data-disabled="true" data-toggle="dropdown"  href="#" @click="toDataList">DataList</a>
           </div>
         </div>
         <button type="button" id="recordButton" class="ml-3 btn" style="background-color: #04254E;color: white"  data-toggle="button" aria-pressed="false" @click="recording()">
@@ -26,9 +31,7 @@
           Stop
         </button>
       </div>
-
     </div>
-
   </nav>
   <input type="file" v-on:change="uploader($event)" webkitdirectory directory v-show="false" id="uparea"/>
   <div class="mainBox row mt-5">
@@ -81,7 +84,7 @@
 
 </template>
 <script>
-import $ from "jquery"
+/* eslint-disable */
 let echarts = require("echarts/lib/echarts");
 import stomp from 'stompjs'
 import parse from 'fast-json-parse'
@@ -111,8 +114,9 @@ import Spectrum from "@/components/Spectrum";
 import Panel from "@/components/Panel";
 import RSSLine from "@/components/RSSLine";
 import Radar from "@/components/radar";
-
+import { useRouter } from 'vue-router'
 echarts.use([TimelineComponent]);
+
 export default {
 name: "DrawPictrue",
   components: {Radar, RSSLine, Panel, Spectrum, RSS, Phase, Localization},
@@ -121,6 +125,7 @@ name: "DrawPictrue",
       connectimg:require('@/assets/connect.png'),
       recordimg:require('@/assets/recordWhite.png'),
       stopimg:require('@/assets/stop.png'),
+      flowerimg:require('@/assets/flower.png'),
       files: {},
       num : 0,
       webpath: 'ws://10.11.15.93:15674/ws',
@@ -141,18 +146,18 @@ name: "DrawPictrue",
     $('#stopButton').prop('disabled',true)
     $('#recordButton').prop('disabled',true)
     },
-  methods:{
-    callUpArea(){
+  setup(){
+
+    const callUpArea=(()=>{
       $("#uparea").click()
-    },
-    uploader(es) {
+    })
+      const uploader =((es)=> {
       this.files = es.target.files
-      this.$refs.radar.connect = true
       for (let i =0; i < this.files.length; i++) {
         setTimeout(this.loadfile, (i+1)*1000,i)
       }
-    },
-    uploader_online() {
+    })
+    const uploader_online=(()=>{
       $('#stopButton').prop('disabled',false)
       $('#onlineButton').addClass('disabled')
       $('#recordButton').prop('disabled',false)
@@ -163,17 +168,17 @@ name: "DrawPictrue",
       this.client.heartbeat.incoming = 0
       this.client.heartbeat.outgoing = 20000
       this.client.connect('admin','admin',this.onconnect,this.disconnect,'/')
-    },
-    disconnect() {
+    })
+    const disconnect=(()=> {
       console.log('error')
-    },
-    onconnect() {
-      let radar = this.$refs.radar
+    })
+    const onconnect=(()=>{
       let rss =this.$refs.rss
       let local = this.$refs.localization
       let phase = this.$refs.phase
       let spectrum = this.$refs.spectrum
       let rssline = this.$refs.rssline
+      let radar = this.$refs.radar
      this.subclient = this.client.subscribe('/queue/oss.url_test',function (data){
        let word = data.body
        let localData = parse(word).value
@@ -213,8 +218,8 @@ name: "DrawPictrue",
          }
      })
 
-    },
-    loadfile(num){
+    })
+    const loadfile=((num)=>{
       let rss =this.$refs.rss
       let local = this.$refs.localization
       let phase = this.$refs.phase
@@ -251,8 +256,8 @@ name: "DrawPictrue",
         }
       })
     }
-    },
-    recording(){
+    })
+    const recording=(()=>{
       if(sessionStorage.getItem('record')==='1'){
         $('#recordButton').css({
           'background-color':'#04254E',
@@ -272,8 +277,8 @@ name: "DrawPictrue",
         sessionStorage.setItem('tableName',time.toLocaleString('chinese', { hour12: false }))
         sessionStorage.setItem('record','1')
       }
-    },
-    sendTable(){
+    })
+    const sendTable=(()=>{
       const that = this
       $('#tableCard').addClass('animate__backOutDown')
       let a = that.valueURL
@@ -286,8 +291,8 @@ name: "DrawPictrue",
         that.valueURL = ''
         sessionStorage.setItem('tableName','')
       });
-    },
-    stopConnect(){
+    })
+    const stopConnect=(()=>{
       $('#stopButton').prop('disabled',true)
       $('#recordButton').prop('disabled',true)
       $('#onlineButton').removeClass('disabled')
@@ -301,11 +306,11 @@ name: "DrawPictrue",
       this.$refs.rss.refreshCharts()
       this.$refs.rssline.refreshRssline()
       this.$refs.spectrum.refreshSpectrum()
-    },
-    callUpImg(){
+    })
+    const callUpImg=(()=>{
       $('#describeImgArea').click()
-    },
-    uploadImg(e){
+    })
+    const uploadImg=((e)=>{
       const that = this
       let file = e.target.files[0]
       var reader = new FileReader()
@@ -314,7 +319,33 @@ name: "DrawPictrue",
         that.valueURL = this.result
       }
       $('#describeImgPath').html(file.name)
-    },
+    })
+    const router = useRouter()
+    const toDataList=(()=>{
+        router.push({
+          name: 'dataList'
+        })
+    })
+    const toHome=(()=>{
+      router.push({
+        name: 'home'
+      })
+    })
+    return{
+      toDataList,
+      uploadImg,
+      callUpImg,
+      stopConnect,
+      sendTable,
+      recording,
+      loadfile,
+      onconnect,
+      disconnect,
+      uploader_online,
+      callUpArea,
+      uploader,
+      toHome
+    }
   }
 }
 

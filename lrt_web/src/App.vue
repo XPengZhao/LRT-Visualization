@@ -1,20 +1,17 @@
 <template>
   <div class="homepage">
-    <DrawPictrue></DrawPictrue>
-
+    <router-view></router-view>
   </div>
 
 </template>
 
 
 <script>
-import DrawPictrue from "@/components/DrawPictrue";
 export default {
   name: 'App',
-  components: {
-    DrawPictrue
-  },
-
+  // components: {
+  //   DrawPictrue
+  // },
 }
 </script>
 

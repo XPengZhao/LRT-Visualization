@@ -86,7 +86,7 @@ name: "RSS",
 <style scoped>
 .panels{
   position: relative;
-  min-height: 390px;
+  min-height: 410px;
   width: 100%;
   border: 1px solid #999999;
   /*background-color: rgba(153,153,153,0.17);*/

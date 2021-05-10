@@ -1,5 +1,9 @@
 import { reactive } from "vue";
 // const trainImg = "image://"+require('@/assets/train.png')
+const computerImg = "image://"+require('@/assets/gui.png')
+const serverImg = 'image://'+require('@/assets/server.png')
+const gatewayImg = 'image://'+require('@/assets/gateway.png')
+const dataImg = 'image://'+require('@/assets/database.png')
 export const state = reactive({
     antselect:[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,],
     connected:false,
@@ -1188,6 +1192,152 @@ export const state = reactive({
 
         }]
     },
+    topologyOpition:{
+        title: {
+            text: '{aaa|    Chrysanth LRT Net}',
+            left:'5%',
+            top:'center',
+            textStyle:{
+
+                rich:{
+                    aaa:{
+                        fontSize:50,
+                        backgroundColor:{image:require('@/assets/flower.png')},
+                        height:200,
+                        width:200,
+                    }
+                }
+            }
+        },
+        grid: {
+            height: '80%',
+            width: '50%',
+            top: '0',
+            left:"center",
+        },
+        tooltip: {},
+        animationDurationUpdate: 1500,
+        animationEasingUpdate: 'quinticInOut',
+        series: [
+            {
+                type: 'graph',
+                layout: 'none',
+                symbolSize: 50,
+                roam: false,
+                label: {
+                    show: true,
+                },
+                edgeSymbol: 'circle',
+                edgeSymbolSize: [10, 10],
+                edgeLabel: {
+                    fontSize: 10,
+                },
+                data: [{
+                    name: 'Database',
+                    x: 50,
+                    y: 30,
+                    symbol: dataImg,
+                    symbolSize:[100,100],
+                    showAllSymbol:true,
+
+                },{
+                    name: 'GUI Server',
+                    x: 200,
+                    y: 30,
+                    symbol: serverImg,
+                    symbolSize:[100,100],
+                    showAllSymbol:true,
+
+                },{
+                    name: 'GUI',
+                    x: 400,
+                    y: 30,
+                    symbol: computerImg,
+                    symbolSize:[100,100],
+                    showAllSymbol:true,
+
+                }, {
+                    name: 'X Server',
+                    x: 300,
+                    y: 200,
+                    symbol: serverImg,
+                    symbolSize:[100,100],
+                    showAllSymbol:true,
+                }, {
+                    name: 'Gateway1',
+                    x: 200,
+                    y: 500,
+                    symbol: gatewayImg,
+                    symbolSize:[100,100],
+                    showAllSymbol:true,
+                }, {
+                    name: 'Gateway2',
+                    x: 400,
+                    y: 500,
+                    symbol: gatewayImg,
+                    symbolSize:[100,100],
+                    showAllSymbol:true,
+                }],
+                // links: [],
+                links: [{
+                    source: 'GUI',
+                    target: 'X Server',
+                    lineStyle: {
+                        opacity: 1,
+                        width: 5,
+                        curveness: 0.5,
+                        color:'#007580',
+                    }
+                }, {
+                    source: 'X Server',
+                    target: 'Gateway1',
+                    lineStyle: {
+                        opacity: 1,
+                        width: 5,
+                        curveness: -0.5,
+                        color:'#007580',
+                    }
+                }, {
+                    source: 'X Server',
+                    target: 'Gateway2',
+                    lineStyle: {
+                        opacity: 1,
+                        width: 5,
+                        curveness: -0.5,
+                        color:'#007580',
+                    }
+                },{
+                    source: 'X Server',
+                    target: 'GUI Server',
+                    lineStyle: {
+                        opacity: 1,
+                        width: 5,
+                        curveness: -0.5,
+                        color:'#007580',
+                    }
+                },{
+                    source: 'Database',
+                    target: 'GUI Server',
+                    lineStyle: {
+                        opacity: 1,
+                        width: 5,
+                        curveness: 0,
+                        color:'#007580',
+                    }
+                },{
+                    source: 'GUI',
+                    target: 'GUI Server',
+                    lineStyle: {
+                        opacity: 1,
+                        width: 5,
+                        curveness: 0,
+                        color:'#007580',
+                    }
+                }],
+
+            }
+        ]
+    }
 
     // tagList: [],
 })
