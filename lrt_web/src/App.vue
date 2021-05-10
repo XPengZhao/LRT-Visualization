@@ -9,9 +9,6 @@
 <script>
 export default {
   name: 'App',
-  // components: {
-  //   DrawPictrue
-  // },
 }
 </script>
 

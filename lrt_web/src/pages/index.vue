@@ -1,30 +1,30 @@
 <template>
   <div class="mainBox">
-    <div id="topology" style="min-height: 800px;margin: 30px;top:100px"></div>
+    <div ref="topology" style="min-height: 800px;margin: 30px;top:100px"></div>
   </div>
 </template>
 
 <script>
 import {state} from "@/store/state";
 import * as echarts from 'echarts';
-import {useRouter} from "vue-router";
+import {useRouter} from "vue-router"
+/* eslint-disable */
 export default {
   name: "index",
   mounted() {
     this.initTopology()
   },
-  methods:{
-      initTopology(){
-          const router = useRouter()
-          this.Topology = echarts.init(document.getElementById('topology'))
-          this.Topology.setOption(state.topologyOpition)
+  methods: {
+    initTopology(){
+      const router = useRouter()
+        const Topology = echarts.init(this.$refs.topology)
+        Topology.setOption(state.topologyOpition)
         window.addEventListener("resize",()=>{
-          this.Topology.resize()
+          Topology.resize()
         })
-          this.Topology.on('click',function (params){
+          Topology.on('click',function (params){
             let self = this
             self.nodeIdx = params.dataIndex
-            console.log(self.nodeIdx)
             if(self.nodeIdx===2){
               router.push({
                 name: 'Show'
@@ -36,9 +36,8 @@ export default {
               })
             }
           })
-        },
-  },
-
+      }
+  }
 }
 </script>
 
