@@ -9,3 +9,12 @@ Content-Type: application/json
   "rss": 1,
   "pos": 1
 }
+##############
+##############
+
+POST http://localhost:3000/lrt/searchData
+Content-Type: application/json
+
+{
+  "Time": 1
+}

@@ -107,6 +107,7 @@ import { CustomChart } from 'echarts/charts';
 echarts.use([CustomChart]);
 import axios from "axios";
 import { TimelineComponent } from 'echarts/components';
+echarts.use([TimelineComponent]);
 import Localization from "@/components/Localization";
 import Phase from "@/components/Phase";
 import RSS from "@/components/RSS";
@@ -114,8 +115,8 @@ import Spectrum from "@/components/Spectrum";
 import Panel from "@/components/Panel";
 import RSSLine from "@/components/RSSLine";
 import Radar from "@/components/radar";
-import { useRouter } from 'vue-router'
-echarts.use([TimelineComponent]);
+import {router} from "@/router";
+
 
 export default {
 name: "DrawPictrue",
@@ -130,6 +131,7 @@ name: "DrawPictrue",
       num : 0,
       webpath: 'ws://10.11.15.93:15674/ws',
       createTable:false,
+      valueURL:''
     }
 
   },
@@ -146,18 +148,18 @@ name: "DrawPictrue",
     $('#stopButton').prop('disabled',true)
     $('#recordButton').prop('disabled',true)
     },
-  setup(){
+  methods:{
 
-    const callUpArea=(()=>{
+    callUpArea(){
       $("#uparea").click()
-    })
-      const uploader =((es)=> {
+    },
+      uploader(){
       this.files = es.target.files
       for (let i =0; i < this.files.length; i++) {
         setTimeout(this.loadfile, (i+1)*1000,i)
       }
-    })
-    const uploader_online=(()=>{
+    },
+    uploader_online(){
       $('#stopButton').prop('disabled',false)
       $('#onlineButton').addClass('disabled')
       $('#recordButton').prop('disabled',false)
@@ -168,11 +170,11 @@ name: "DrawPictrue",
       this.client.heartbeat.incoming = 0
       this.client.heartbeat.outgoing = 20000
       this.client.connect('admin','admin',this.onconnect,this.disconnect,'/')
-    })
-    const disconnect=(()=> {
+    },
+    disconnect(){
       console.log('error')
-    })
-    const onconnect=(()=>{
+    },
+    onconnect(){
       let rss =this.$refs.rss
       let local = this.$refs.localization
       let phase = this.$refs.phase
@@ -217,15 +219,15 @@ name: "DrawPictrue",
            spectrum.upDateSpectrum(spectrumList)
          }
      })
-
-    })
-    const loadfile=((num)=>{
+    },
+    loadfile(){
       let rss =this.$refs.rss
       let local = this.$refs.localization
       let phase = this.$refs.phase
       let spectrum = this.$refs.spectrum
       let rssline = this.$refs.rssline
       let reader = new FileReader()
+      let num = 0
       reader.readAsDataURL(this.files[num])
       reader.onloadend = function (e) {
       $.getJSON(e.target.result).done(function (localData) {
@@ -256,8 +258,8 @@ name: "DrawPictrue",
         }
       })
     }
-    })
-    const recording=(()=>{
+    },
+    recording(){
       if(sessionStorage.getItem('record')==='1'){
         $('#recordButton').css({
           'background-color':'#04254E',
@@ -277,8 +279,8 @@ name: "DrawPictrue",
         sessionStorage.setItem('tableName',time.toLocaleString('chinese', { hour12: false }))
         sessionStorage.setItem('record','1')
       }
-    })
-    const sendTable=(()=>{
+    },
+    sendTable(){
       const that = this
       $('#tableCard').addClass('animate__backOutDown')
       let a = that.valueURL
@@ -288,11 +290,12 @@ name: "DrawPictrue",
         img:a,
         tableName:sessionStorage.getItem('tableName'),
       }).then(function (){
-        that.valueURL = ''
+        that.valueURL = 'null'
+        $('#describeWord').val('')
         sessionStorage.setItem('tableName','')
       });
-    })
-    const stopConnect=(()=>{
+    },
+    stopConnect(){
       $('#stopButton').prop('disabled',true)
       $('#recordButton').prop('disabled',true)
       $('#onlineButton').removeClass('disabled')
@@ -306,11 +309,11 @@ name: "DrawPictrue",
       this.$refs.rss.refreshCharts()
       this.$refs.rssline.refreshRssline()
       this.$refs.spectrum.refreshSpectrum()
-    })
-    const callUpImg=(()=>{
+    },
+    callUpImg(){
       $('#describeImgArea').click()
-    })
-    const uploadImg=((e)=>{
+    },
+    uploadImg(e){
       const that = this
       let file = e.target.files[0]
       var reader = new FileReader()
@@ -319,33 +322,17 @@ name: "DrawPictrue",
         that.valueURL = this.result
       }
       $('#describeImgPath').html(file.name)
-    })
-    const router = useRouter()
-    const toDataList=(()=>{
+    },
+    toDataList(){
         router.push({
           name: 'dataList'
         })
-    })
-    const toHome=(()=>{
+    },
+    toHome(){
       router.push({
         name: 'home'
       })
-    })
-    return{
-      toDataList,
-      uploadImg,
-      callUpImg,
-      stopConnect,
-      sendTable,
-      recording,
-      loadfile,
-      onconnect,
-      disconnect,
-      uploader_online,
-      callUpArea,
-      uploader,
-      toHome
-    }
+    },
   }
 }
 

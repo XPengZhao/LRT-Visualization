@@ -4,7 +4,6 @@ var lrtModel = require('../models/lrtdata')
 var mongoose = require('../common/mongodb')
 var tableDataModel = require('../models/tableData')
 
-/* GET users listing. */
 router.get('/', function(req, res, next) {
     res.send('respond with a resource');
 });
@@ -25,7 +24,6 @@ router.post('/insert', function(req, res, next) {
 
 });
 router.post('/insertTable', function(req, res, next) {
-    console.log(req.body.tableName)
     let tableData = new tableDataModel({
         antPos:req.body.antPos,
         Describe:req.body.Describe,
@@ -38,6 +36,32 @@ router.post('/insertTable', function(req, res, next) {
     })
 
 });
+
+router.post('/searchData',function (req,res,next){
+    tableDataModel.findAll(1,function (err,data){
+        res.send(data)
+    })
+})
+router.post('/deleteTable',function (req,res,next){
+    mongoose.connection.db.dropCollection(req.body.tableName, function(err, result) {
+        if(!err){
+            console.log('success')
+        }else {
+            console.log(err)
+        }
+    });
+    tableDataModel.deleteTable(req.body.tableName,function (err,data){
+        if(err){
+            console.log(err)
+        } else {
+            res.json({
+                message:'success'
+            })
+        }
+
+    })
+
+})
 
 
 module.exports = router;
