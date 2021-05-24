@@ -42,7 +42,7 @@ name: "Localization",
         this.LocalizationChart.resize()
       })
     },
-    upDateLocalization(data,tag){
+    upDateLocalization(data,tag,atnpos){
       let posData = []
       if(tag in this.tagList){
         this.pos[tag].push(data)
@@ -63,6 +63,23 @@ name: "Localization",
         })
 
       }
+      posData.push({
+        name:'gateway1',
+        type: 'scatter',
+        data: atnpos[0],
+        symbol: require('@/assets/atn.png'),
+        symbolSize:[20,20],
+        showAllSymbol:true,
+      },
+          {
+            name:'gateway2',
+            type: 'scatter',
+            data: atnpos[1],
+            symbol: require('@/assets/atn.png'),
+            symbolSize:[20,20],
+            showAllSymbol:true,
+          }
+      )
       state.localOpition.series=posData
       state.localOpition.legend.data = this.tagList
       this.LocalizationChart.setOption(state.localOpition,500)
@@ -70,6 +87,8 @@ name: "Localization",
     refreshChart(){
       state.localOpition.series=[]
       state.localOpition.legend.data = []
+      this.pos = []
+      this.tagList = []
       this.LocalizationChart.setOption(state.localOpition,500)
     }
   }

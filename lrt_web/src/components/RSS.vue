@@ -66,10 +66,10 @@ name: "RSS",
       this.RSSChart.setOption(state.rssOpition)
       },
 
-    upDateRSS(data){
+    upDateRSS(){
       // state.rssOpition.animation=false
       for(let i=0;i<16;i++) {
-        state.rssOpition.series[i].data = [data[i]]
+        state.rssOpition.series[i].data = [state.rss[state.gatewayChoose][i]]
       }
         this.RSSChart.setOption(state.rssOpition,100)
     },
@@ -77,6 +77,7 @@ name: "RSS",
       for(let i=0;i<16;i++) {
         state.rssOpition.series[i].data = [-70]
       }
+      state.rss={}
       this.RSSChart.setOption(state.rssOpition,100)
     }
   }

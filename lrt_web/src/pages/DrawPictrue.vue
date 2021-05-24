@@ -10,17 +10,20 @@
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav">
         <div class="dropdown">
-          <button class="btn dropdown-toggle" style="background-color: #04254E;color: white;min-width: 160px" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <button class="btn" style="background-color: #04254E;color: white;min-width: 160px" type="button" v-on:click="test()">
+            test
+          </button>
+          <button class="btn" style="background-color: #04254E;color: white;min-width: 160px" type="button" v-on:click="uploader_online()">
             <img :src="connectimg" style="height: 20px;">
             Connect
           </button>
-          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <a class="dropdown-item" data-disabled="true" data-toggle="dropdown" id="onlineButton" href="#" v-on:click="uploader_online()">Now</a>
-            <hr>
-            <a class="dropdown-item" data-disabled="true" data-toggle="dropdown" href="#" v-on:click="callUpArea()">Local</a>
-            <hr>
-            <a class="dropdown-item" data-disabled="true" data-toggle="dropdown"  href="#" @click="toDataList">DataList</a>
-          </div>
+<!--          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">-->
+<!--            <a class="dropdown-item" data-disabled="true" data-toggle="dropdown" id="onlineButton" href="#" >Now</a>-->
+<!--            <hr>-->
+<!--            <a class="dropdown-item" data-disabled="true" data-toggle="dropdown" href="#" v-on:click="callUpArea()">Local</a>-->
+<!--            <hr>-->
+<!--            <a class="dropdown-item" data-disabled="true" data-toggle="dropdown"  href="#" @click="toDataList">DataList</a>-->
+<!--          </div>-->
         </div>
         <button type="button" id="recordButton" class="ml-3 btn" style="background-color: #04254E;color: white"  data-toggle="button" aria-pressed="false" @click="recording()">
           <img :src="recordimg" style="height: 20px">
@@ -85,29 +88,12 @@
 </template>
 <script>
 /* eslint-disable */
-let echarts = require("echarts/lib/echarts");
+import {state} from "@/store/state";
 import stomp from 'stompjs'
 import parse from 'fast-json-parse'
-require("echarts/lib/chart/heatmap")
-require('echarts/lib/chart/scatter')
-require('echarts/lib/chart/line')
-require('echarts/lib/component/title')
-require('echarts/lib/component/toolbox')
-require('echarts/lib/component/tooltip')
-require('echarts/lib/component/visualMap')
-import { GridComponent } from 'echarts/components'
-echarts.use([GridComponent])
-import { LegendComponent } from 'echarts/components';
-echarts.use([LegendComponent]);
-import { CalendarComponent } from 'echarts/components';
-echarts.use([CalendarComponent]);
-import { EffectScatterChart } from 'echarts/charts';
-echarts.use([EffectScatterChart]);
-import { CustomChart } from 'echarts/charts';
-echarts.use([CustomChart]);
+import {CalendarComponent, GridComponent, LegendComponent, TimelineComponent} from 'echarts/components'
+import {CustomChart, EffectScatterChart} from 'echarts/charts';
 import axios from "axios";
-import { TimelineComponent } from 'echarts/components';
-echarts.use([TimelineComponent]);
 import Localization from "@/components/Localization";
 import Phase from "@/components/Phase";
 import RSS from "@/components/RSS";
@@ -116,6 +102,21 @@ import Panel from "@/components/Panel";
 import RSSLine from "@/components/RSSLine";
 import Radar from "@/components/radar";
 import {router} from "@/router";
+
+let echarts = require("echarts/lib/echarts");
+require("echarts/lib/chart/heatmap")
+require('echarts/lib/chart/scatter')
+require('echarts/lib/chart/line')
+require('echarts/lib/component/title')
+require('echarts/lib/component/toolbox')
+require('echarts/lib/component/tooltip')
+require('echarts/lib/component/visualMap')
+echarts.use([GridComponent])
+echarts.use([LegendComponent]);
+echarts.use([CalendarComponent]);
+echarts.use([EffectScatterChart]);
+echarts.use([CustomChart]);
+echarts.use([TimelineComponent]);
 
 
 export default {
@@ -129,13 +130,15 @@ name: "DrawPictrue",
       flowerimg:require('@/assets/flower.png'),
       files: {},
       num : 0,
-      webpath: 'ws://10.11.15.93:15674/ws',
       createTable:false,
-      valueURL:''
+      valueURL:'',
+      timestamp:'',
+      timeSort:true,
     }
 
   },
   mounted () {
+
     this.$refs.localization.initLocalizationCharts()
     this.$refs.phase.initPhaseCharts()
     this.$refs.rss.initRSSCharts()
@@ -153,7 +156,7 @@ name: "DrawPictrue",
     callUpArea(){
       $("#uparea").click()
     },
-      uploader(){
+      uploader(es){
       this.files = es.target.files
       for (let i =0; i < this.files.length; i++) {
         setTimeout(this.loadfile, (i+1)*1000,i)
@@ -164,11 +167,11 @@ name: "DrawPictrue",
       $('#onlineButton').addClass('disabled')
       $('#recordButton').prop('disabled',false)
       const API = localStorage.getItem('ApiUrl')
-      const ws = new WebSocket(API)
+      this.ws = new WebSocket(API)
       // const ws = new WebSocket('ws://192.168.0.100:15674/ws')
-      this.client = stomp.over(ws)
-      this.client.heartbeat.incoming = 0
-      this.client.heartbeat.outgoing = 20000
+      this.client = stomp.over(this.ws)
+      this.client.heartbeat.incoming = 100
+      this.client.heartbeat.outgoing = 100000
       this.client.connect('admin','admin',this.onconnect,this.disconnect,'/')
     },
     disconnect(){
@@ -181,83 +184,72 @@ name: "DrawPictrue",
       let spectrum = this.$refs.spectrum
       let rssline = this.$refs.rssline
       let radar = this.$refs.radar
+      const that = this
      this.subclient = this.client.subscribe('/queue/oss.url_test',function (data){
        let word = data.body
        let localData = parse(word).value
-       if(sessionStorage.getItem('record')==='1'){
-         axios.post('http://localhost:3000/lrt/insert',{
-           table:sessionStorage.getItem('tableName'),
-           time: localData.time,
-           tagid: localData.tagid,
-           atnid: localData.atnid,
-           phase: localData.phase,
-           rss: localData.rss,
-           pos: localData.pos,
-           // rn16:Array,
-         }).then(function (){
-           if(sessionStorage.getItem('createTable')==='0'){
-             sessionStorage.setItem('createTable','1')
-           }
-         }).catch(function () {
-           sessionStorage.setItem('createTable','0')
-         });
+       if(that.timestamp){
+         that.timeSort = Number(that.timestamp) - Number(localData['fuse'].timestamp) < 0;
+       }else {
+         that.timestamp = localData['fuse'].timestamp
        }
-         rss.upDateRSS(localData.rss)
-         let x = localData.pos[0]
-         let y = localData.pos[1]
-         local.upDateLocalization([x, y], localData.tagid)
-         phase.upDatePhase(localData.phase)
-         rssline.upDateRSSline(localData.rss)
-         radar.upDateRadar([localData.aoa])
-         let spectrumList = []
-         if (localData.spectrum) {
-           for (let i = 0; i < 100; i++) {
-             for (let j = 0; j < 100; j++) {
-               spectrumList.push([i, j, localData.spectrum[i][j]])
+       that.timestamp = localData['fuse'].timestamp
+       if(sessionStorage.getItem('record')==='1'&&that.timeSort){
+
+             axios.post('http://localhost:3000/lrt/insert',{
+               table:sessionStorage.getItem('tableName'),
+               time: localData.time,
+               tagid: localData.tagid,
+               atnpos: localData.atnpos,
+               phase: localData.phase,
+               rss: localData.rss,
+               pos: localData.pos,
+               // rn16:Array,
+             })
+           for(let key in localData){
+             if(key in state.rss){
+               state.rss[key] = localData[key].rss
+               state.aoa[key] = localData[key].aoa
+               for(let i = 0;i < 16; i++){
+                 if(state.rssLine[key][i]){
+                   state.rssLine[key][i].push(localData[key].rss[i])
+                 }else {
+                   state.rssLine[key][i] = [localData[key].rss[i]]
+                 }
+                 if(state.phase[key][i]){
+                   state.phase[key][i].push(localData[key].phase[i])
+                 }else {
+                   state.phase[key][i] = [localData[key].phase[i]]
+                 }
+               }
              }
            }
-           spectrum.upDateSpectrum(spectrumList)
-         }
+
+
+       }
+
+       rss.upDateRSS()
+       phase.upDatePhase()
+       rssline.upDateRSSline()
+       radar.upDateRadar()
+       let x = localData['fuse'].pos[0]
+       let y = localData['fuse'].pos[1]
+       local.upDateLocalization([x, y], localData['fuse'].tagid,localData['fuse'].atnpos)
+       if (localData['fuse'].spectrum) {
+         let spectrumList = that.convSpectrum(localData['fuse'].spectrum,100)
+         spectrum.upDateSpectrum(spectrumList)
+       }
      })
     },
-    loadfile(){
-      let rss =this.$refs.rss
-      let local = this.$refs.localization
-      let phase = this.$refs.phase
-      let spectrum = this.$refs.spectrum
-      let rssline = this.$refs.rssline
-      let reader = new FileReader()
-      let num = 0
-      reader.readAsDataURL(this.files[num])
-      reader.onloadend = function (e) {
-      $.getJSON(e.target.result).done(function (localData) {
-        let middata = []
-        for (let i = 0; i < 4; i++) {
-          for (let j = 0; j < 4; j++) {
-            let num = localData.rss[i * 4 + j]
-            middata.push([i, j, num.toFixed(2)])
-          }
-        }
-        let rssdata = middata.map(function (item) {
-          return [item[1], item[0], item[2] || '-'];
-        })
-        rss.upDateRSS(rssdata)
-        let x = localData.pos[0]
-        let y = localData.pos[1]
-        local.upDateLocalization([x, y], localData.tagid)
-        phase.upDatePhase(localData.phase)
-        rssline.upDateRSSline(localData.rss)
-        let spectrumList = []
-        if (localData.spectrum) {
-          for (let i = 0; i < 100; i++) {
-            for (let j = 0; j < 100; j++) {
-              spectrumList.push([i, j, localData.spectrum[i][j]])
-            }
-          }
-          spectrum.upDateSpectrum(spectrumList)
-        }
+    convSpectrum(arr,dimension){
+      let arr1 = arr.flatMap(function (item){
+        return item
       })
-    }
+      return arr1.map(function (value, index) {
+        let x = parseInt((index + 1) / dimension)
+        let y = (index + 1) % dimension
+        return [x, y, value]
+      })
     },
     recording(){
       if(sessionStorage.getItem('record')==='1'){
@@ -299,8 +291,13 @@ name: "DrawPictrue",
       $('#stopButton').prop('disabled',true)
       $('#recordButton').prop('disabled',true)
       $('#onlineButton').removeClass('disabled')
+      this.timestamp = ''
+      this.timeSort = true
       if(this.subclient){
         this.subclient.unsubscribe()
+      }
+      if (this.ws){
+        this.ws.close()
       }
       this.$refs.localization.refreshChart()
       this.$refs.panel.refreshCharts()
@@ -329,6 +326,7 @@ name: "DrawPictrue",
         })
     },
     toHome(){
+      this.stopConnect()
       router.push({
         name: 'home'
       })

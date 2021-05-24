@@ -20,11 +20,11 @@ You will get information by `*.json` file and show the information on the interf
 
 ```python
 {
-  	"atnid": i
+  	"atnid": ['gateway1','gateway2']
     "time": us
     "tagid": i
-    "phase": [phase0, phase1,..., phase15],
-    "rss": [rss0, rss1, ..., rss15],
+    "phase": {'gateway1':[phase0, phase1,..., phase15],'gateway2':[phase0, phase1,..., phase15]},
+    "rss": {'gateway1':[rss0, rss1, ..., rss15],'gateway2':[rss0, rss1, ..., rss15]}
     "spectrum": [[a0_0,a0_1,..a0_199],[a1_0,a1_1,...,a1_199], ..., [a199_0, a199_1, ..., a199_199]],
     "pos": [x,y]
 }

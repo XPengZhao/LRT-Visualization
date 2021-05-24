@@ -30,14 +30,9 @@ export const state = reactive({
         },
         xAxis: {
             scale: true,
-            min: 0,
-            max: 200
         },
         yAxis: {
             scale: true,
-            min: 0,
-            max: 200
-
         },
         series: []},
     phaseOpition:{
@@ -1182,7 +1177,7 @@ export const state = reactive({
         },
         series: [{
             coordinateSystem: 'polar',
-            name: 'Tag',
+            name: 'gateway1',
             data: [],
             type:'effectScatter',
             // symbol: trainImg,
@@ -1190,7 +1185,18 @@ export const state = reactive({
             // showAllSymbol:true,
             color:'red'
 
-        }]
+        },
+            {
+                coordinateSystem: 'polar',
+                name: 'gateway2',
+                data: [],
+                type:'effectScatter',
+                // symbol: trainImg,
+                // symbolSize:[20,20],
+                // showAllSymbol:true,
+                color:'#fc5404'
+
+            }]
     },
     topologyOpition:{
         title: {
@@ -1337,7 +1343,11 @@ export const state = reactive({
 
             }
         ]
-    }
-
+    },
+    rss:{},
+    phase:{},
+    rssLine:{},
+    aoa:{},
+    gatewayChoose:'gateway1',
     // tagList: [],
 })

@@ -29,7 +29,6 @@ export default {
 name: "RSSLine",
   data(){
     return{
-      rss : [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],],
       timearray:[],
       selected : Array(),
       num:0
@@ -43,15 +42,15 @@ name: "RSSLine",
         this.RSSLineChart.resize()
       })
     },
-    upDateRSSline(data){
-      for(let i=0;i<16;i++){
-        this.rss[i].push(data[i])
-      }
-      if(this.rss[0].length>200){
-        for(let i=0;i<16;i++){
-          this.rss[i].shift()
+    upDateRSSline(){
+      for(let key in state.rss){
+        if(state.rssLine[key][0].length>200){
+          for(let i=0;i<16;i++){
+            state.rssLine[key][i].shift()
+          }
         }
       }
+
       this.timearray.push(this.num)
       if(this.timearray.length>200){
         this.timearray.shift()
@@ -63,7 +62,7 @@ name: "RSSLine",
             type: 'line',
             symbol: 'none',
             // stack: 'rss',
-            data: this.rss[i]
+            data: state.rssLine[state.gatewayChoose][i]
           }
         }else {
           state.rsslineOpition.series[i]={
@@ -80,6 +79,7 @@ name: "RSSLine",
       this.num ++
     },
     refreshRssline(){
+      state.rss={}
       state.rsslineOpition.xAxis.data=[]
       this.RSSLineChart.setOption(state.rsslineOpition,100)
       this.num=0

@@ -18,3 +18,7 @@ Content-Type: application/json
 {
   "Time": 1
 }
+
+#############
+#############
+GET http://localhost:3000/lrt/

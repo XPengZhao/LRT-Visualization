@@ -26,7 +26,6 @@ export default {
   name: "Phase",
   data(){
     return{
-      phase : [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],],
       timearray:[],
       selected : Array(),
       num:0
@@ -41,13 +40,12 @@ export default {
       })
 
     },
-    upDatePhase(data){
-      for(let i=0;i<16;i++){
-        this.phase[i].push(data[i])
-      }
-      if(this.phase[0].length>200){
-        for(let i=0;i<16;i++){
-          this.phase[i].shift()
+    upDatePhase(){
+      for(let key in state.rss){
+        if(state.phase[key][0].length>200){
+          for(let i=0;i<16;i++){
+            state.phase[key][i].shift()
+          }
         }
       }
       this.timearray.push(this.num)
@@ -61,7 +59,7 @@ export default {
             type: 'line',
             symbol: 'none',
             // stack: 'phase',
-            data: this.phase[i]
+            data: state.phase[state.gatewayChoose][i]
           }
         }else {
           state.phaseOpition.series[i]={
@@ -78,7 +76,10 @@ export default {
       this.num ++
     },
     refreshChart(){
+      state.phase={}
+      this.timearray=[]
       state.phaseOpition.xAxis.data=[]
+      state.antselect=[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,]
       this.PhaseChart.setOption(state.phaseOpition,100)
       this.num = 0
     }

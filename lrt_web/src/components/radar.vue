@@ -1,8 +1,8 @@
 <template>
-  <div style="background-color: black">
-    <div class=" panels" style="height: 400px">
-      <div class="radar-body" style="height: 400px;background-color: #1c7430">
-        <div class="radar" style="background-color: pink;width: 100%;height: 100%;"></div>
+  <div style="background-color: black;width: 100%">
+    <div class=" panels" style="width: 100%">
+      <div class="radar-body" style="width: 100%">
+        <div class="radar" style="width: 100%;height: 100%;"></div>
       </div>
       <div style="height:405px;width:100%"  ref="radarchart"></div>
       <div class="panels-foot"></div>
@@ -46,12 +46,15 @@ name: "radar",
         this.radarChart.resize()
       })
     },
-    upDateRadar(data){
-      state.radarOpition.series[0].data=data
+    upDateRadar(){
+      state.radarOpition.series[0].data=[state.aoa['gateway1']]
+      state.radarOpition.series[1].data=[state.aoa['gateway2']]
       this.radarChart.setOption(state.radarOpition,500)
     },
     refreshChart(){
       state.radarOpition.series[0].data=[]
+      state.radarOpition.series[1].data=[]
+      state.aoa = {}
       this.radarChart.setOption(state.radarOpition,500)
     },
 
@@ -62,17 +65,20 @@ name: "radar",
 
 <style scoped>
 .radar-body{
-  top: 22px;
-  left: 22px;
+  top: 22.5%;
+  left: 0;
   position:absolute;
   display: flex;
-  height: 400px;
+  width: 100%;
+  height: auto;
+  aspect-ratio:1/1;
   /*align-items: center;*/
   /*justify-content: center;*/
 }
 .radar {
-  width: 8em;
-  height: 8em;
+  width: 100%;
+  height: auto;
+  aspect-ratio:1/1;
   font-size: 37px;
   background:
       linear-gradient(rgba(0,0,0,0),rgba(0,0,0,0));
@@ -84,8 +90,8 @@ name: "radar",
 .radar::before {
   content: '';
   position: absolute;
-  width: calc(8em / 2);
-  height: calc(8em / 2);
+  width: 40%;
+  height: 40%;
 }
 .radar::before {
   z-index: 9999;
@@ -99,14 +105,14 @@ name: "radar",
 .radar {
   border-radius: 50%;
 }
-.radar {
-  width: calc(8em + 1.5em);
-  height: calc(8em + 1.5em);
-}
+/*.radar {*/
+/*  width: calc(8em + 1.5em);*/
+/*  height: calc(8em + 1.5em);*/
+/*}*/
 
 .radar::before {
-  top: calc(1.5em / 2);
-  left: calc(1.5em / 2);
+  top: 10%;
+  left: 10%;
 }
 .radar::before {
   animation: scanning 5s linear infinite;
