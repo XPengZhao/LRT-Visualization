@@ -132,8 +132,6 @@ name: "DrawPictrue",
       num : 0,
       createTable:false,
       valueURL:'',
-      timestamp:'',
-      timeSort:true,
     }
 
   },
@@ -188,16 +186,11 @@ name: "DrawPictrue",
      this.subclient = this.client.subscribe('/queue/oss.url_test',function (data){
        let word = data.body
        let localData = parse(word).value
-       if(that.timestamp){
-         that.timeSort = Number(that.timestamp) - Number(localData['fuse'].timestamp) < 0;
-       }else {
-         that.timestamp = localData['fuse'].timestamp
-       }
-       that.timestamp = localData['fuse'].timestamp
-       if(sessionStorage.getItem('record')==='1'&&that.timeSort){
+       if(sessionStorage.getItem('record')==='1'){
 
              axios.post('http://localhost:3000/lrt/insert',{
                table:sessionStorage.getItem('tableName'),
+               atnid:localData.atnid,
                time: localData.time,
                tagid: localData.tagid,
                atnpos: localData.atnpos,
@@ -206,10 +199,10 @@ name: "DrawPictrue",
                pos: localData.pos,
                // rn16:Array,
              })
-           for(let key in localData){
-             if(key in state.rss){
-               state.rss[key] = localData[key].rss
-               state.aoa[key] = localData[key].aoa
+           for(let key in localData.atnid){
+             state.rss[key] = localData.rss[key]
+             state.aoa[key] = localData.aoa[key]
+             if(key in state.rssLine){
                for(let i = 0;i < 16; i++){
                  if(state.rssLine[key][i]){
                    state.rssLine[key][i].push(localData[key].rss[i])
