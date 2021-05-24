@@ -21,6 +21,7 @@ You will get information by `*.json` file and show the information on the interf
 ```python
 {
   	"atnid": ['gateway1','gateway2'],
+    "atnpos": {'gateway1':[x,y],'gateway2':[x,y]},
     "time": us,
     "tagid": i,
     "phase": {'gateway1':[phase0, phase1,..., phase15],'gateway2':[phase0, phase1,..., phase15]},
