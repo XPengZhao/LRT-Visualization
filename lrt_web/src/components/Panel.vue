@@ -2,22 +2,22 @@
   <div class=" mt-2">
     <div class="card panels" style="background-color: #100C2A" >
       <div class="card-body">
-          <img class="channel" :src="pic[1]" @click="changeFrame(1)">
-          <img class="channel" :src="pic[2]" @click="changeFrame(2)">
-          <img class="channel" :src="pic[3]" @click="changeFrame(3)">
-          <img class="channel" :src="pic[4]" @click="changeFrame(4)">
-          <img class="channel" :src="pic[5]" @click="changeFrame(5)">
-          <img class="channel" :src="pic[6]" @click="changeFrame(6)">
-          <img class="channel" :src="pic[7]" @click="changeFrame(7)">
-          <img class="channel" :src="pic[8]" @click="changeFrame(8)">
-          <img class="channel" :src="pic[9]" @click="changeFrame(9)">
-          <img class="channel" :src="pic[10]" @click="changeFrame(10)">
-          <img class="channel" :src="pic[11]" @click="changeFrame(11)">
-          <img class="channel" :src="pic[12]" @click="changeFrame(12)">
-          <img class="channel" :src="pic[13]" @click="changeFrame(13)">
-          <img class="channel" :src="pic[14]" @click="changeFrame(14)">
-          <img class="channel" :src="pic[15]" @click="changeFrame(15)">
-          <img class="channel" :src="pic[16]" @click="changeFrame(16)">
+          <img class="channel" :src="pic[1]" @click="changeFrame(1)" alt="">
+          <img class="channel" :src="pic[2]" @click="changeFrame(2)" alt="">
+          <img class="channel" :src="pic[3]" @click="changeFrame(3)" alt="">
+          <img class="channel" :src="pic[4]" @click="changeFrame(4)" alt="">
+          <img class="channel" :src="pic[5]" @click="changeFrame(5)" alt="">
+          <img class="channel" :src="pic[6]" @click="changeFrame(6)" alt="">
+          <img class="channel" :src="pic[7]" @click="changeFrame(7)" alt="">
+          <img class="channel" :src="pic[8]" @click="changeFrame(8)" alt="">
+          <img class="channel" :src="pic[9]" @click="changeFrame(9)" alt="">
+          <img class="channel" :src="pic[10]" @click="changeFrame(10)" alt="">
+          <img class="channel" :src="pic[11]" @click="changeFrame(11)" alt="">
+          <img class="channel" :src="pic[12]" @click="changeFrame(12)" alt="">
+          <img class="channel" :src="pic[13]" @click="changeFrame(13)" alt="">
+          <img class="channel" :src="pic[14]" @click="changeFrame(14)" alt="">
+          <img class="channel" :src="pic[15]" @click="changeFrame(15)" alt="">
+          <img class="channel" :src="pic[16]" @click="changeFrame(16)" alt="">
     </div>
       <div class="panels-foot"></div>
     </div>
@@ -34,32 +34,32 @@ name: "Panel",
   components: {},
   data(){
     return{pic:{
-      1:require('../assets/unsign.png'),
-      2:require('../assets/unsign.png'),
-      3:require('../assets/unsign.png'),
-      4:require('../assets/unsign.png'),
-      5:require('../assets/unsign.png'),
-      6:require('../assets/unsign.png'),
-      7:require('../assets/unsign.png'),
-      8:require('../assets/unsign.png'),
-      9:require('../assets/unsign.png'),
-      10:require('../assets/unsign.png'),
-      11:require('../assets/unsign.png'),
-      12:require('../assets/unsign.png'),
-      13:require('../assets/unsign.png'),
-      14:require('../assets/unsign.png'),
-      15:require('../assets/unsign.png'),
-      16:require('../assets/unsign.png'),}
+      1:state.unsignalImg,
+      2:state.unsignalImg,
+      3:state.unsignalImg,
+      4:state.unsignalImg,
+      5:state.unsignalImg,
+      6:state.unsignalImg,
+      7:state.unsignalImg,
+      8:state.unsignalImg,
+      9:state.unsignalImg,
+      10:state.unsignalImg,
+      11:state.unsignalImg,
+      12:state.unsignalImg,
+      13:state.unsignalImg,
+      14:state.unsignalImg,
+      15:state.unsignalImg,
+      16:state.unsignalImg,}
     }
   },
   methods:{
     changeFrame(data){
       if(state.antselect[data-1]){
         state.antselect[data-1]=false
-        this.pic[data] = require('../assets/unsign.png')
+        this.pic[data] = state.unsignalImg
       }else {
         state.antselect[data-1]=true
-        this.pic[data] = require('../assets/sign.png')
+        this.pic[data] = state.signalImg
       }
     },
     refreshCharts(){
@@ -81,7 +81,8 @@ name: "Panel",
 }
 .panels{
   position: relative;
-  min-height: 410px;
+  min-height: 250px;
+  height: auto !important;
   width: 100%;
   border: 1px solid #999999;
 }
@@ -91,8 +92,8 @@ name: "Panel",
   left: 0;
   width: 20px;
   height: 20px;
-  border-left: 3px solid #999999;
-  border-top: 3px solid #999999;
+  border-left: 3px solid white;
+  border-top: 3px solid white;
   content: "";
 }
 .panels::after{
@@ -101,8 +102,8 @@ name: "Panel",
   right: 0;
   width: 20px;
   height: 20px;
-  border-right: 3px solid #999999;
-  border-top: 3px solid #999999;
+  border-right: 3px solid white;
+  border-top: 3px solid white;
   content: "";
 }
 .panels-foot{
@@ -117,8 +118,8 @@ name: "Panel",
   left: 0;
   width: 20px;
   height: 20px;
-  border-left: 3px solid #999999;
-  border-bottom: 3px solid #999999;
+  border-left: 3px solid white;
+  border-bottom: 3px solid white;
   content: "";
 }
 .panels-foot::after{
@@ -127,8 +128,8 @@ name: "Panel",
   right: 0;
   width: 20px;
   height: 20px;
-  border-right: 3px solid #999999;
-  border-bottom: 3px solid #999999;
+  border-right: 3px solid white;
+  border-bottom: 3px solid white;
   content: "";
 }
 </style>

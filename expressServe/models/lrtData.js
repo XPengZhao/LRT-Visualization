@@ -1,13 +1,14 @@
 var mongoose = require('../common/mongodb')
 
 var lrtData = new mongoose.Schema({
-    time: String,
-    tagid: Number,
-    atnid: Number,
-    atnpos:Array,
-    phase: Array,
-    rss: Array,
-    pos: Array,
+    tagId:String,
+    logTime:String,
+    phyTime:String,
+    savedTime:String,
+    position: Array,
+    truth:Array,
+    xServer: Array,
+    spectrum:Array,
     // rn16:Array,
 })
 
@@ -16,6 +17,9 @@ lrtData.statics.findTag = function (tagid, callback){
 }
 lrtData.statics.findTagandTimeStamp = function (tagid, timestamp, callback){
     this.find({tagid:tagid,TimeStamp:timestamp},callback)
+}
+lrtData.statics.findAll = function (callback) {
+    this.find({},callback)
 }
 
 

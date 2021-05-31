@@ -1,10 +1,13 @@
 <template>
-  <div style="background-color: black;width: 100%">
-    <div class=" panels" style="width: 100%">
-      <div class="radar-body" style="width: 100%">
-        <div class="radar" style="width: 100%;height: 100%;"></div>
+  <div style="background-color: black; ">
+    <div class="card panels">
+      <div class="radar-body">
+        <div class="radar"></div>
       </div>
-      <div style="height:405px;width:100%"  ref="radarchart"></div>
+      <div class="card-body" style="top:-5%">
+        <div class="radarchart"  ref="radarchart"></div>
+      </div>
+
       <div class="panels-foot"></div>
     </div>
   </div>
@@ -36,6 +39,7 @@ export default {
 name: "radar",
   data(){
   return{
+    aoaList : []
   }
   },
   methods:{
@@ -47,15 +51,22 @@ name: "radar",
       })
     },
     upDateRadar(){
-      state.radarOpition.series[0].data=[state.aoa['gateway1']]
-      state.radarOpition.series[1].data=[state.aoa['gateway2']]
-      this.radarChart.setOption(state.radarOpition,500)
+      for(let key in state.aoa){
+        this.aoaList.push({
+          coordinateSystem: 'polar',
+          name: key,
+          data: [[state.aoa[key].azimuth,state.aoa[key].elevation]],
+          type:'effectScatter',
+          color:'red'
+        },)
+      }
+      state.radarOpition.series = this.aoaList
+      this.radarChart.setOption(state.radarOpition,100)
     },
     refreshChart(){
-      state.radarOpition.series[0].data=[]
-      state.radarOpition.series[1].data=[]
+      state.radarOpition.series=[]
       state.aoa = {}
-      this.radarChart.setOption(state.radarOpition,500)
+      this.radarChart.setOption(state.radarOpition,100)
     },
 
   }
@@ -65,8 +76,6 @@ name: "radar",
 
 <style scoped>
 .radar-body{
-  top: 22.5%;
-  left: 0;
   position:absolute;
   display: flex;
   width: 100%;
@@ -90,17 +99,17 @@ name: "radar",
 .radar::before {
   content: '';
   position: absolute;
-  width: 40%;
-  height: 40%;
+  width: 35%;
+  height: 35%;
 }
 .radar::before {
-  z-index: 9999;
   background: linear-gradient(
       45deg,
-      rgba(0, 0, 0, 0) 50%,
-      rgba(0, 192, 0, 1) 100%
+      rgba(0, 192, 0, 1) 0%,
+      rgba(0, 0, 0, 0) 50%
+
   );
-  border-radius: 100% 0 0 0;
+  border-radius: 0 0 100% 0;
 }
 .radar {
   border-radius: 50%;
@@ -111,12 +120,12 @@ name: "radar",
 /*}*/
 
 .radar::before {
-  top: 10%;
-  left: 10%;
+  top: 50%;
+  left: 50%;
 }
 .radar::before {
   animation: scanning 5s linear infinite;
-  transform-origin: 100% 100%;
+  transform-origin: 0 0;
 }
 
 @keyframes scanning {
@@ -124,11 +133,16 @@ name: "radar",
     transform: rotate(360deg);
   }
 }
-
+.radarchart{
+  width: 100%;
+  height: auto;
+  aspect-ratio:1/1;
+}
 .panels{
   position: relative;
-  min-height: 410px;
-  width: 100%;
+  min-height: 250px;
+  /*width: auto;*/
+  /*aspect-ratio:1/1;*/
   border: 1px solid #999999;
   background:radial-gradient(circle, rgba(3, 177, 0, 0.5), rgba(3, 177, 0, 0.1),rgba(3, 14, 52, 0.8));
   /*background-color: pink;*/

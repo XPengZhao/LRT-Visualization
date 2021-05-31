@@ -26,9 +26,8 @@ export default {
   name: "Phase",
   data(){
     return{
-      timearray:[],
       selected : Array(),
-      num:0
+      timeArray:[],
     }
   },
   methods: {
@@ -40,48 +39,49 @@ export default {
       })
 
     },
-    upDatePhase(){
-      for(let key in state.rss){
-        if(state.phase[key][0].length>200){
-          for(let i=0;i<16;i++){
-            state.phase[key][i].shift()
+    upDatePhase(time){
+      if(state.phase[state.gatewayChoose]){
+        this.timeArray.push(time)
+        for(let key in state.rssLine){
+          if(state.phase[key][0].length>200){
+            for(let i=0;i<16;i++){
+              state.phase[key][i].shift()
+
+            }
           }
         }
+      if(this.timeArray.length>200){
+        this.timeArray.shift()
       }
-      this.timearray.push(this.num)
-      if(this.timearray.length>200){
-        this.timearray.shift()
-      }
-      for(let i=0;i<16;i++){
-        if(state.antselect[i]){
-          state.phaseOpition.series[i]={
-            name: 'ANT'+String(i+1),
-            type: 'line',
-            symbol: 'none',
-            // stack: 'phase',
-            data: state.phase[state.gatewayChoose][i]
-          }
-        }else {
-          state.phaseOpition.series[i]={
-            name: 'ANT'+String(i+1),
-            type: 'line',
-            symbol: 'none',
-            // stack: 'phase',
-            data: []
+        for(let i=0;i<16;i++){
+          if(state.antselect[i]){
+            state.phaseOpition.series[i]={
+              name: 'ANT'+String(i+1),
+              type: 'line',
+              symbol: 'none',
+              // stack: 'phase',
+              data: state.phase[state.gatewayChoose][i]
+            }
+          }else {
+            state.phaseOpition.series[i]={
+              name: 'ANT'+String(i+1),
+              type: 'line',
+              symbol: 'none',
+              // stack: 'phase',
+              data: []
+            }
           }
         }
+        state.phaseOpition.xAxis.data=this.timeArray
+        this.PhaseChart.setOption(state.phaseOpition,100)
       }
-      state.phaseOpition.xAxis.data=this.timearray
-      this.PhaseChart.setOption(state.phaseOpition,100)
-      this.num ++
     },
     refreshChart(){
+      this.timeArray=[]
       state.phase={}
-      this.timearray=[]
       state.phaseOpition.xAxis.data=[]
-      state.antselect=[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,]
+      state.antselect=[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
       this.PhaseChart.setOption(state.phaseOpition,100)
-      this.num = 0
     }
   }
 }
@@ -90,7 +90,9 @@ export default {
 <style scoped>
 .panels{
   position: relative;
-  min-height: 410px;
+  min-height: 250px;
+  height: auto !important;
+  aspect-ratio:2.1/1;
   width: 100%;
   border: 1px solid #999999;
   background-color: rgba(153,153,153,0.17);

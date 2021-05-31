@@ -9,6 +9,7 @@ import axios from "axios";
 import 'animate.css';
 import {router} from "@/router";
 
+
 axios.get('./config.json').then((result)=>{
     localStorage.setItem('ApiUrl',result.data.ApiUrl);
 }).catch((error)=>{console.log(error)})

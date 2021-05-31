@@ -22,3 +22,18 @@ Content-Type: application/json
 #############
 #############
 GET http://localhost:3000/lrt/
+
+#############
+#############
+POST http://localhost:3000/lrt/replay
+Content-Type: application/json
+
+{
+  "table": "2021/5/28 23:47:09"
+}
+
+#############
+#############
+GET http://admin:admin@158.132.255.178:15672/api/exchanges
+Content-Type: application/json
+

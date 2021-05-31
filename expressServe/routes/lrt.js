@@ -3,6 +3,9 @@ var router = express.Router();
 var lrtModel = require('../models/lrtData')
 var mongoose = require('../common/mongodb')
 var tableDataModel = require('../models/tableData')
+const mq = require('../common/mq')
+const amqp = require('amqplib/callback_api')
+
 
 router.get('/', function(req, res, next) {
     let lrtDataModel = mongoose.model('test111',lrtModel)
@@ -23,13 +26,14 @@ router.get('/', function(req, res, next) {
 router.post('/insert', function(req, res, next) {
     let lrtDataModel = mongoose.model(req.body.table,lrtModel)
     let LrtData = new lrtDataModel({
-        time: req.body.time,
-        tagid: req.body.tagid,
-        atnid:req.body.atnid,
-        atnpos:req.body.atnpos,
-        phase: req.body.phase,
-        rss: req.body.rss,
-        pos: req.body.pos,
+        tagId:req.body.tagId,
+        logTime:req.body.logTime,
+        phyTime:req.body.phyTime,
+        savedTime:req.body.savedTime,
+        position: req.body.position,
+        truth:req.body.truth,
+        xServer: req.body.xServer,
+        spectrum:req.body.spectrum,
         // rn16:Array,
     })
     LrtData.save(function () {
@@ -39,7 +43,6 @@ router.post('/insert', function(req, res, next) {
 });
 router.post('/insertTable', function(req, res, next) {
     let tableData = new tableDataModel({
-        antPos:req.body.antPos,
         Describe:req.body.Describe,
         img: req.body.img,
         tableName: req.body.tableName
@@ -73,6 +76,16 @@ router.post('/deleteTable',function (req,res,next){
             })
         }
 
+    })
+
+})
+router.post('/replay',function (req,res,next){
+    let lrtDataModel = mongoose.model(req.body.table,lrtModel)
+       lrtDataModel.findAll(async function (err,data) {
+           mq.create(data)
+       })
+    res.json({
+        message:'End'
     })
 
 })

@@ -59,6 +59,7 @@
 <script>
 import {useRouter} from "vue-router";
 import axios from "axios";
+import {state} from "@/store/state";
 /* eslint-disable */
 export default {
   name: "dataList",
@@ -98,7 +99,6 @@ export default {
       $('#updateTable').show()
     })
     const deleteTable=((e)=>{
-      console.log(e)
       axios.post('http://localhost:3000/lrt/deleteTable',{
         tableName:e
       }).then(function (){
@@ -110,7 +110,8 @@ export default {
     })
     const getTable=(()=>{
       const updateimg=require('@/assets/update.png'),
-          deleteimg=require('@/assets/delete.png')
+          deleteimg=require('@/assets/delete.png'),
+          playimg = require('@/assets/play.png')
       axios.post('http://localhost:3000/lrt/searchData', {
         mes: 0
       }).then(function (res) {
@@ -130,6 +131,8 @@ export default {
               '               <img src="' + updateimg + '" alt="" style="border:1px solid black;border-radius: 5px;height:20px;width:20px;"></a>' +
               "              <a class='deletelink' onclick='deleteTable(\""+res.data[i].tableName+"\")'>" +
               '              <img src="' + deleteimg + '" alt="" style="border:1px solid black;border-radius: 5px;height:20px;width:20px;"></a>' +
+              "              <a class='replay' onclick='replay(\""+res.data[i].tableName+"\")'>" +
+              '              <img src="' + playimg + '" alt="" style="border:1px solid black;border-radius: 5px;height:20px;width:20px;"></a>' +
               '            </div>' +
               '          </div>' +
               '        </td>' +
@@ -143,6 +146,15 @@ export default {
     const create=(()=>{
       window.updateTable = updateTable
       window.deleteTable = deleteTable
+      window.replay = replay
+    })
+    const replay=((e)=>{
+      goDraw()
+      state.queue = 'replay'
+      axios.post('http://localhost:3000/lrt/replay',{
+        table:e
+      })
+
     })
     const callUpImg=(()=>{
       $('#describeImgArea').click()
@@ -170,8 +182,13 @@ export default {
         $('#updateTable').hide()
       },1000)
     })
+    const goDraw=(()=>{
+      router.push({
+        name: 'Show'
+      })
+    })
     return{
-      create,getTable,deleteTable,updateTable,toHome,callUpImg,uploadImg,sendTable,closeImg,closeDiv
+      create,getTable,deleteTable,updateTable,toHome,callUpImg,uploadImg,sendTable,closeImg,closeDiv,replay,goDraw
     }
   },
 

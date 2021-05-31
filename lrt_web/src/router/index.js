@@ -1,6 +1,6 @@
 import {  createRouter,createWebHashHistory } from 'vue-router'
 const dataList = () => import('@/pages/dataList')
-const show = () => import('@/pages/DrawPictrue')
+const show = () => import('@/pages/dataVisualization')
 const home = () => import('@/pages/index')
 const routes = [
     {

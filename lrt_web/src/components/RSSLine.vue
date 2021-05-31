@@ -29,9 +29,8 @@ export default {
 name: "RSSLine",
   data(){
     return{
-      timearray:[],
       selected : Array(),
-      num:0
+      timeArray:[],
     }
   },
   methods:{
@@ -42,47 +41,46 @@ name: "RSSLine",
         this.RSSLineChart.resize()
       })
     },
-    upDateRSSline(){
-      for(let key in state.rss){
-        if(state.rssLine[key][0].length>200){
-          for(let i=0;i<16;i++){
-            state.rssLine[key][i].shift()
+    upDateRSSline(time){
+      if(state.rssLine[state.gatewayChoose]) {
+        this.timeArray.push(time)
+        for (let key in state.rss) {
+          if (state.rssLine[key][0].length > 200) {
+            for (let i = 0; i < 16; i++) {
+              state.rssLine[key][i].shift()
+            }
           }
         }
+      if(this.timeArray.length>200){
+        this.timeArray.shift()
       }
-
-      this.timearray.push(this.num)
-      if(this.timearray.length>200){
-        this.timearray.shift()
-      }
-      for(let i=0;i<16;i++){
-        if(state.antselect[i]){
-          state.rsslineOpition.series[i]={
-            name: 'RSS'+String(i+1),
-            type: 'line',
-            symbol: 'none',
-            // stack: 'rss',
-            data: state.rssLine[state.gatewayChoose][i]
-          }
-        }else {
-          state.rsslineOpition.series[i]={
-            name: 'RSS'+String(i+1),
-            type: 'line',
-            symbol: 'none',
-            // stack: 'rss',
-            data: []
+        for (let i = 0; i < 16; i++) {
+          if (state.antselect[i]) {
+            state.rsslineOpition.series[i] = {
+              name: 'RSS' + String(i + 1),
+              type: 'line',
+              symbol: 'none',
+              // stack: 'rss',
+              data: state.rssLine[state.gatewayChoose][i]
+            }
+          } else {
+            state.rsslineOpition.series[i] = {
+              name: 'RSS' + String(i + 1),
+              type: 'line',
+              symbol: 'none',
+              data: []
+            }
           }
         }
+        state.rsslineOpition.xAxis.data = this.timeArray
+        this.RSSLineChart.setOption(state.rsslineOpition, 100)
       }
-      state.rsslineOpition.xAxis.data=this.timearray
-      this.RSSLineChart.setOption(state.rsslineOpition,100)
-      this.num ++
     },
     refreshRssline(){
       state.rss={}
+      this.timeArray=[]
       state.rsslineOpition.xAxis.data=[]
       this.RSSLineChart.setOption(state.rsslineOpition,100)
-      this.num=0
     }
   }
 }
@@ -91,7 +89,9 @@ name: "RSSLine",
 <style scoped>
 .panels{
   position: relative;
-  min-height: 410px;
+  min-height: 250px;
+  height: auto !important;
+  aspect-ratio:2.15/1;
   width: 100%;
   border: 1px solid #999999;
   background-color: rgba(153,153,153,0.17);

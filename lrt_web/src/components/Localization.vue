@@ -30,8 +30,9 @@ name: "Localization",
   data(){
   return{
     pos:[],
-    tagList: []
-
+    tagList: [],
+    pic:state.atnPic,
+    star:state.starImg
   }
   },
   methods:{
@@ -41,8 +42,11 @@ name: "Localization",
       window.addEventListener("resize",()=>{
         this.LocalizationChart.resize()
       })
+      this.LocalizationChart.on('click',function (params){
+        state.gatewayChoose = params.seriesName
+      })
     },
-    upDateLocalization(data,tag,atnpos){
+    upDateLocalization(data,tag,truth,xRange,yRange){
       let posData = []
       if(tag in this.tagList){
         this.pos[tag].push(data)
@@ -54,33 +58,51 @@ name: "Localization",
         if(this.pos[i].length>100)
           this.pos[i].shift()
       }
+      // console.log(this.pos)
       for(let i in this.pos){
         posData.push({
-          name:'Tag'+i,
+          name: i,
           type: 'scatter',
-          symbolSize: 30,
+          symbolSize:10,
           data: this.pos[i]
+        })
+        posData.push({
+          name:'Tag'+i,
+          type: 'effectScatter',
+          data: [data],
+          symbolSize:30,
         })
 
       }
+      for(let key in state.atnpos){
+        posData.push({
+          name:key,
+          type: 'scatter',
+          data: [[state.atnpos[key][0],state.atnpos[key][2]]],
+          symbol: this.pic,
+          itemStyle:{
+            color: 'white'
+          },
+          symbolSize:[35,50],
+          showAllSymbol:true,
+        })
+      }
       posData.push({
-        name:'gateway1',
+        name:'Truth',
         type: 'scatter',
-        data: atnpos[0],
-        symbol: require('@/assets/atn.png'),
+        data: [[truth[0],truth[2]]],
+        symbol: this.star,
+        itemStyle:{
+          color: 'yellow'
+        },
         symbolSize:[20,20],
         showAllSymbol:true,
-      },
-          {
-            name:'gateway2',
-            type: 'scatter',
-            data: atnpos[1],
-            symbol: require('@/assets/atn.png'),
-            symbolSize:[20,20],
-            showAllSymbol:true,
-          }
-      )
+      })
       state.localOpition.series=posData
+      state.localOpition.xAxis.min = xRange[0]*2
+      state.localOpition.xAxis.max = xRange[1]*2
+      state.localOpition.yAxis.min = yRange[0]*2
+      state.localOpition.yAxis.max = yRange[1]*2
       state.localOpition.legend.data = this.tagList
       this.LocalizationChart.setOption(state.localOpition,500)
     },
@@ -100,7 +122,7 @@ name: "Localization",
   position: relative;
   width: 100%;
   height: auto;
-  aspect-ratio:1/1;
+  aspect-ratio:1/0.97;
   border: 1px solid #999999;
   background-color: rgba(153,153,153,0.17);
 }

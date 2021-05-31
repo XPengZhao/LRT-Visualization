@@ -16,7 +16,7 @@ export default {
   },
   methods: {
     initTopology(){
-      const router = useRouter()
+        const router = useRouter()
         const Topology = echarts.init(this.$refs.topology)
         Topology.setOption(state.topologyOpition)
         window.addEventListener("resize",()=>{
@@ -26,6 +26,7 @@ export default {
             let self = this
             self.nodeIdx = params.dataIndex
             if(self.nodeIdx===2){
+              state.queue = 'oss.url_test'
               router.push({
                 name: 'Show'
               })
