@@ -9,20 +9,33 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav">
-          <button class="btn" id="onlineButton" style="background-color: #04254E;color: white;min-width: 160px" type="button" v-on:click="uploader_online()">
-            <img :src="connectimg" style="height: 20px;">
-            Connect
-          </button>
         <button type="button" id="recordButton" class="ml-3 btn" style="background-color: #04254E;color: white;min-width: 160px"  data-toggle="button" aria-pressed="false" @click="recording()">
           <img :src="recordimg" style="height: 20px">
           Recording
         </button>
+        <vue-slider v-model="indexValue"
+                    :width="1000"
+                    :lazy="true"
+                    @dragging="test"
+                    @change="test"
+                    :min-range="20"
+                    :max-range="200"
+                    :max = "timeArrayLength"
+                    :tooltip = "'always'"
+                    :tooltip-placement="'bottom'"
+                    ref="timeSlider"
+                    id = "timeSlider"
+
+        />
 <!--        <button type="button" id="stopButton" class="ml-3 btn" style="background-color: #04254E;color: white;min-width: 160px"  data-toggle="button" aria-pressed="false" @click="stopConnect()">-->
 <!--          <img :src="stopimg" style="height: 20px">-->
 <!--          Stop-->
 <!--        </button>-->
       </div>
     </div>
+    <button type="button"  class="ml-3 btn" style="background-color: #04254E;color: white;min-width: 160px"  data-toggle="button" aria-pressed="false" @click="toAnalysis()">
+      Analysis
+    </button>
     <button type="button" id="fullButton" class="btn" style="background-color: #04254E;color: white;min-width: 20px;position: relative;right: 0"  data-toggle="button" aria-pressed="false" @click="changeScreen()">
       <img :src="windowSizeImg" style="height: 20px">
     </button>
@@ -45,7 +58,7 @@
     <div class="col-2 ">
       <Panel ref="panel"></Panel>
       <RSS class="mt-2" ref="rss"></RSS>
-      <radar class="mt-2" ref="radar"></radar>
+<!--      <radar class="mt-2" ref="radar"></radar>-->
     </div>
 
   </div>
@@ -73,7 +86,6 @@
     </div>
     </div>
   </div>
-
 </template>
 <script>
 /* eslint-disable */
@@ -111,10 +123,9 @@ echarts.use([TimelineComponent]);
 
 export default {
 name: "DrawPictrue",
-  components: {Radar, RSSLine, Panel, Spectrum, RSS, Phase, Localization},
+  components: {Radar, RSSLine, Panel, Spectrum, RSS, Phase, Localization,VueSlider: window['vue-slider-component']},
   data(){
     return{
-      connectimg:require('@/assets/connect.png'),
       recordimg:require('@/assets/recordWhite.png'),
       stopimg:require('@/assets/stop.png'),
       flowerimg:require('@/assets/flower.png'),
@@ -122,6 +133,9 @@ name: "DrawPictrue",
       isFullscreen: false,
       atnpos:Array,
       receiveNum: 0,
+      replayisNull:true,
+      indexValue:[0,200],
+      timeArrayLength:1000,
     }
 
   },
@@ -129,6 +143,9 @@ name: "DrawPictrue",
     windowSizeImg(){
       return this.isFullscreen?require('@/assets/window.png'):require('@/assets/fullScreen.png')
     },
+    // timeArrayLength(){
+    //   return
+    // }
   },
   mounted () {
     this.init()
@@ -136,18 +153,22 @@ name: "DrawPictrue",
     this.uploader_online()
     },
   methods:{
+  test(data){
+    console.log(data)
+  },
     init(){
       this.$refs.localization.initLocalizationCharts()
       this.$refs.phase.initPhaseCharts()
       this.$refs.rss.initRSSCharts()
       this.$refs.spectrum.initSpectrumCharts()
       this.$refs.rssline.initRSSLineCharts()
-      this.$refs.radar.initRadarCharts()
+      // this.$refs.radar.initRadarCharts()
       sessionStorage.setItem('record',0)
       sessionStorage.setItem('createTable',0)
       $('#createTable').hide()
       $('#stopButton').prop('disabled',true)
       $('#recordButton').prop('disabled',true)
+
     },
     changeScreen(){
       if (!screenfull.isEnabled) return alert(`Error`);
@@ -159,6 +180,8 @@ name: "DrawPictrue",
         $('#stopButton').hide()
         $('#onlineButton').hide()
         $('#recordButton').hide()
+      }else {
+        $('#timeSlider').hide()
       }
     },
     recordAble(){
@@ -190,52 +213,66 @@ name: "DrawPictrue",
         spectrum:spectrumSave
       })
     },
-    realTimeProcessing(data){
-      let rss =this.$refs.rss
-      let local = this.$refs.localization
-      let phase = this.$refs.phase
-      let spectrum = this.$refs.spectrum
-      let rssLine = this.$refs.rssline
-      let radar = this.$refs.radar
+    realTimeProcessing(data) {
+      const that = this
+      let rss =that.$refs.rss
+      let local = that.$refs.localization
+      let phase = that.$refs.phase
+      let spectrum = that.$refs.spectrum
+      let rssLine = that.$refs.rssline
+      // let radar = this.$refs.radar
       let word = data.body
-      let localData = parse(word).value
-      if(localData.xServer){
-        this.receiveNum ++
-        // console.log(localData)
-        if(sessionStorage.getItem('record')==='1') {
-          this.recordMessageSend(localData)
+      if (word) {
+        try{
+          var localData = JSON.parse(word)
+        }catch (e) {
+          console.log(word)
+          console.log(e)
         }
-        for(let key in localData.xServer.gateways){
-          state.rss[key] = localData.xServer.gateways[key].rss
-          state.aoa[key] = localData.spectrum.aoa
-          state.atnpos[key] = localData.xServer.gateways[key].position[0]
-          if(key in state.rssLine){
-            for(let i = 0;i < 16; i++){
-              state.rssLine[key][i].push(localData.xServer.gateways[key].rss[i])
-              state.phase[key][i].push(localData.xServer.gateways[key].phase[i])
-            }
-          }else {
-            state.rssLine[key] = localData.xServer.gateways[key].rss.map(function (item){
-              return [item]
-            })
-            state.phase[key] = localData.xServer.gateways[key].phase.map(function (item){
-              return [item]
-            })
+
+        if (localData.xServer) {
+          that.receiveNum++
+          // console.log(localData)
+          if (sessionStorage.getItem('record') === '1') {
+            that.recordMessageSend(localData)
           }
-          data.ack()
-        }
-        rss.upDateRSS()
-        phase.upDatePhase(this.receiveNum)
-        rssLine.upDateRSSline(this.receiveNum)
-        radar.upDateRadar()
-        let x = localData.position[0]
-        let y = localData.position[2]
-        local.upDateLocalization([x, y], localData.tagId,localData.truth,localData.spectrum.xRange,localData.spectrum.zRange)
-        if (localData.spectrum) {
-          let spectrumList = this.convSpectrum(localData.spectrum.data,100)
+          for (let key in localData.xServer.gateways) {
+            state.rss[key] = localData.xServer.gateways[key].rss
+            // state.aoa[key] = localData.xServer.gateways[key].aoa[0]
+            state.atnpos[key] = localData.xServer.gateways[key].position[0]
+            if (key in state.phase) {
+              for (let i = 0; i < 16; i++) {
+                state.rssLine[key][i].push(localData.xServer.gateways[key].rss[i])
+                state.phase[key][i].push(localData.xServer.gateways[key].phase[i])
+              }
+            } else {
+              state.rssLine[key] = localData.xServer.gateways[key].rss.map(function (item){
+                return [item]
+              })
+              state.phase[key] = localData.xServer.gateways[key].phase.map(function (item) {
+                return [item]
+              })
+            }
+            data.ack()
+          }
+          phase.upDatePhase(that.receiveNum)
+          rssLine.upDateRSSline(that.receiveNum)
+          // radar.upDateRadar()
+          let x = localData.position[0]
+          let y = localData.position[2]
+          local.upDateLocalization([x, y], localData.tagId, localData.truth, localData.spectrum.xRange, localData.spectrum.zRange)
+          let spectrumList =[]
+          for(let i =0;i<100;i++){
+            for(let j=0;j<100;j++){
+              spectrumList.push([i,j,localData.spectrum.data[i][j]])
+            }
+          }
           spectrum.upDateSpectrum(spectrumList)
+          rss.upDateRSS()
+    }
+
+
         }
-      }
     },
     uploader_online(){
       $('#stopButton').prop('disabled',false)
@@ -245,39 +282,68 @@ name: "DrawPictrue",
       this.ws = new WebSocket(API)
       // const ws = new WebSocket('ws://192.168.0.100:15674/ws')
       this.client = stomp.over(this.ws)
-      this.client.heartbeat.incoming = 10000
-      this.client.heartbeat.outgoing = 10000
+      this.client.heartbeat.incoming = 300
+      this.client.heartbeat.outgoing = 300
       // this.client.connect('admin','admin',this.onconnect,this.disconnect,'/')
       if(state.queue==='replay'){
-        this.client.connect('admin','admin',this.onreplay,this.disconnect,'/')
+        this.client.connect('vueAdmin','vueAdmin',this.onreplay,this.disconnect,'/replay')
       }
       else {
         this.client.connect('admin','admin',this.onconnect,this.disconnect,'/')
       }
-
     },
     disconnect(e){
-      // this.uploader_online()
+      this.uploader_online()
       console.log(e)
+      console.log('Reconnect')
     },
-    onreplay(){
+    onreplay: function () {
       const that = this
-     var dialog = bootbox.dialog({
+      this.dialog = bootbox.dialog({
         message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i> Please wait while we do something...</p>',
         closeButton: false
       });
-      this.subclient = this.client.subscribe('/queue/replay',function (data){
+      this.subclient = this.client.subscribe('/queue/replay', function (data) {
         let word = data.body
         let localData = parse(word).value
-        if(localData.end){
-          dialog.modal('hide');
+        for (let key in localData.xServer.gateways) {
+          that.replayisNull = false
+          if (key in state.rssLine) {
+            state.rss[key].push(localData.xServer.gateways[key].rss)
+            state.aoa[key].push(localData.spectrum.aoa)
+            state.atnpos[key].push(localData.xServer.gateways[key].position[0])
+            for (let i = 0; i < 16; i++) {
+              state.rssLine[key][i].push(localData.xServer.gateways[key].rss[i])
+              state.phase[key][i].push(localData.xServer.gateways[key].phase[i])
+            }
+          } else {
+            state.rss[key] = [localData.xServer.gateways[key].rss]
+            state.aoa[key] = [localData.spectrum.aoa]
+            state.atnpos[key] = [localData.xServer.gateways[key].position[0]]
+            state.rssLine[key] = localData.xServer.gateways[key].rss.map(function (item) {
+              return [item]
+            })
+            state.phase[key] = localData.xServer.gateways[key].phase.map(function (item) {
+              return [item]
+            })
+          }
+          data.ack()
+        }
+        if (localData.end) {
           that.subclient.unsubscribe()
         }
       })
+      if (this.replayisNull) {
+        setTimeout(this.hideDialog,1000)
+        this.subclient.unsubscribe()
+      }
 
     },
+    hideDialog(){
+      this.dialog.modal('toggle')
+    },
     onconnect(){
-        this.subclient = this.client.subscribe('/queue/oss.url_test',this.realTimeProcessing,{ack: 'gui'})
+        this.subclient = this.client.subscribe('/queue/oss.url_test',this.realTimeProcessing)
     },
     convSpectrum(arr,dimension){
       let arr1 = arr.flatMap(function (item){
@@ -312,7 +378,7 @@ name: "DrawPictrue",
     },
     sendTable(){
       const that = this
-      $('#tableCard').addClass('animate__backOutDown')
+
       let a = that.valueURL
       axios.post('http://localhost:3000/lrt/insertTable',{
         Describe:$('#describeWord').val(),
@@ -323,13 +389,14 @@ name: "DrawPictrue",
         $('#describeWord').val('')
         sessionStorage.setItem('tableName','')
       });
+      setTimeout(function (){
+        $('#tableCard').addClass('animate__backOutDown')
+      },1000)
     },
     stopConnect(){
       $('#stopButton').prop('disabled',true)
       $('#recordButton').prop('disabled',true)
       $('#onlineButton').removeClass('disabled')
-      this.timestamp = ''
-      this.timeSort = true
       state.rss={}
       state.phase={}
       state.rssLine={}
@@ -337,7 +404,7 @@ name: "DrawPictrue",
       state.gatewayChoose='gateway1'
       state.queue='oss.url_test'
       if(this.client){
-        this.client.unsubscribe()
+        this.client.unsubscribe('0')
       }
       this.refresh()
     },
@@ -353,11 +420,6 @@ name: "DrawPictrue",
         that.valueURL = this.result
       }
       $('#describeImgPath').html(file.name)
-    },
-    toDataList(){
-        router.push({
-          name: 'dataList'
-        })
     },
     refresh(){
       this.$refs.localization.refreshChart()
@@ -378,6 +440,12 @@ name: "DrawPictrue",
       state.queue='oss.url_test'
       router.push({
         name: 'home'
+      })
+    },
+    toAnalysis(){
+    this.stopConnect()
+      router.push({
+        name: 'Analysis'
       })
     },
   }

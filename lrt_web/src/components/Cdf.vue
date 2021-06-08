@@ -1,6 +1,6 @@
 <template>
   <div class="panels mr-3">
-    <div style="width:100%;height:100%" ref="spectrumchart"></div>
+    <div style="width:100%;height:100%" ref="cdfchart"></div>
     <div class="panels-foot"></div>
   </div>
 </template>
@@ -26,23 +26,20 @@ echarts.use([EffectScatterChart]);
 import { TimelineComponent } from 'echarts/components';
 echarts.use([TimelineComponent]);
 export default {
-name: "Spectrum",
-  methods:{
-    initSpectrumCharts () {
-      this.SpectrumChart = echarts.init(this.$refs.spectrumchart,'dark');
-      this.SpectrumChart.setOption(state.spectrumOpition)
-      window.addEventListener("resize",()=>{
-        this.SpectrumChart.resize()
+  name: "Cdf",
+  data(){
+    return{
+      timeArray:[],
+    }
+  },
+  methods: {
+    initCdfCharts() {
+      this.cdfChart = echarts.init(this.$refs.cdfchart, 'dark');
+      this.cdfChart.setOption(state.cdfOpition)
+      window.addEventListener("resize", () => {
+        this.cdfChart.resize()
       })
     },
-    upDateSpectrum(data){
-      state.spectrumOpition.series[0].data = data
-      this.SpectrumChart.setOption(state.spectrumOpition,150)
-    },
-    refreshSpectrum(){
-      state.spectrumOpition.series[0].data = []
-      this.SpectrumChart.setOption(state.spectrumOpition,150)
-    }
   }
 }
 </script>
@@ -52,7 +49,7 @@ name: "Spectrum",
   position: relative;
   min-height: 250px;
   height: auto !important;
-  aspect-ratio:2.1/1;
+  aspect-ratio:2.15/1;
   width: 100%;
   border: 1px solid #999999;
   background-color: rgba(153,153,153,0.17);

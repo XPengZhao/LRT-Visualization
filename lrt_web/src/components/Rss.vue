@@ -51,7 +51,7 @@ name: "RSS",
         for (let i = 0; i < 16; i++) {
           state.rssOpition.series[i].data = [state.rss[state.gatewayChoose][i]]
         }
-        this.RSSChart.setOption(state.rssOpition, 100)
+        this.RSSChart.setOption(state.rssOpition, 150)
       }
     },
     refreshCharts(){
@@ -59,7 +59,7 @@ name: "RSS",
         state.rssOpition.series[i].data = [-70]
       }
       state.rss={}
-      this.RSSChart.setOption(state.rssOpition,100)
+      this.RSSChart.setOption(state.rssOpition,150)
     }
   }
 }

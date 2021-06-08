@@ -1,6 +1,6 @@
 <template>
   <div class="panels mr-3">
-    <div style="width:100%;height:100%" ref="spectrumchart"></div>
+    <div style="width:100%;height:100%" ref="errorlinechart"></div>
     <div class="panels-foot"></div>
   </div>
 </template>
@@ -26,23 +26,35 @@ echarts.use([EffectScatterChart]);
 import { TimelineComponent } from 'echarts/components';
 echarts.use([TimelineComponent]);
 export default {
-name: "Spectrum",
-  methods:{
-    initSpectrumCharts () {
-      this.SpectrumChart = echarts.init(this.$refs.spectrumchart,'dark');
-      this.SpectrumChart.setOption(state.spectrumOpition)
-      window.addEventListener("resize",()=>{
-        this.SpectrumChart.resize()
+  name: "errorLine",
+  data(){
+    return{
+      selected : Array(),
+      timeArray:[],
+      errorArray:[],
+    }
+  },
+  methods: {
+    initErrorLineCharts() {
+      this.errorLineChart = echarts.init(this.$refs.errorlinechart, 'dark');
+      this.errorLineChart.setOption(state.errorlineOpition)
+      window.addEventListener("resize", () => {
+        this.errorLineChart.resize()
       })
     },
-    upDateSpectrum(data){
-      state.spectrumOpition.series[0].data = data
-      this.SpectrumChart.setOption(state.spectrumOpition,150)
+    updateCharts(time,data){
+      this.timeArray.push(time)
+      if(this.timeArray.length>400){
+        this.timeArray.shift()
+      }
+      this.errorArray.push(data)
+      if(this.errorArray.length>400){
+        this.errorArray.shift()
+      }
+      state.errorlineOpition.xAxis.data = this.timeArray
+      state.errorlineOpition.series[0].data = this.errorArray
+      this.errorLineChart.setOption(state.errorlineOpition,100)
     },
-    refreshSpectrum(){
-      state.spectrumOpition.series[0].data = []
-      this.SpectrumChart.setOption(state.spectrumOpition,150)
-    }
   }
 }
 </script>
@@ -52,7 +64,7 @@ name: "Spectrum",
   position: relative;
   min-height: 250px;
   height: auto !important;
-  aspect-ratio:2.1/1;
+  aspect-ratio:2.15/1;
   width: 100%;
   border: 1px solid #999999;
   background-color: rgba(153,153,153,0.17);

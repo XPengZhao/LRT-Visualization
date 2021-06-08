@@ -73,14 +73,14 @@ name: "RSSLine",
           }
         }
         state.rsslineOpition.xAxis.data = this.timeArray
-        this.RSSLineChart.setOption(state.rsslineOpition, 100)
+        this.RSSLineChart.setOption(state.rsslineOpition, 150)
       }
     },
     refreshRssline(){
       state.rss={}
       this.timeArray=[]
       state.rsslineOpition.xAxis.data=[]
-      this.RSSLineChart.setOption(state.rsslineOpition,100)
+      this.RSSLineChart.setOption(state.rsslineOpition,150)
     }
   }
 }

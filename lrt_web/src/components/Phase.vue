@@ -42,11 +42,10 @@ export default {
     upDatePhase(time){
       if(state.phase[state.gatewayChoose]){
         this.timeArray.push(time)
-        for(let key in state.rssLine){
+        for(let key in state.phase){
           if(state.phase[key][0].length>200){
             for(let i=0;i<16;i++){
               state.phase[key][i].shift()
-
             }
           }
         }
@@ -73,7 +72,7 @@ export default {
           }
         }
         state.phaseOpition.xAxis.data=this.timeArray
-        this.PhaseChart.setOption(state.phaseOpition,100)
+        this.PhaseChart.setOption(state.phaseOpition,150)
       }
     },
     refreshChart(){
@@ -81,7 +80,7 @@ export default {
       state.phase={}
       state.phaseOpition.xAxis.data=[]
       state.antselect=[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
-      this.PhaseChart.setOption(state.phaseOpition,100)
+      this.PhaseChart.setOption(state.phaseOpition,150)
     }
   }
 }

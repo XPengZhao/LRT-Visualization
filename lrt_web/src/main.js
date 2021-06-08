@@ -7,6 +7,8 @@ import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap.js";
 import axios from "axios";
 import 'animate.css';
+import VueSlider from 'vue-slider-component'
+import 'vue-slider-component/theme/default.css'
 import {router} from "@/router";
 
 
@@ -21,6 +23,7 @@ router.beforeEach((to,from,next)=>{
 })
 const app = createApp(App)
 app.use(router)
+app.component('VueSlider',VueSlider)
 // app.use(animated)
 app.mount('#app')
 

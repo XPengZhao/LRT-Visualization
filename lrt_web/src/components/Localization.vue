@@ -55,11 +55,9 @@ name: "Localization",
         this.tagList.push('Tag'+tag)
       }
       for(let i in this.pos){
-        if(this.pos[i].length>100)
+        if(this.pos[i].length>10){
           this.pos[i].shift()
-      }
-      // console.log(this.pos)
-      for(let i in this.pos){
+        }
         posData.push({
           name: i,
           type: 'scatter',
@@ -72,7 +70,6 @@ name: "Localization",
           data: [data],
           symbolSize:30,
         })
-
       }
       for(let key in state.atnpos){
         posData.push({
@@ -99,19 +96,22 @@ name: "Localization",
         showAllSymbol:true,
       })
       state.localOpition.series=posData
-      state.localOpition.xAxis.min = xRange[0]*2
-      state.localOpition.xAxis.max = xRange[1]*2
-      state.localOpition.yAxis.min = yRange[0]*2
-      state.localOpition.yAxis.max = yRange[1]*2
+      if(state.localOpition.xAxis.min !== xRange[0]*2){
+        state.localOpition.xAxis.min = xRange[0]*2
+        state.localOpition.xAxis.max = xRange[1]*2
+        state.localOpition.yAxis.min = yRange[0]*2
+        state.localOpition.yAxis.max = yRange[1]*2
+      }
+
       state.localOpition.legend.data = this.tagList
-      this.LocalizationChart.setOption(state.localOpition,500)
+      this.LocalizationChart.setOption(state.localOpition,150)
     },
     refreshChart(){
       state.localOpition.series=[]
       state.localOpition.legend.data = []
       this.pos = []
       this.tagList = []
-      this.LocalizationChart.setOption(state.localOpition,500)
+      this.LocalizationChart.setOption(state.localOpition,150)
     }
   }
 }

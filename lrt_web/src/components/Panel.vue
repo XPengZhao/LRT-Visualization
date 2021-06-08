@@ -49,17 +49,19 @@ name: "Panel",
       13:state.unsignalImg,
       14:state.unsignalImg,
       15:state.unsignalImg,
-      16:state.unsignalImg,}
+      16:state.unsignalImg,},
+      unsignalImg:state.unsignalImg,
+      signImg: state.signalImg
     }
   },
   methods:{
     changeFrame(data){
       if(state.antselect[data-1]){
         state.antselect[data-1]=false
-        this.pic[data] = state.unsignalImg
+        this.pic[data] = this.unsignalImg
       }else {
         state.antselect[data-1]=true
-        this.pic[data] = state.signalImg
+        this.pic[data] = this.signImg
       }
     },
     refreshCharts(){
