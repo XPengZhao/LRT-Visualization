@@ -13,7 +13,8 @@ import {router} from "@/router";
 
 
 axios.get('./config.json').then((result)=>{
-    localStorage.setItem('ApiUrl',result.data.ApiUrl);
+    localStorage.setItem("BackendUrl",result.data.BackendUrl)
+    localStorage.setItem("MQUrl",result.data.MQUrl)
 }).catch((error)=>{console.log(error)})
 router.beforeEach((to,from,next)=>{
     if(to.meta.title){
@@ -21,6 +22,7 @@ router.beforeEach((to,from,next)=>{
     }
     next()
 })
+
 const app = createApp(App)
 app.use(router)
 app.component('VueSlider',VueSlider)

@@ -20,12 +20,13 @@
       </button>
     </nav>
   <div class="mainBox row mt-3">
-    <div class="col-6 mt-2">
-      <error-line ref="errorLine"></error-line>
+    <div class="col-4 mt-2">
       <Cdf ref="cdf"></Cdf>
+      <ConfidenceCdf class="mt-5" ref="confidenceCdf"></ConfidenceCdf>
     </div>
     <div class="col-4">
       <div class="row mt-2">
+        <error-bar ref="errorBar"></error-bar>
       </div>
       <div class="row mt-2">
       </div>
@@ -42,19 +43,24 @@
 /* eslint-disable */
 import {router} from "@/router";
 import screenfull from "screenfull";
-import ErrorLine from "../components/errorLine";
+import ConfidenceCdf from "../components/confidenceCdf";
 import Cdf from "../components/Cdf"
-import stomp from "stompjs";
-import parse from "fast-json-parse";
 import {state} from "../store/state";
+import ErrorBar from "../components/errorBar";
+import stomp from "stompjs";
+import bootbox from "bootbox";
+import parse from "fast-json-parse";
+const cdf = require('cumulative-distribution-function');
 export default {
   name: "distanceError",
-  components: {ErrorLine, Cdf},
+  components: {ErrorBar, ConfidenceCdf, Cdf},
   data(){
     return{
       backImg:require('@/assets/backArrow.png'),
       flowerimg:require('@/assets/flower.png'),
       isFullscreen: false,
+      isUpdate:true,
+      errorBarData:[]
     }
   },
   computed: {
@@ -62,16 +68,26 @@ export default {
       return this.isFullscreen ? require('@/assets/window.png') : require('@/assets/fullScreen.png')
     },
   },
+
   mounted() {
-    this.$refs.errorLine.initErrorLineCharts()
+    this.$refs.confidenceCdf.initConfidenceCdfCharts()
     this.$refs.cdf.initCdfCharts()
+    this.$refs.errorBar.initErrorBarCharts()
     this.uploader_online()
   },
   methods:{
+    distanceCompute(x1,x2,y1,y2){
+      let a = Math.pow((x1-x2),2)
+      let b = Math.pow((y1-y2),2)
+      return Number(Math.sqrt(a+b).toFixed(2))
+    },
     changeScreen(){
       if (!screenfull.isEnabled) return alert(`Error`);
       this.isFullscreen = !this.isFullscreen
       screenfull.toggle();
+    },
+    stopConnect(){
+      this.client.disconnect()
     },
     toHome(){
       this.stopConnect()
@@ -86,41 +102,69 @@ export default {
       })
     },
     uploader_online(){
-      const API = localStorage.getItem('ApiUrl')
-      this.ws = new WebSocket(API)
+      // this.ws = new WebSocket(this.MQUrl)
       // const ws = new WebSocket('ws://192.168.0.100:15674/ws')
-      this.client = stomp.over(this.ws)
-      this.client.heartbeat.incoming = 10000
+      this.client = stomp.over(state.ws)
+      this.client.heartbeat.incoming = 1000
       this.client.heartbeat.outgoing = 10000
       // this.client.connect('admin','admin',this.onconnect,this.disconnect,'/')
-      this.client.connect('admin','admin',this.onconnect,this.disconnect,'/')
+      this.client.connect('admin','admin',this.onreplay,this.disconnect,'/')
     },
     disconnect(e){
-      // this.uploader_online()
       console.log(e)
     },
-    onconnect(){
+    onreplay: function () {
       const that = this
-      this.subclient = this.client.subscribe('/queue/oss.url_test',function (data) {
+      if(!this.dialog){
+        this.dialog = bootbox.dialog({
+          message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i> Please wait while we do something...</p>',
+          closeButton: false
+        });
+      }
+      this.subclient = this.client.subscribe('/queue/replay', function (data) {
         let word = data.body
         let localData = parse(word).value
-        let error = that.distanceCompute(localData.truth[0],localData.position[0],localData.truth[2],localData.position[2])
-        let dayTime = localData.phyTime.split(' ')
-        that.$refs.errorLine.updateCharts(dayTime[1],error)
+        // console.log(localData)
+        that.errorNum = that.distanceCompute(localData.truth[0],localData.position[0],localData.truth[2],localData.position[2])
+        state.error.push(that.errorNum)
+        state.replay.truth.push([localData.truth[0],localData.truth[2]])
+
+        state.replay.position.push([localData.position[0],localData.position[2]])
+        if(localData.spectrum[0].confidence in state.confidence){
+          state.confidence[localData.spectrum[0].confidence].push(that.errorNum)
+        }else {
+          state.confidence[localData.spectrum[0].confidence] = [that.errorNum]
+        }
+      if(that.errorNum<5){
+        that.errorBarData.push([Number(localData.truth[0])*10+50,Number(localData.truth[2])*10+50,that.errorNum])
+      }
+        if (localData.end) {
+
+          that.hideDialog()
+          that.subclient.unsubscribe()
+          that.updateChart()
+        }
 
       })
+
     },
-    distanceCompute(x1,x2,y1,y2){
-      let a = Math.pow((x1-x2),2)
-      let b = Math.pow((y1-y2),2)
-      return Math.sqrt(a+b).toFixed(2)
+    hideDialog(){
+      this.dialog.modal('toggle')
     },
-    stopConnect(){
-      if(this.client){
-        this.client.unsubscribe('0')
+    updateChart(){
+      console.log(state.error)
+      this.mycdf = cdf(state.error)
+      this.$refs.cdf.updateChart(this.mycdf)
+      let ccdf = {}
+      for(let key in state.confidence){
+        ccdf[key] = cdf(state.confidence[key])
       }
+      this.$refs.confidenceCdf.updateCharts(ccdf)
+      console.log(this.errorBarData)
+      this.$refs.errorBar.updateChart(this.errorBarData)
     },
-  }
+    },
+
 }
 </script>
 

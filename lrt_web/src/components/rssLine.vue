@@ -51,9 +51,7 @@ name: "RSSLine",
             }
           }
         }
-      if(this.timeArray.length>200){
-        this.timeArray.shift()
-      }
+      let timeArray = this.randArray(state.rssLine[state.gatewayChoose].length)
         for (let i = 0; i < 16; i++) {
           if (state.antselect[i]) {
             state.rsslineOpition.series[i] = {
@@ -72,16 +70,39 @@ name: "RSSLine",
             }
           }
         }
-        state.rsslineOpition.xAxis.data = this.timeArray
-        this.RSSLineChart.setOption(state.rsslineOpition, 150)
+
+        state.rsslineOpition.xAxis.data = timeArray
+        this.RSSLineChart.setOption(state.rsslineOpition,true, 150)
       }
+    },
+    randArray(len) {
+      return Array.from({length:len},  function (){
+              return Math.floor(Math.random()*(200))
+          }
+      );
     },
     refreshRssline(){
       state.rss={}
       this.timeArray=[]
       state.rsslineOpition.xAxis.data=[]
       this.RSSLineChart.setOption(state.rsslineOpition,150)
-    }
+    },
+    replayChart(index){
+      if(state.rssLine[state.gatewayChoose][0].length>index[1]-1){
+
+        for(let i=0;i<16;i++){
+          state.rsslineOpition.series[i]={
+            name: 'RSS'+String(i+1),
+            type: 'line',
+            symbol: 'none',
+            data: state.rssLine[state.gatewayChoose][i].slice(index[0],index[1])
+          }
+        }
+        this.timeArray = this.randArray(index[1]-index[0])
+        state.rsslineOpition.xAxis.data=this.timeArray
+        this.RSSLineChart.setOption(state.rsslineOpition,10)
+      }
+    },
   }
 }
 </script>

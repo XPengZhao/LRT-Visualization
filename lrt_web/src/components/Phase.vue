@@ -39,9 +39,9 @@ export default {
       })
 
     },
-    upDatePhase(time){
+    upDatePhase(){
       if(state.phase[state.gatewayChoose]){
-        this.timeArray.push(time)
+
         for(let key in state.phase){
           if(state.phase[key][0].length>200){
             for(let i=0;i<16;i++){
@@ -49,9 +49,7 @@ export default {
             }
           }
         }
-      if(this.timeArray.length>200){
-        this.timeArray.shift()
-      }
+        let timeArray = this.randArray(state.phase[state.gatewayChoose].length)
         for(let i=0;i<16;i++){
           if(state.antselect[i]){
             state.phaseOpition.series[i]={
@@ -71,8 +69,8 @@ export default {
             }
           }
         }
-        state.phaseOpition.xAxis.data=this.timeArray
-        this.PhaseChart.setOption(state.phaseOpition,150)
+        state.phaseOpition.xAxis.data=timeArray
+        this.PhaseChart.setOption(state.phaseOpition,true,150)
       }
     },
     refreshChart(){
@@ -81,7 +79,31 @@ export default {
       state.phaseOpition.xAxis.data=[]
       state.antselect=[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
       this.PhaseChart.setOption(state.phaseOpition,150)
-    }
+    },
+    replayChart(index){
+      if(state.phase[state.gatewayChoose][0].length>index[1]-1){
+        for(let i=0;i<16;i++){
+          state.phaseOpition.series[i]={
+            name: 'ANT'+String(i+1),
+            type: 'line',
+            symbol: 'none',
+            // stack: 'phase',
+            data: state.phase[state.gatewayChoose][i].slice(index[0],index[1])
+          }
+        }
+
+        this.timeArray = this.randArray(index[1]-index[0])
+        state.phaseOpition.xAxis.data=this.timeArray
+        this.PhaseChart.setOption(state.phaseOpition,10)
+      }
+
+    },
+
+    randArray(len) {
+      return Array.from({length:len},  function (){
+        return Math.floor(Math.random()*(len))
+      })
+    },
   }
 }
 </script>

@@ -16,11 +16,10 @@
         <vue-slider v-model="indexValue"
                     :width="1000"
                     :lazy="true"
-                    @dragging="test"
-                    @change="test"
+                    @change="replayUpdate"
                     :min-range="20"
                     :max-range="200"
-                    :max = "timeArrayLength"
+                    :max = "replayDataLength"
                     :tooltip = "'always'"
                     :tooltip-placement="'bottom'"
                     ref="timeSlider"
@@ -33,7 +32,7 @@
 <!--        </button>-->
       </div>
     </div>
-    <button type="button"  class="ml-3 btn" style="background-color: #04254E;color: white;min-width: 160px"  data-toggle="button" aria-pressed="false" @click="toAnalysis()">
+    <button type="button"  class="ml-3 btn" style="background-color: #04254E;color: white;min-width: 160px" id="analysis"  data-toggle="button" aria-pressed="false" @click="toAnalysis()">
       Analysis
     </button>
     <button type="button" id="fullButton" class="btn" style="background-color: #04254E;color: white;min-width: 20px;position: relative;right: 0"  data-toggle="button" aria-pressed="false" @click="changeScreen()">
@@ -52,13 +51,13 @@
         <RSSLine ref="rssline"></RSSLine>
       </div>
       <div class="row mt-2">
-        <Spectrum ref="spectrum"></Spectrum>
+        <Spectrum id="spectrum" ref="spectrum"></Spectrum>
       </div>
     </div>
     <div class="col-2 ">
-      <Panel ref="panel"></Panel>
+      <Panel ref="panel" id = "panel"></Panel>
       <RSS class="mt-2" ref="rss"></RSS>
-<!--      <radar class="mt-2" ref="radar"></radar>-->
+      <div style="color: white"><h2>{{errorNum}}</h2></div>
     </div>
 
   </div>
@@ -89,7 +88,7 @@
 </template>
 <script>
 /* eslint-disable */
-import {state} from "@/store/state";
+import {state} from "../store/state";
 import stomp from 'stompjs';
 import parse from 'fast-json-parse';
 import {CalendarComponent, GridComponent, LegendComponent, TimelineComponent} from 'echarts/components'
@@ -104,6 +103,7 @@ import RSSLine from "@/components/rssLine";
 import Radar from "@/components/Radar";
 import {router} from "@/router";
 import screenfull from 'screenfull';
+
 let echarts = require("echarts/lib/echarts");
 import  bootbox from 'bootbox'
 require("echarts/lib/chart/heatmap")
@@ -135,7 +135,9 @@ name: "DrawPictrue",
       receiveNum: 0,
       replayisNull:true,
       indexValue:[0,200],
-      timeArrayLength:1000,
+      replayDataLength:1000,
+      errorNum:0,
+      BackendUrl:localStorage.getItem("BackendUrl")
     }
 
   },
@@ -152,9 +154,12 @@ name: "DrawPictrue",
     this.isReplay()
     this.uploader_online()
     },
+  created() {
+  this.replayDataLength=state.replayLength
+  },
   methods:{
-  test(data){
-    console.log(data)
+  test(){
+    console.log(this.indexValue)
   },
     init(){
       this.$refs.localization.initLocalizationCharts()
@@ -197,10 +202,9 @@ name: "DrawPictrue",
         "xRange":localData.spectrum.xRange, // searched range
         "yRange":localData.spectrum.yRange, //searched range
         "zRange":localData.spectrum.zRange, //searched range. If z1=z2, the searching is taken on a single plane.
-        "aoa":localData.spectrum.aoa,
         "createdTime": localData.spectrum.createdTime,
       }
-      axios.post('http://localhost:3000/lrt/insert', {
+      axios.post(this.BackendUrl+'/insert', {
         table: sessionStorage.getItem('tableName'),
         tagId:localData.tagId,
         logTime:localData.logTime, //the logical time after the queque alignment
@@ -223,24 +227,32 @@ name: "DrawPictrue",
       // let radar = this.$refs.radar
       let word = data.body
       if (word) {
-        try{
-          var localData = JSON.parse(word)
-        }catch (e) {
-          console.log(word)
-          console.log(e)
-        }
-
+        let localData = parse(word).value
+        // console.log(localData)
         if (localData.xServer) {
           that.receiveNum++
-          // console.log(localData)
+          that.errorNum = that.distanceCompute(localData.truth[0],localData.position[0],localData.truth[2],localData.position[2])
+          state.error.push(that.errorNum)
+          if(state.error.length>1000){
+            state.error.shift()
+          }
+          let dayTime = localData.phyTime.split(' ')
+          state.dayTime.push(dayTime)
+          if(state.dayTime.length>1000){
+            state.dayTime.shift()
+          }
+              // console.log(localData)
           if (sessionStorage.getItem('record') === '1') {
             that.recordMessageSend(localData)
           }
           for (let key in localData.xServer.gateways) {
+            if(!state.atnpos[key]){
+              state.atnpos[key]=localData.xServer.gateways[key].position[0]
+            }
             state.rss[key] = localData.xServer.gateways[key].rss
             // state.aoa[key] = localData.xServer.gateways[key].aoa[0]
-            state.atnpos[key] = localData.xServer.gateways[key].position[0]
             if (key in state.phase) {
+
               for (let i = 0; i < 16; i++) {
                 state.rssLine[key][i].push(localData.xServer.gateways[key].rss[i])
                 state.phase[key][i].push(localData.xServer.gateways[key].phase[i])
@@ -253,7 +265,6 @@ name: "DrawPictrue",
                 return [item]
               })
             }
-            data.ack()
           }
           phase.upDatePhase(that.receiveNum)
           rssLine.upDateRSSline(that.receiveNum)
@@ -278,82 +289,98 @@ name: "DrawPictrue",
       $('#stopButton').prop('disabled',false)
       $('#onlineButton').addClass('disabled')
       $('#recordButton').prop('disabled',false)
-      const API = localStorage.getItem('ApiUrl')
-      this.ws = new WebSocket(API)
-      // const ws = new WebSocket('ws://192.168.0.100:15674/ws')
-      this.client = stomp.over(this.ws)
-      this.client.heartbeat.incoming = 300
-      this.client.heartbeat.outgoing = 300
+      this.client = stomp.client(localStorage.getItem("MQUrl"))
+      this.client.heartbeat.incoming = 0
+      this.client.heartbeat.outgoing = 10000
       // this.client.connect('admin','admin',this.onconnect,this.disconnect,'/')
       if(state.queue==='replay'){
-        this.client.connect('vueAdmin','vueAdmin',this.onreplay,this.disconnect,'/replay')
+        this.client.connect('admin','admin',this.onreplay,this.disconnect,'/')
       }
       else {
         this.client.connect('admin','admin',this.onconnect,this.disconnect,'/')
       }
     },
     disconnect(e){
-      this.uploader_online()
+      // this.uploader_online()
       console.log(e)
-      console.log('Reconnect')
+      // console.log('Reconnect')
     },
     onreplay: function () {
+    $("#panel").hide()
+      $("#spectrum").hide()
+      state.rsslineOpition.legend.selectedMode = true
+      state.phaseOpition.legend.selectedMode = true
       const that = this
-      this.dialog = bootbox.dialog({
-        message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i> Please wait while we do something...</p>',
-        closeButton: false
-      });
+      if(!this.dialog){
+        this.dialog = bootbox.dialog({
+          message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i> Please wait while we do something...</p>',
+          closeButton: false
+        });
+      }
       this.subclient = this.client.subscribe('/queue/replay', function (data) {
         let word = data.body
         let localData = parse(word).value
-        for (let key in localData.xServer.gateways) {
-          that.replayisNull = false
+        // console.log(localData)
+        that.errorNum = that.distanceCompute(localData.truth[0],localData.position[0],localData.truth[2],localData.position[2])
+        state.error.push(that.errorNum)
+        state.replay.truth.push([localData.truth[0],localData.truth[2]])
+        state.replay.position.push([localData.position[0],localData.position[2]])
+        if(localData.spectrum[0].confidence in state.confidence){
+          state.confidence[localData.spectrum[0].confidence].push(that.errorNum)
+        }else {
+          state.confidence[localData.spectrum[0].confidence] = [that.errorNum]
+        }
+        for (let key in localData.xServer[0].gateways) {
+          if(!state.atnpos[key]){
+            state.atnpos[key]=localData.xServer[0].gateways[key].position[0]
+          }
           if (key in state.rssLine) {
-            state.rss[key].push(localData.xServer.gateways[key].rss)
-            state.aoa[key].push(localData.spectrum.aoa)
-            state.atnpos[key].push(localData.xServer.gateways[key].position[0])
+            state.rss[key].push(localData.xServer[0].gateways[key].rss)
+            // state.aoa[key].push(localData.spectrum.aoa)
             for (let i = 0; i < 16; i++) {
-              state.rssLine[key][i].push(localData.xServer.gateways[key].rss[i])
-              state.phase[key][i].push(localData.xServer.gateways[key].phase[i])
+              state.rssLine[key][i].push(localData.xServer[0].gateways[key].rss[i])
+              state.phase[key][i].push(localData.xServer[0].gateways[key].phase[i])
             }
           } else {
-            state.rss[key] = [localData.xServer.gateways[key].rss]
-            state.aoa[key] = [localData.spectrum.aoa]
-            state.atnpos[key] = [localData.xServer.gateways[key].position[0]]
-            state.rssLine[key] = localData.xServer.gateways[key].rss.map(function (item) {
+            state.rss[key] = [localData.xServer[0].gateways[key].rss]
+            // state.aoa[key] = [localData.spectrum.aoa]
+            state.rssLine[key] = localData.xServer[0].gateways[key].rss.map(function (item) {
               return [item]
             })
-            state.phase[key] = localData.xServer.gateways[key].phase.map(function (item) {
+            state.phase[key] = localData.xServer[0].gateways[key].phase.map(function (item) {
               return [item]
-            })
+            },{durable:true,'auto-delete':true,'x-message-ttl':100,exclusive:false})
           }
           data.ack()
         }
         if (localData.end) {
           that.subclient.unsubscribe()
+          that.hideDialog()
+          that.replayUpdate()
         }
-      })
-      if (this.replayisNull) {
-        setTimeout(this.hideDialog,1000)
-        this.subclient.unsubscribe()
-      }
 
+      })
+
+    },
+    replayUpdate(){
+      this.$refs.phase.replayChart(this.indexValue)
+      this.$refs.localization.replayChart(this.indexValue)
+      this.$refs.rssline.replayChart(this.indexValue)
+      this.$refs.rss.replayChart(this.indexValue[0])
+    },
+    distanceCompute(x1,x2,y1,y2){
+      let a = Math.pow((x1-x2),2)
+      let b = Math.pow((y1-y2),2)
+      return Number(Math.sqrt(a+b).toFixed(2))
     },
     hideDialog(){
       this.dialog.modal('toggle')
     },
     onconnect(){
         this.subclient = this.client.subscribe('/queue/oss.url_test',this.realTimeProcessing)
-    },
-    convSpectrum(arr,dimension){
-      let arr1 = arr.flatMap(function (item){
-        return item
-      })
-      return arr1.map(function (value, index) {
-        let x = parseInt(index / dimension)
-        let y = index % dimension
-        return [x, y, value]
-      })
+      // this.subclient = this.client.subscribe('/queue/heartbeat',function (data) {
+      //   console.log(data.body)
+      // },{durable:true,'auto-delete':false,'x-message-ttl':5000,'message-ttl':1000})
     },
     recording(){
       if(sessionStorage.getItem('record')==='1'){
@@ -371,27 +398,28 @@ name: "DrawPictrue",
           'background-color':'red',
           'border':'2px solid white'
         })
+        $("#analysis").addClass("disabled")
         let time = new Date()
         sessionStorage.setItem('tableName',time.toLocaleString('chinese', { hour12: false }))
         sessionStorage.setItem('record','1')
       }
     },
     sendTable(){
+      let d = String($('#describeWord').val())
+      let v = String(this.valueURL)
+      let t = String(sessionStorage.getItem('tableName'))
       const that = this
-
-      let a = that.valueURL
-      axios.post('http://localhost:3000/lrt/insertTable',{
-        Describe:$('#describeWord').val(),
-        img:a,
-        tableName:sessionStorage.getItem('tableName'),
+      axios.post(this.BackendUrl+'/insertTable',{
+        Describe:d,
+        img:v,
+        tableName:t,
       }).then(function (){
         that.valueURL = 'null'
         $('#describeWord').val('')
         sessionStorage.setItem('tableName','')
       });
-      setTimeout(function (){
         $('#tableCard').addClass('animate__backOutDown')
-      },1000)
+      $("#analysis").removeClass("disabled")
     },
     stopConnect(){
       $('#stopButton').prop('disabled',true)
@@ -404,7 +432,10 @@ name: "DrawPictrue",
       state.gatewayChoose='gateway1'
       state.queue='oss.url_test'
       if(this.client){
-        this.client.unsubscribe('0')
+        this.subclient.unsubscribe()
+      }
+      if(this.client){
+        this.client.disconnect()
       }
       this.refresh()
     },
@@ -425,7 +456,7 @@ name: "DrawPictrue",
       this.$refs.localization.refreshChart()
       this.$refs.panel.refreshCharts()
       this.$refs.phase.refreshChart()
-      this.$refs.radar.refreshChart()
+      // this.$refs.radar.refreshChart()
       this.$refs.rss.refreshCharts()
       this.$refs.rssline.refreshRssline()
       this.$refs.spectrum.refreshSpectrum()
@@ -443,7 +474,7 @@ name: "DrawPictrue",
       })
     },
     toAnalysis(){
-    this.stopConnect()
+      // window.open("http://158.132.255.171:5000/#/analysis","_blank")
       router.push({
         name: 'Analysis'
       })

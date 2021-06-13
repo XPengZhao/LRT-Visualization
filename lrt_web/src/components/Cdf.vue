@@ -40,6 +40,16 @@ export default {
         this.cdfChart.resize()
       })
     },
+    updateChart(cdf){
+      let xData = [0,1,2,3,4,5,6,7,8,9,10]
+      let yData = []
+      for(let i in xData){
+        yData.push(cdf(Number(i)))
+      }
+      state.cdfOpition.xAxis.data = xData
+      state.cdfOpition.series[0].data = yData
+      this.cdfChart.setOption(state.cdfOpition)
+    }
   }
 }
 </script>
@@ -49,7 +59,7 @@ export default {
   position: relative;
   min-height: 250px;
   height: auto !important;
-  aspect-ratio:2.15/1;
+  aspect-ratio:1.5/1;
   width: 100%;
   border: 1px solid #999999;
   background-color: rgba(153,153,153,0.17);

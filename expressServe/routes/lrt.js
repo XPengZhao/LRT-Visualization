@@ -41,7 +41,7 @@ router.post('/insert', function(req, res, next) {
     })
 
 });
-router.post('/insertTable', function(req, res, next) {
+router.post('/insertTable', function(req, res, next) {npm
     let tableData = new tableDataModel({
         Describe:req.body.Describe,
         img: req.body.img,
@@ -81,12 +81,14 @@ router.post('/deleteTable',function (req,res,next){
 })
 router.post('/replay',function (req,res,next){
     let lrtDataModel = mongoose.model(req.body.table,lrtModel)
+
        lrtDataModel.findAll(async function (err,data) {
            mq.create(data)
+           res.json({
+               message:data.length
+           })
        })
-    res.json({
-        message:'End'
-    })
+
 
 })
 

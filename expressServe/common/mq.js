@@ -3,7 +3,7 @@ var amqp = require('amqplib/callback_api');
 class RabbitMQ{
 
     create(data){
-        amqp.connect('amqp://admin:admin@158.132.255.178:5672', function(error0, connection) {
+        amqp.connect('amqp://admin:admin@158.132.255.123:5672', function(error0, connection) {
             if (error0) {
                 throw error0;
             }

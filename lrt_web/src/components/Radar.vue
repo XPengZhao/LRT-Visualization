@@ -61,12 +61,12 @@ name: "radar",
         },)
       }
       state.radarOpition.series = this.aoaList
-      this.radarChart.setOption(state.radarOpition,150)
+      this.radarChart.setOption(state.radarOpition,true,150)
     },
     refreshChart(){
       state.radarOpition.series=[]
       state.aoa = {}
-      this.radarChart.setOption(state.radarOpition,150)
+      this.radarChart.setOption(state.radarOpition,true,150)
     },
 
   }

@@ -67,6 +67,7 @@ export default {
     return {
       connectimg: require('@/assets/connect.png'),
       flowerimg: require('@/assets/flower.png'),
+
     }
   },
   mounted() {
@@ -78,6 +79,7 @@ export default {
   setup(){
     const closeImg = require('@/assets/close.png')
     const router = useRouter()
+    const BackendUrl=localStorage.getItem("BackendUrl")
     const toHome=(()=>{
       router.push({
         name: 'home'
@@ -99,7 +101,7 @@ export default {
       $('#updateTable').show()
     })
     const deleteTable=((e)=>{
-      axios.post('http://localhost:3000/lrt/deleteTable',{
+      axios.post(BackendUrl+'/deleteTable',{
         tableName:e
       }).then(function (){
         $('#table').empty()
@@ -111,15 +113,16 @@ export default {
     const getTable=(()=>{
       const updateimg=require('@/assets/update.png'),
           deleteimg=require('@/assets/delete.png'),
-          playimg = require('@/assets/play.png')
-      axios.post('http://localhost:3000/lrt/searchData', {
+          playimg = require('@/assets/play.png'),
+          analysisimg = require("@/assets/analysis.png")
+      axios.post(BackendUrl+'/searchData', {
         mes: 0
       }).then(function (res) {
         for (let i = 0; i < res.data.length; i++) {
           $('#table').append('<tr>' +
               '<th scope="row">' + (i + 1) + '</th>' +
               '        <td>' +
-              '          <img src="' + res.data[i].img + '" alt="" style="height: 100px">' +
+              '          <img src="' + res.data[i].img + '" alt="" style="height: 300px">' +
               '        </td>' +
               '        <td style="max-height:100px;vertical-align: middle;">' +
               '          <a type="button" data-toggle="collapse" data-target="#collapseExample' + i + '" aria-expanded="false" aria-controls="collapseExample" >\n' +
@@ -129,10 +132,12 @@ export default {
               '            <div class="card card-body row" style="max-width: 200px;max-height: 50px; left: 20px">' +
               "              <a class='updatelink' onclick='updateTable(\"" + res.data[i].tableName+"0128"+res.data[i].Describe+"0128"+res.data[i].img+ "\")'>" +
               '               <img src="' + updateimg + '" alt="" style="border:1px solid black;border-radius: 5px;height:20px;width:20px;"></a>' +
-              "              <a class='deletelink' onclick='deleteTable(\""+res.data[i].tableName+"\")'>" +
-              '              <img src="' + deleteimg + '" alt="" style="border:1px solid black;border-radius: 5px;height:20px;width:20px;"></a>' +
+              // "              <a class='deletelink' onclick='deleteTable(\""+res.data[i].tableName+"\")'>" +
+              // '              <img src="' + deleteimg + '" alt="" style="border:1px solid black;border-radius: 5px;height:20px;width:20px;"></a>' +
               "              <a class='replay' onclick='replay(\""+res.data[i].tableName+"\")'>" +
               '              <img src="' + playimg + '" alt="" style="border:1px solid black;border-radius: 5px;height:20px;width:20px;"></a>' +
+              "              <a class='analysis' onclick='analysis(\""+res.data[i].tableName+"\")'>" +
+              '              <img src="' + analysisimg + '" alt="" style="border:1px solid black;border-radius: 5px;height:20px;width:20px;"></a>' +
               '            </div>' +
               '          </div>' +
               '        </td>' +
@@ -147,11 +152,24 @@ export default {
       window.updateTable = updateTable
       window.deleteTable = deleteTable
       window.replay = replay
+      window.analysis= analysis
     })
     const replay=((e)=>{
-      goDraw()
+
       state.queue = 'replay'
-      axios.post('http://localhost:3000/lrt/replay',{
+      axios.post(BackendUrl+'/replay',{
+        table:e
+      }).then(function (res) {
+        state.replayLength = Number(res.data.message)
+        console.log(res)
+        setTimeout(goDraw,50)
+      })
+
+    })
+    const analysis=(async (e)=>{
+      goAnalysis()
+      state.queue='replay'
+     await axios.post(BackendUrl+'/replay',{
         table:e
       })
 
@@ -187,8 +205,13 @@ export default {
         name: 'Show'
       })
     })
+    const goAnalysis=(()=>{
+      router.push({
+        name: 'Analysis'
+      })
+    })
     return{
-      create,getTable,deleteTable,updateTable,toHome,callUpImg,uploadImg,sendTable,closeImg,closeDiv,replay,goDraw
+      create,getTable,deleteTable,updateTable,toHome,callUpImg,uploadImg,sendTable,closeImg,closeDiv,replay,goDraw,BackendUrl,goAnalysis,analysis
     }
   },
 
