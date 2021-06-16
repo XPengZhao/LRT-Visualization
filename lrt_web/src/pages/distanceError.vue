@@ -103,8 +103,8 @@ export default {
     },
     uploader_online(){
       // this.ws = new WebSocket(this.MQUrl)
-      // const ws = new WebSocket('ws://192.168.0.100:15674/ws')
-      this.client = stomp.over(state.ws)
+      const ws = new WebSocket('http://158.132.255.123:15674/ws')
+      this.client = stomp.over(ws)
       this.client.heartbeat.incoming = 1000
       this.client.heartbeat.outgoing = 10000
       // this.client.connect('admin','admin',this.onconnect,this.disconnect,'/')
@@ -139,12 +139,10 @@ export default {
         that.errorBarData.push([Number(localData.truth[0])*10+50,Number(localData.truth[2])*10+50,that.errorNum])
       }
         if (localData.end) {
-
           that.hideDialog()
           that.subclient.unsubscribe()
           that.updateChart()
         }
-
       })
 
     },
@@ -160,7 +158,6 @@ export default {
         ccdf[key] = cdf(state.confidence[key])
       }
       this.$refs.confidenceCdf.updateCharts(ccdf)
-      console.log(this.errorBarData)
       this.$refs.errorBar.updateChart(this.errorBarData)
     },
     },

@@ -72,7 +72,7 @@ name: "RSSLine",
         }
 
         state.rsslineOpition.xAxis.data = timeArray
-        this.RSSLineChart.setOption(state.rsslineOpition,true, 150)
+        this.RSSLineChart.setOption(state.rsslineOpition,true, 10)
       }
     },
     randArray(len) {
@@ -85,7 +85,7 @@ name: "RSSLine",
       state.rss={}
       this.timeArray=[]
       state.rsslineOpition.xAxis.data=[]
-      this.RSSLineChart.setOption(state.rsslineOpition,150)
+      this.RSSLineChart.setOption(state.rsslineOpition,10)
     },
     replayChart(index){
       if(state.rssLine[state.gatewayChoose][0].length>index[1]-1){

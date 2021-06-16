@@ -37,11 +37,11 @@ name: "Spectrum",
     },
     upDateSpectrum(data){
       state.spectrumOpition.series[0].data = data
-      this.SpectrumChart.setOption(state.spectrumOpition,true,150)
+      this.SpectrumChart.setOption(state.spectrumOpition,true,10)
     },
     refreshSpectrum(){
       state.spectrumOpition.series[0].data = []
-      this.SpectrumChart.setOption(state.spectrumOpition,150)
+      this.SpectrumChart.setOption(state.spectrumOpition,10)
     }
   }
 }

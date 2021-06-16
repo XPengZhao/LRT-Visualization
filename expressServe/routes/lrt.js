@@ -41,7 +41,7 @@ router.post('/insert', function(req, res, next) {
     })
 
 });
-router.post('/insertTable', function(req, res, next) {npm
+router.post('/insertTable', function(req, res, next) {
     let tableData = new tableDataModel({
         Describe:req.body.Describe,
         img: req.body.img,

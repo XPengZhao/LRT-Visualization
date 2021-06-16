@@ -142,7 +142,8 @@ export default {
       $('#stopButton').prop('disabled',false)
       $('#onlineButton').addClass('disabled')
       $('#recordButton').prop('disabled',false)
-      this.client = stomp.client(localStorage.getItem("MQUrl"))
+      const ws = new WebSocket(localStorage.getItem("MQUrl"))
+      this.client = stomp.over(ws)
       this.client.heartbeat.incoming = 0
       this.client.heartbeat.outgoing = 10000
       // this.client.connect('admin','admin',this.onconnect,this.disconnect,'/')

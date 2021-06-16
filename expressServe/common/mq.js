@@ -14,9 +14,7 @@ class RabbitMQ{
 
                 var queue = 'replay';
 
-                channel.assertQueue(queue, {
-                    durable: true
-                });
+                channel.assertQueue(queue, {durable:true});
                 for(let i = 0;i<data.length;i++){
                     setTimeout(function (){
                         let msg={

@@ -289,9 +289,10 @@ name: "DrawPictrue",
       $('#stopButton').prop('disabled',false)
       $('#onlineButton').addClass('disabled')
       $('#recordButton').prop('disabled',false)
-      this.client = stomp.client(localStorage.getItem("MQUrl"))
-      this.client.heartbeat.incoming = 0
-      this.client.heartbeat.outgoing = 10000
+      const ws = new WebSocket(localStorage.getItem("MQUrl"))
+      this.client = stomp.over(ws)
+      this.client.heartbeat.incoming = 1000
+      this.client.heartbeat.outgoing = 1000
       // this.client.connect('admin','admin',this.onconnect,this.disconnect,'/')
       if(state.queue==='replay'){
         this.client.connect('admin','admin',this.onreplay,this.disconnect,'/')
@@ -301,7 +302,7 @@ name: "DrawPictrue",
       }
     },
     disconnect(e){
-      // this.uploader_online()
+      this.uploader_online()
       console.log(e)
       // console.log('Reconnect')
     },
@@ -349,7 +350,7 @@ name: "DrawPictrue",
             })
             state.phase[key] = localData.xServer[0].gateways[key].phase.map(function (item) {
               return [item]
-            },{durable:true,'auto-delete':true,'x-message-ttl':100,exclusive:false})
+            })
           }
           data.ack()
         }
@@ -417,7 +418,9 @@ name: "DrawPictrue",
         that.valueURL = 'null'
         $('#describeWord').val('')
         sessionStorage.setItem('tableName','')
-      });
+      }).catch(function (err) {
+        console.log(err)
+      })
         $('#tableCard').addClass('animate__backOutDown')
       $("#analysis").removeClass("disabled")
     },

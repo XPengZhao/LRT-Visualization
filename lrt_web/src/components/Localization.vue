@@ -104,14 +104,14 @@ name: "Localization",
       }
 
       state.localOpition.legend.data = this.tagList
-      this.LocalizationChart.setOption(state.localOpition,true,150)
+      this.LocalizationChart.setOption(state.localOpition,true,10)
     },
     refreshChart(){
       state.localOpition.series=[]
       state.localOpition.legend.data = []
       this.pos = []
       this.tagList = []
-      this.LocalizationChart.setOption(state.localOpition,150)
+      this.LocalizationChart.setOption(state.localOpition,10)
     },
     replayChart(index){
       let posData = []
@@ -158,7 +158,7 @@ name: "Localization",
       })
       state.localOpition.series=posData
       state.localOpition.legend.data = ["Tag1"]
-      this.LocalizationChart.setOption(state.localOpition,true,150)
+      this.LocalizationChart.setOption(state.localOpition,true,10)
 
     }
   }

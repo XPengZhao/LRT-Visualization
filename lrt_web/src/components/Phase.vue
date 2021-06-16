@@ -70,7 +70,7 @@ export default {
           }
         }
         state.phaseOpition.xAxis.data=timeArray
-        this.PhaseChart.setOption(state.phaseOpition,true,150)
+        this.PhaseChart.setOption(state.phaseOpition,true,10)
       }
     },
     refreshChart(){
@@ -78,7 +78,7 @@ export default {
       state.phase={}
       state.phaseOpition.xAxis.data=[]
       state.antselect=[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
-      this.PhaseChart.setOption(state.phaseOpition,150)
+      this.PhaseChart.setOption(state.phaseOpition,10)
     },
     replayChart(index){
       if(state.phase[state.gatewayChoose][0].length>index[1]-1){
