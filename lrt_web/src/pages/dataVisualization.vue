@@ -32,9 +32,6 @@
 <!--        </button>-->
       </div>
     </div>
-    <button type="button"  class="ml-3 btn" style="background-color: #04254E;color: white;min-width: 160px" id="analysis"  data-toggle="button" aria-pressed="false" @click="toAnalysis()">
-      Analysis
-    </button>
     <button type="button" id="fullButton" class="btn" style="background-color: #04254E;color: white;min-width: 20px;position: relative;right: 0"  data-toggle="button" aria-pressed="false" @click="changeScreen()">
       <img :src="windowSizeImg" style="height: 20px">
     </button>
@@ -266,8 +263,8 @@ name: "DrawPictrue",
               })
             }
           }
-          phase.upDatePhase(that.receiveNum)
-          rssLine.upDateRSSline(that.receiveNum)
+          phase.upDatePhase()
+          rssLine.upDateRSSline()
           // radar.upDateRadar()
           let x = localData.position[0]
           let y = localData.position[2]
@@ -309,15 +306,20 @@ name: "DrawPictrue",
     onreplay: function () {
     $("#panel").hide()
       $("#spectrum").hide()
+      $("#timeSlider").hide()
       state.rsslineOpition.legend.selectedMode = true
       state.phaseOpition.legend.selectedMode = true
       const that = this
-      if(!this.dialog){
-        this.dialog = bootbox.dialog({
-          message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i> Please wait while we do something...</p>',
-          closeButton: false
-        });
-      }
+      let rss =that.$refs.rss
+      let local = that.$refs.localization
+      let phase = that.$refs.phase
+      let rssLine = that.$refs.rssline
+      // if(!this.dialog){
+      //   this.dialog = bootbox.dialog({
+      //     message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i> Please wait while we do something...</p>',
+      //     closeButton: false
+      //   });
+      // }
       this.subclient = this.client.subscribe('/queue/replay', function (data) {
         let word = data.body
         let localData = parse(word).value
@@ -354,10 +356,17 @@ name: "DrawPictrue",
           }
           data.ack()
         }
+        phase.upDatePhase()
+        rssLine.upDateRSSline()
+        let x = localData.position[0]
+        let y = localData.position[2]
+        local.upDateLocalization([x, y], localData.tagId, localData.truth, localData.spectrum.xRange, localData.spectrum.zRange)
+        rss.upDateRSS()
         if (localData.end) {
           that.subclient.unsubscribe()
-          that.hideDialog()
+          // that.hideDialog()
           that.replayUpdate()
+          $("#timeSlider").show()
         }
 
       })

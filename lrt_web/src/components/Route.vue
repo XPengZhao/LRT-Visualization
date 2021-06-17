@@ -1,45 +1,43 @@
 <template>
   <div class="panels mr-3">
-    <div style="width:100%;height:100%" ref="errorbarchart"></div>
+    <div style="width:100%;height:100%" ref="routechart"></div>
     <div class="panels-foot"></div>
   </div>
 </template>
 
 <script>
 let echarts = require("echarts/lib/echarts");
-import {state} from "@/store/state";
-require('echarts/lib/chart/scatter')
+import { state } from '@/store/state'
+require('echarts/lib/chart/line')
 require('echarts/lib/component/title')
 require('echarts/lib/component/toolbox')
 require('echarts/lib/component/tooltip')
-import {Bar3DChart} from 'echarts-gl/charts'
-import { Grid3DComponent } from 'echarts-gl/components';
-import { GridComponent,TooltipComponent} from 'echarts/components';
-import { VisualMapComponent,AxisPointerComponent,LegendComponent,TitleComponent,ToolboxComponent,DataZoomComponent,CalendarComponent,TimelineComponent } from 'echarts/components';
-echarts.use([TooltipComponent,GridComponent,ToolboxComponent,DataZoomComponent,TimelineComponent,Grid3DComponent,VisualMapComponent,AxisPointerComponent,LegendComponent,CalendarComponent,TitleComponent,Bar3DChart]);
-
+import { GridComponent } from 'echarts/components'
+echarts.use([GridComponent])
+import { LegendComponent } from 'echarts/components';
+echarts.use([LegendComponent]);
+import { CalendarComponent } from 'echarts/components';
+echarts.use([CalendarComponent]);
+import { EffectScatterChart } from 'echarts/charts';
+echarts.use([EffectScatterChart]);
+import { TimelineComponent } from 'echarts/components';
+echarts.use([TimelineComponent]);
 export default {
-  name: "errorBar",
-  data(){
-    return{
-      errorBarDataArr:[],
-    }
-  },
+  name: "Route",
   methods: {
-    initErrorBarCharts() {
-      this.errorBarChart = echarts.init(this.$refs.errorbarchart, 'dark');
-      this.errorBarChart.setOption(state.errorBarOpition)
+    initRouteCharts() {
+      this.routeChart = echarts.init(this.$refs.routechart, 'dark');
+      this.routeChart.setOption(state.routeOpition)
       window.addEventListener("resize", () => {
-        this.errorBarChart.resize()
+        this.routeChart.resize()
       })
     },
     updateChart(data){
-      state.errorBarOpition.series[0].data = data
-      this.errorBarChart.setOption(state.errorBarOpition)
+      state.routeOpition.series[0].data = data
+      this.routeChart.setOption(state.routeOpition)
     }
 
   }
-
 }
 </script>
 

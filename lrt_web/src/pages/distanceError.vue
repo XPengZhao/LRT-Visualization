@@ -29,6 +29,7 @@
         <error-bar ref="errorBar"></error-bar>
       </div>
       <div class="row mt-2">
+        <Route ref="route"></Route>
       </div>
       <div class="row mt-2">
       </div>
@@ -50,17 +51,19 @@ import ErrorBar from "../components/errorBar";
 import stomp from "stompjs";
 import bootbox from "bootbox";
 import parse from "fast-json-parse";
+import Route from "@/components/Route";
 const cdf = require('cumulative-distribution-function');
 export default {
   name: "distanceError",
-  components: {ErrorBar, ConfidenceCdf, Cdf},
+  components: {Route, ErrorBar, ConfidenceCdf, Cdf},
   data(){
     return{
       backImg:require('@/assets/backArrow.png'),
       flowerimg:require('@/assets/flower.png'),
       isFullscreen: false,
       isUpdate:true,
-      errorBarData:[]
+      errorBarData:[],
+      groundTruth:[],
     }
   },
   computed: {
@@ -73,6 +76,7 @@ export default {
     this.$refs.confidenceCdf.initConfidenceCdfCharts()
     this.$refs.cdf.initCdfCharts()
     this.$refs.errorBar.initErrorBarCharts()
+    this.$refs.route.initRouteCharts()
     this.uploader_online()
   },
   methods:{
@@ -136,8 +140,9 @@ export default {
           state.confidence[localData.spectrum[0].confidence] = [that.errorNum]
         }
       if(that.errorNum<5){
-        that.errorBarData.push([Number(localData.truth[0])*10+50,Number(localData.truth[2])*10+50,that.errorNum])
+        that.errorBarData.push([Number(localData.truth[0]),Number(localData.truth[2]),that.errorNum])
       }
+      that.groundTruth.push([localData.truth[0],localData.truth[2]])
         if (localData.end) {
           that.hideDialog()
           that.subclient.unsubscribe()
@@ -159,6 +164,7 @@ export default {
       }
       this.$refs.confidenceCdf.updateCharts(ccdf)
       this.$refs.errorBar.updateChart(this.errorBarData)
+      this.$refs.route.updateChart(this.groundTruth)
     },
     },
 

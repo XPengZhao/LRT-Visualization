@@ -49,7 +49,7 @@ name: "RSS",
       // state.rssOpition.animation=false
       if(state.rss[state.gatewayChoose]) {
         for (let i = 0; i < 16; i++) {
-          state.rssOpition.series[i].data = [state.rss[state.gatewayChoose][i]]
+          state.rssOpition.series[i].data = [state.rss[state.gatewayChoose][i][-1]]
         }
         this.RSSChart.setOption(state.rssOpition,true, 10)
       }

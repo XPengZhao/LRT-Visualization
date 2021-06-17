@@ -1354,6 +1354,19 @@ export const state = reactive({
             }
         }]
     },
+    routeOpition:{
+        title: {
+            text: 'Ground Truth',
+            textStyle:{color:"#fff"},
+            left: "center"
+        },
+        xAxis: {},
+        yAxis: {},
+        series: [{
+            data: [],
+            type: 'line'
+        }]
+    },
     rss:{},
     phase:{},
     rssLine:{},
