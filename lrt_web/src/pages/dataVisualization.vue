@@ -38,6 +38,12 @@
   </nav>
   <div class="mainBox row mt-3">
     <div class="col-6 mt-2">
+      <div class="row">
+        <div style="color: white"><h2>Error: {{errorNum}}</h2></div>
+        <div style="color: white"><h2>R1: 1</h2></div>
+        <div style="color: white"><h2>R2: {{errorNum}}</h2></div>
+      </div>
+
       <Localization ref="localization"></Localization>
     </div>
     <div class="col-4">
@@ -54,7 +60,7 @@
     <div class="col-2 ">
       <Panel ref="panel" id = "panel"></Panel>
       <RSS class="mt-2" ref="rss"></RSS>
-      <div style="color: white"><h2>{{errorNum}}</h2></div>
+
     </div>
 
   </div>
@@ -225,26 +231,26 @@ name: "DrawPictrue",
       if (word) {
         let localData = parse(word).value
         // console.log(localData)
-        if (localData.xServer) {
-          that.receiveNum++
-          that.errorNum = that.distanceCompute(localData.truth[0],localData.position[0],localData.truth[2],localData.position[2])
-          state.error.push(that.errorNum)
-          if(state.error.length>1000){
-            state.error.shift()
-          }
-          let dayTime = localData.phyTime.split(' ')
-          state.dayTime.push(dayTime)
-          if(state.dayTime.length>1000){
-            state.dayTime.shift()
-          }
+        // if (localData.xServer) {
+        //   that.receiveNum++
+        //   that.errorNum = that.distanceCompute(localData.truth[0],localData.position[0],localData.truth[2],localData.position[2])
+        //   state.error.push(that.errorNum)
+        //   if(state.error.length>1000){
+        //     state.error.shift()
+        //   }
+        //   let dayTime = localData.phyTime.split(' ')
+        //   state.dayTime.push(dayTime)
+        //   if(state.dayTime.length>1000){
+        //     state.dayTime.shift()
+        //   }
               // console.log(localData)
           if (sessionStorage.getItem('record') === '1') {
             that.recordMessageSend(localData)
           }
           for (let key in localData.xServer.gateways) {
-            if(!state.atnpos[key]){
-              state.atnpos[key]=localData.xServer.gateways[key].position[0]
-            }
+            // if(!state.atnpos[key]){
+            //   state.atnpos[key]=localData.xServer.gateways[key].position[0]
+            // }
             state.rss[key] = localData.xServer.gateways[key].rss
             // state.aoa[key] = localData.xServer.gateways[key].aoa[0]
             if (key in state.phase) {

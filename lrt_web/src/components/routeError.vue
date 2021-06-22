@@ -36,6 +36,21 @@ export default {
       })
     },
     updateChart(){
+      for(let key in state.groundTruth){
+        state.routeErrorOpition.series.push({
+          name:key,
+          type: 'scatter',
+          data: [state.groundTruth[key]],
+          symbol: state.atnPic,
+          itemStyle: {
+            color: 'white'
+          },
+          symbolSize: [15,15],
+          showAllSymbol: true,
+        })
+      }
+      state.routeErrorOpition.series[1].data = state.roundp
+      state.routeErrorOpition.series[2].data = state.roundr1
       state.routeErrorOpition.series[0].data = state.truthError
       this.routeErrorChart.setOption(state.routeErrorOpition,10)
     }

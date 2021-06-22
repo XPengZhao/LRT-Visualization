@@ -40,17 +40,15 @@ function locate(gt) {
 
 function comp8p(x,y,r,truthMinX,truthMinY) {
     let roundp = []
-    for(let i = x-r;i<x+r;i++){
-        let yi = parseInt((Math.sqrt(Math.pow(r,2)-Math.pow((i-x),2))+y).toFixed(2))
-        roundp.push([i,yi])
+    for(let i = 0;i<360;i++){
+        let hudu = 2*Math.PI/360*i
+        let x1 = x + Math.sin(hudu)*r
+        let y1 = y - Math.cos(hudu)*r
+        roundp.push([x1,y1])
     }
-    let roundp1 = roundp.map(function (num) {
+    roundp = roundp.map(function (num) {
         return[num[0]+Math.abs(truthMinX),num[1]+Math.abs(truthMinY)]
     })
-    let roundp2 = roundp1.map(function (num) {
-        return[num[0],y-(num[1]-Math.abs(truthMinY)-y)+Math.abs(truthMinY)]
-    })
-    roundp =roundp1.concat(roundp2.reverse())
     return roundp
 
 }

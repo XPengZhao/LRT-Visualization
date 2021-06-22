@@ -25,8 +25,6 @@ import { EffectScatterChart } from 'echarts/charts';
 echarts.use([EffectScatterChart]);
 import { TimelineComponent } from 'echarts/components';
 echarts.use([TimelineComponent]);
-import { PieChart } from 'echarts/charts';
-echarts.use([PieChart]);
 export default {
   name: "Route",
   methods: {

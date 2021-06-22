@@ -11,6 +11,7 @@ require('echarts/lib/chart/scatter')
 require('echarts/lib/component/title')
 require('echarts/lib/component/toolbox')
 require('echarts/lib/component/tooltip')
+require('echarts/lib/component/dataZoomInside')
 import { state } from '@/store/state'
 import { GridComponent } from 'echarts/components'
 echarts.use([GridComponent])
@@ -32,7 +33,11 @@ name: "Localization",
     pos:[],
     tagList: [],
     pic:state.atnPic,
-    star:state.starImg
+    star:state.starImg,
+    atnR:state.atnR,
+    atnRound:[],
+    oneMeterRound:[],
+    atnPos:{},
   }
   },
   methods:{
@@ -45,12 +50,49 @@ name: "Localization",
       this.LocalizationChart.on('click',function (params){
         state.gatewayChoose = params.seriesName
       })
+      if(!this.oneMeterRound){
+        this.oneMeterRound=this.comp8p(1)
+      }
     },
     antColor(key){
       return key === state.gatewayChoose?"red":"white"
     },
-    upDateLocalization(data,tag,truth,xRange,yRange){
-      let posData = []
+    comp8p(r) {
+      let roundp = []
+      for(let i = 0;i<360;i++){
+        let hudu = 2*Math.PI/360*i
+        let x1 = Math.sin(hudu)*r
+        let y1 = 0 - Math.cos(hudu)*r
+        roundp.push([x1,y1])
+        if(hudu===0){
+          this.atnPos['gateway1'] = [x1,y1]
+        }
+        if(hudu===120){
+          this.atnPos['gateway2'] = [x1,y1]
+        }
+        if(hudu===240){
+          this.atnPos['gateway3'] = [x1,y1]
+        }
+      }
+      return roundp
+    },
+    upDateLocalization(data,tag,truth){
+      if(!this.atnRound){
+        this.atnRound=this.comp8p(state.atnR)
+      }
+      let posData = [{
+        type: 'line',
+        symbol:'none',
+        symbolSize:0,
+        data: this.oneMeterRound,
+        smooth:true,
+      },{
+        type: 'line',
+        symbol:'none',
+        symbolSize:0,
+        data: this.atnRound,
+        smooth:true,
+      }]
       if(tag in this.tagList){
         this.pos[tag].push(data)
       }else{
@@ -74,11 +116,11 @@ name: "Localization",
           symbolSize:30,
         })
       }
-      for(let key in state.atnpos){
+      for(let key in this.atnPos){
         posData.push({
           name:key,
           type: 'scatter',
-          data: [[state.atnpos[key][0],state.atnpos[key][2]]],
+          data: [[this.atnPos[key][0],this.atnPos[key][2]]],
           symbol: this.pic,
           itemStyle:{
             color: this.antColor(key)
@@ -99,12 +141,12 @@ name: "Localization",
         showAllSymbol:true,
       })
       state.localOpition.series=posData
-      if(state.localOpition.xAxis.min !== xRange[0]*2){
-        state.localOpition.xAxis.min = xRange[0]*2
-        state.localOpition.xAxis.max = xRange[1]*2
-        state.localOpition.yAxis.min = yRange[0]*2
-        state.localOpition.yAxis.max = yRange[1]*2
-      }
+      // if(state.localOpition.xAxis.min !== xRange[0]*2){
+      //   state.localOpition.xAxis.min = xRange[0]*2
+      //   state.localOpition.xAxis.max = xRange[1]*2
+      //   state.localOpition.yAxis.min = yRange[0]*2
+      //   state.localOpition.yAxis.max = yRange[1]*2
+      // }
 
       state.localOpition.legend.data = this.tagList
       this.LocalizationChart.setOption(state.localOpition,true,10)
