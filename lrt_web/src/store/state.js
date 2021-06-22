@@ -55,9 +55,11 @@ export const state = reactive({
             scale: true,
             inverse:true,
 
+
         },
         yAxis: {
             scale: true,
+
         },
         series: [
 

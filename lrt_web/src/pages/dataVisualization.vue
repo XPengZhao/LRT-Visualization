@@ -39,14 +39,18 @@
   <div class="mainBox row mt-3">
     <div class="col-6 mt-2">
       <div class="row">
+        <span class="ml-3"></span>
         <div style="color: white"><h2>Error: {{errorNum}}</h2></div>
+        <span class="ml-3"></span>
         <div style="color: white"><h2>R1: 1</h2></div>
+        <span class="ml-3"></span>
         <div style="color: white"><h2>R2: 5</h2></div>
       </div>
 
       <Localization ref="localization"></Localization>
     </div>
     <div class="col-4">
+      <div class="mt-2"><h2><span><br></span></h2></div>
       <div class="row mt-2">
         <Phase ref="phase"></Phase>
       </div>
@@ -58,6 +62,7 @@
       </div>
     </div>
     <div class="col-2 ">
+      <div class="mt-2"><h2><span><br></span></h2></div>
       <Panel ref="panel" id = "panel"></Panel>
       <RSS class="mt-2" ref="rss"></RSS>
 
@@ -228,22 +233,23 @@ name: "DrawPictrue",
       let rssLine = that.$refs.rssline
       // let radar = this.$refs.radar
       let word = data.body
+      console.log(data.body)
       if (word) {
         let localData = parse(word).value
         // console.log(localData)
         if (localData.xServer) {
         //   that.receiveNum++
-        //   that.errorNum = that.distanceCompute(localData.truth[0],localData.position[0],localData.truth[2],localData.position[2])
-        //   state.error.push(that.errorNum)
-        //   if(state.error.length>1000){
-        //     state.error.shift()
-        //   }
+          that.errorNum = that.distanceCompute(localData.truth[0],localData.position[0],localData.truth[2],localData.position[2])
+          state.error.push(that.errorNum)
+          if(state.error.length>1000){
+            state.error.shift()
+          }
         //   let dayTime = localData.phyTime.split(' ')
         //   state.dayTime.push(dayTime)
         //   if(state.dayTime.length>1000){
         //     state.dayTime.shift()
         //   }
-              // console.log(localData)
+
           if (sessionStorage.getItem('record') === '1') {
             that.recordMessageSend(localData)
           }

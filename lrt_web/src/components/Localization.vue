@@ -51,9 +51,9 @@ name: "Localization",
       this.LocalizationChart.on('click',function (params){
         state.gatewayChoose = params.seriesName
       })
-      if(!this.oneMeterRound){
-        this.oneMeterRound=this.comp8p(1)
-      }
+
+      this.oneMeterRound=this.comp8p(1)
+      this.atnRound=this.comp8p(5)
     },
     antColor(key){
       return key === state.gatewayChoose?"red":"white"
@@ -65,23 +65,19 @@ name: "Localization",
         let x1 = Math.sin(hudu)*r
         let y1 = 0 - Math.cos(hudu)*r
         roundp.push([x1,y1])
-        if(hudu===0){
+        if(i===0){
           this.atnPos['gateway1'] = [x1,y1]
         }
-        if(hudu===120){
+        if(i===120){
           this.atnPos['gateway2'] = [x1,y1]
         }
-        if(hudu===240){
+        if(i===240){
           this.atnPos['gateway3'] = [x1,y1]
         }
       }
       return roundp
     },
     upDateLocalization(data,tag,truth){
-
-      if(!this.atnRound){
-        this.atnRound=this.comp8p(state.atnR)
-      }
       let posData = [{
         type: 'line',
         symbol:'none',
@@ -122,7 +118,7 @@ name: "Localization",
         posData.push({
           name:key,
           type: 'scatter',
-          data: [[this.atnPos[key][0],this.atnPos[key][2]]],
+          data: [this.atnPos[key]],
           symbol: this.pic,
           itemStyle:{
             color: this.antColor(key)
