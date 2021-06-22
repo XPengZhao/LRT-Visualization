@@ -231,7 +231,7 @@ name: "DrawPictrue",
       if (word) {
         let localData = parse(word).value
         // console.log(localData)
-        // if (localData.xServer) {
+        if (localData.xServer) {
         //   that.receiveNum++
         //   that.errorNum = that.distanceCompute(localData.truth[0],localData.position[0],localData.truth[2],localData.position[2])
         //   state.error.push(that.errorNum)
