@@ -6,17 +6,23 @@
 </template>
 
 <script>
-let echarts = require("echarts/lib/echarts");
 import {state} from "@/store/state";
+let echarts = require("echarts/lib/echarts");
 require('echarts/lib/chart/scatter')
 require('echarts/lib/component/title')
 require('echarts/lib/component/toolbox')
 require('echarts/lib/component/tooltip')
-import {Bar3DChart} from 'echarts-gl/charts'
-import { Grid3DComponent } from 'echarts-gl/components';
-import { GridComponent,TooltipComponent} from 'echarts/components';
-import { VisualMapComponent,AxisPointerComponent,LegendComponent,TitleComponent,ToolboxComponent,DataZoomComponent,CalendarComponent,TimelineComponent } from 'echarts/components';
-echarts.use([TooltipComponent,GridComponent,ToolboxComponent,DataZoomComponent,TimelineComponent,Grid3DComponent,VisualMapComponent,AxisPointerComponent,LegendComponent,CalendarComponent,TitleComponent,Bar3DChart]);
+require('echarts/lib/component/dataZoom')
+import { GridComponent } from 'echarts/components'
+echarts.use([GridComponent])
+import { LegendComponent } from 'echarts/components';
+echarts.use([LegendComponent]);
+import { CalendarComponent } from 'echarts/components';
+echarts.use([CalendarComponent]);
+import { EffectScatterChart } from 'echarts/charts';
+echarts.use([EffectScatterChart]);
+import { TimelineComponent } from 'echarts/components';
+echarts.use([TimelineComponent]);
 
 export default {
   name: "errorBar",
@@ -33,8 +39,9 @@ export default {
         this.errorBarChart.resize()
       })
     },
-    updateChart(data){
-      state.errorBarOpition.series[0].data = data
+    updateChart(){
+      console.log(state.truthArray)
+      state.errorBarOpition.series[0].data = state.truthArray
       this.errorBarChart.setOption(state.errorBarOpition)
     }
 
@@ -48,7 +55,7 @@ export default {
   position: relative;
   min-height: 250px;
   height: auto !important;
-  aspect-ratio:1.5/1;
+  aspect-ratio:1/1;
   width: 100%;
   border: 1px solid #999999;
   background-color: rgba(153,153,153,0.17);

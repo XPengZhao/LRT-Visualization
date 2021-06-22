@@ -48,8 +48,9 @@ name: "RSS",
     upDateRSS(){
       // state.rssOpition.animation=false
       if(state.rss[state.gatewayChoose]) {
+        let len = state.rss[state.gatewayChoose].length-1
         for (let i = 0; i < 16; i++) {
-          state.rssOpition.series[i].data = [state.rss[state.gatewayChoose][i][-1]]
+          state.rssOpition.series[i].data = [state.rss[state.gatewayChoose][len][i]]
         }
         this.RSSChart.setOption(state.rssOpition,true, 10)
       }

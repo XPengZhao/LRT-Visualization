@@ -6,12 +6,15 @@
 </template>
 
 <script>
+import {state} from "../store/state";
 let echarts = require("echarts/lib/echarts");
-import { state } from '@/store/state'
+require("echarts/lib/chart/heatmap")
+require('echarts/lib/chart/scatter')
 require('echarts/lib/chart/line')
 require('echarts/lib/component/title')
 require('echarts/lib/component/toolbox')
 require('echarts/lib/component/tooltip')
+require('echarts/lib/component/visualMap')
 import { GridComponent } from 'echarts/components'
 echarts.use([GridComponent])
 import { LegendComponent } from 'echarts/components';
@@ -22,6 +25,8 @@ import { EffectScatterChart } from 'echarts/charts';
 echarts.use([EffectScatterChart]);
 import { TimelineComponent } from 'echarts/components';
 echarts.use([TimelineComponent]);
+import { PieChart } from 'echarts/charts';
+echarts.use([PieChart]);
 export default {
   name: "Route",
   methods: {
@@ -32,9 +37,24 @@ export default {
         this.routeChart.resize()
       })
     },
-    updateChart(data){
-      state.routeOpition.series[0].data = data
-      this.routeChart.setOption(state.routeOpition)
+    updateChart(){
+      for(let key in state.groundTruth){
+        state.routeOpition.series.push({
+          name:key,
+          type: 'scatter',
+          data: [state.groundTruth[key]],
+          symbol: state.atnPic,
+          itemStyle: {
+            color: 'white'
+          },
+          symbolSize: [15,15],
+          showAllSymbol: true,
+        })
+      }
+      state.routeOpition.series[1].data = state.roundp
+      state.routeOpition.series[2].data = state.roundr1
+      state.routeOpition.series[0].data = state.truthConfidence
+      this.routeChart.setOption(state.routeOpition,10)
     }
 
   }
@@ -46,7 +66,7 @@ export default {
   position: relative;
   min-height: 250px;
   height: auto !important;
-  aspect-ratio:1.5/1;
+  aspect-ratio:1/1;
   width: 100%;
   border: 1px solid #999999;
   background-color: rgba(153,153,153,0.17);

@@ -38,4 +38,11 @@ Content-Type: application/json
 #############
 GET http://admin:admin@158.132.255.178:15672/api/exchanges
 Content-Type: application/json
+######
+######
+POST http://localhost:3000/lrt/analysis
+Content-Type: application/json
 
+{
+"table": "2021/6/8 19:55:54"
+}

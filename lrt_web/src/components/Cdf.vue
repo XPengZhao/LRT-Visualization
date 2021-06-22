@@ -15,6 +15,7 @@ require('echarts/lib/component/title')
 require('echarts/lib/component/toolbox')
 require('echarts/lib/component/tooltip')
 require('echarts/lib/component/visualMap')
+require('echarts/lib/component/dataZoom')
 import { GridComponent } from 'echarts/components'
 echarts.use([GridComponent])
 import { LegendComponent } from 'echarts/components';
@@ -41,13 +42,20 @@ export default {
       })
     },
     updateChart(cdf){
-      let xData = [0,1,2,3,4,5,6,7,8,9,10]
-      let yData = []
-      for(let i in xData){
-        yData.push(cdf(Number(i)))
-      }
-      state.cdfOpition.xAxis.data = xData
-      state.cdfOpition.series[0].data = yData
+      let xData = cdf.xs()
+      let yData = cdf.ps()
+      let posData = yData.map(function (num,index){
+        return [xData[index],num]
+      })
+      state.cdfOpition.series[0].data = posData
+        state.cdfOpition.series.push({
+          type: 'scatter',
+          symbolSize:20,
+          data: [posData[state.cdfIndex[0]]]
+        })
+
+
+
       this.cdfChart.setOption(state.cdfOpition)
     }
   }

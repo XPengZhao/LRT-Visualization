@@ -17,8 +17,8 @@
                     :width="1000"
                     :lazy="true"
                     @change="replayUpdate"
-                    :min-range="20"
-                    :max-range="200"
+                    :min-range="10"
+                    :max-range="replayDataLength"
                     :max = "replayDataLength"
                     :tooltip = "'always'"
                     :tooltip-placement="'bottom'"
@@ -168,7 +168,6 @@ name: "DrawPictrue",
       sessionStorage.setItem('record',0)
       sessionStorage.setItem('createTable',0)
       $('#createTable').hide()
-      $('#stopButton').prop('disabled',true)
       $('#recordButton').prop('disabled',true)
 
     },
@@ -269,13 +268,17 @@ name: "DrawPictrue",
           let x = localData.position[0]
           let y = localData.position[2]
           local.upDateLocalization([x, y], localData.tagId, localData.truth, localData.spectrum.xRange, localData.spectrum.zRange)
-          let spectrumList =[]
-          for(let i =0;i<100;i++){
-            for(let j=0;j<100;j++){
-              spectrumList.push([i,j,localData.spectrum.data[i][j]])
+
+          if(localData.spectrum.data){
+            let spectrumList =[]
+            for(let i =0;i<100;i++){
+              for(let j=0;j<100;j++){
+                spectrumList.push([i,j,localData.spectrum.data[i][j]])
+              }
             }
+            spectrum.upDateSpectrum(spectrumList)
           }
-          spectrum.upDateSpectrum(spectrumList)
+
           rss.upDateRSS()
     }
 
@@ -283,8 +286,6 @@ name: "DrawPictrue",
         }
     },
     uploader_online(){
-      $('#stopButton').prop('disabled',false)
-      $('#onlineButton').addClass('disabled')
       $('#recordButton').prop('disabled',false)
       const ws = new WebSocket(localStorage.getItem("MQUrl"))
       this.client = stomp.over(ws)
@@ -306,7 +307,7 @@ name: "DrawPictrue",
     onreplay: function () {
     $("#panel").hide()
       $("#spectrum").hide()
-      $("#timeSlider").hide()
+      // $("#timeSlider").hide()
       state.rsslineOpition.legend.selectedMode = true
       state.phaseOpition.legend.selectedMode = true
       const that = this
@@ -360,17 +361,21 @@ name: "DrawPictrue",
         rssLine.upDateRSSline()
         let x = localData.position[0]
         let y = localData.position[2]
-        local.upDateLocalization([x, y], localData.tagId, localData.truth, localData.spectrum.xRange, localData.spectrum.zRange)
+        local.upDateLocalization([x, y], localData.tagId, localData.truth, localData.spectrum[0].xRange, localData.spectrum[0].zRange)
+        // console.log(state.rss)
         rss.upDateRSS()
         if (localData.end) {
           that.subclient.unsubscribe()
           // that.hideDialog()
           that.replayUpdate()
-          $("#timeSlider").show()
+         // that.showTimeslider()
         }
 
       })
 
+    },
+    showTimeslider(){
+      $("#timeSlider").show()
     },
     replayUpdate(){
       this.$refs.phase.replayChart(this.indexValue)

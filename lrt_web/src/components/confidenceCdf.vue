@@ -15,6 +15,7 @@ require('echarts/lib/component/title')
 require('echarts/lib/component/toolbox')
 require('echarts/lib/component/tooltip')
 require('echarts/lib/component/visualMap')
+require('echarts/lib/component/dataZoom')
 import { GridComponent } from 'echarts/components'
 echarts.use([GridComponent])
 import { LegendComponent } from 'echarts/components';
@@ -43,19 +44,24 @@ export default {
       })
     },
     updateCharts(cdf){
-      let xData = [0,1,2,3,4,5,6,7,8,9,10]
-      state.confidenceCdfOpition.xAxis.data = xData
       for(let key in cdf){
-        let yData = []
-        for(let i in xData){
-          yData.push(cdf[key](Number(i)))
-        }
+        let yData = cdf[key].ps()
+        let xData = cdf[key].xs()
+        let posData = yData.map(function (num,index){
+          return [xData[index],num]
+        })
         state.confidenceCdfOpition.series.push({
               name: "Confidence "+key,
-              data: yData,
+              data: posData,
               type: 'line',
             smooth: true
         })
+        state.confidenceCdfOpition.series.push({
+          type: 'scatter',
+          symbolSize:20,
+          data: [posData[state.ccdfIndex[key][0]]]
+        })
+
         state.confidenceCdfOpition.legend.data.push('Confidence '+key)
       }
       this.confidenceCdfChart.setOption(state.confidenceCdfOpition,true,100)

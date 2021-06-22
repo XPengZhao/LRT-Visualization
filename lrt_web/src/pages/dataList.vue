@@ -167,12 +167,38 @@ export default {
 
     })
     const analysis=(async (e)=>{
-      goAnalysis()
-      state.queue='replay'
-     await axios.post(BackendUrl+'/replay',{
-        table:e
-      })
 
+     await axios.post(BackendUrl+'/analysis',{
+        table:e
+      }).then(function (res) {
+        state.error = res.data.error
+       state.confidence = res.data.confidence
+       state.truthError = res.data.truthError
+       state.truthConfidence = res.data.truthConfidence
+       state.cdfIndex = res.data.index
+       state.ccdfIndex = res.data.ccdfIndex
+       // console.log(state.ccdfIndex)
+       // console.log(state.confidence)
+       state.routeOpition.xAxis.data = errorBarData(res.data.truthMinX,res.data.truthMaxX)
+       state.routeOpition.yAxis.data = errorBarData(res.data.truthMinY,res.data.truthMaxY)
+       state.routeErrorOpition.xAxis.data = errorBarData(res.data.truthMinX,res.data.truthMaxX)
+       state.routeErrorOpition.yAxis.data = errorBarData(res.data.truthMinY,res.data.truthMaxY)
+
+       state.truthArray = res.data.truthArray
+       state.groundTruth = res.data.groundTruth
+       state.round = res.data.round
+       state.roundp = res.data.roundp
+       state.roundr1 = res.data.roundr1
+       goAnalysis()
+     })
+
+    })
+    const errorBarData=((min,max)=>{
+      let arr = []
+      for(let i=min-10;i<max+10;i++){
+        arr.push(i)
+      }
+      return arr
     })
     const callUpImg=(()=>{
       $('#describeImgArea').click()
@@ -211,7 +237,7 @@ export default {
       })
     })
     return{
-      create,getTable,deleteTable,updateTable,toHome,callUpImg,uploadImg,sendTable,closeImg,closeDiv,replay,goDraw,BackendUrl,goAnalysis,analysis
+      create,getTable,deleteTable,updateTable,toHome,callUpImg,uploadImg,sendTable,closeImg,closeDiv,replay,goDraw,BackendUrl,goAnalysis,analysis,errorBarData
     }
   },
 

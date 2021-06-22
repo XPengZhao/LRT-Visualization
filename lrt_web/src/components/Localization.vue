@@ -46,6 +46,9 @@ name: "Localization",
         state.gatewayChoose = params.seriesName
       })
     },
+    antColor(key){
+      return key === state.gatewayChoose?"red":"white"
+    },
     upDateLocalization(data,tag,truth,xRange,yRange){
       let posData = []
       if(tag in this.tagList){
@@ -78,7 +81,7 @@ name: "Localization",
           data: [[state.atnpos[key][0],state.atnpos[key][2]]],
           symbol: this.pic,
           itemStyle:{
-            color: 'white'
+            color: this.antColor(key)
           },
           symbolSize:[35,50],
           showAllSymbol:true,
@@ -140,7 +143,7 @@ name: "Localization",
           itemStyle: {
             color: 'white'
           },
-          symbolSize: [35, 50],
+          symbolSize: [15, 30],
           showAllSymbol: true,
         })
       }
