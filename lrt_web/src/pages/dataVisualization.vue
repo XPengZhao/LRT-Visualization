@@ -41,7 +41,7 @@
       <div class="row">
         <div style="color: white"><h2>Error: {{errorNum}}</h2></div>
         <div style="color: white"><h2>R1: 1</h2></div>
-        <div style="color: white"><h2>R2: {{errorNum}}</h2></div>
+        <div style="color: white"><h2>R2: 5</h2></div>
       </div>
 
       <Localization ref="localization"></Localization>
@@ -220,7 +220,7 @@ name: "DrawPictrue",
       })
     },
     realTimeProcessing(data) {
-      const that = this
+          const that = this
       let rss =that.$refs.rss
       let local = that.$refs.localization
       let phase = that.$refs.phase
@@ -273,7 +273,7 @@ name: "DrawPictrue",
           // radar.upDateRadar()
           let x = localData.position[0]
           let y = localData.position[2]
-          local.upDateLocalization([x, y], localData.tagId, localData.truth, localData.spectrum.xRange, localData.spectrum.zRange)
+          local.upDateLocalization([x, y], localData.tagId, localData.truth)
 
           if(localData.spectrum.data){
             let spectrumList =[]

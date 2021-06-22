@@ -34,10 +34,11 @@ name: "Localization",
     tagList: [],
     pic:state.atnPic,
     star:state.starImg,
-    atnR:state.atnR,
+    atnR:5,
     atnRound:[],
     oneMeterRound:[],
     atnPos:{},
+
   }
   },
   methods:{
@@ -77,6 +78,7 @@ name: "Localization",
       return roundp
     },
     upDateLocalization(data,tag,truth){
+
       if(!this.atnRound){
         this.atnRound=this.comp8p(state.atnR)
       }
