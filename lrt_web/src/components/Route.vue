@@ -1,5 +1,5 @@
 <template>
-  <div class="panels mr-3">
+  <div class="panels">
     <div style="width:100%;height:100%" ref="routechart"></div>
     <div class="panels-foot"></div>
   </div>
@@ -68,6 +68,7 @@ export default {
   width: 100%;
   border: 1px solid #999999;
   background-color: rgba(153,153,153,0.17);
+  z-index: 999;
 }
 .panels::before{
   position: absolute;

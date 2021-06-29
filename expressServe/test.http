@@ -31,7 +31,7 @@ POST http://localhost:3000/lrt/replay
 Content-Type: application/json
 
 {
-  "table": "2021/6/8 19:55:54"
+  "table": "6/17/2021, 15:04:58"
 }
 
 #############

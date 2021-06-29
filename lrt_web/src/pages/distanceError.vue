@@ -20,14 +20,21 @@
       </button>
     </nav>
   <div class="mainBox">
-    <div class="row">
-      <Route  class="col-3" ref="route"></Route>
-      <routeError class="col-3" ref="routeError"></routeError>
-      <error-bar class="col-3" ref="errorBar"></error-bar>
+    <div class="row mt-2" style="width: 100%;  margin:0 auto;">
+      <span style="width: 2.5%"></span>
+      <Route  style="width: 30%" ref="route"></Route>
+      <span style="width: 2.5%"></span>
+      <routeError style="width: 30%" ref="routeError"></routeError>
+      <span style="width: 2.5%"></span>
+      <error-bar style="width: 30%" ref="errorBar"></error-bar>
+      <span style="width: 2.5%"></span>
     </div>
-    <div class="row">
-      <Cdf class="col-5" ref="cdf"></Cdf>
-      <ConfidenceCdf class="col-5" ref="confidenceCdf"></ConfidenceCdf>
+    <div class="row mt-2" style="width: 100%;  margin:0 auto;">
+      <span style="width: 2.5%;z-index: -50"></span>
+      <Cdf style="width: 45.8%" ref="cdf"></Cdf>
+      <span style="width: 2.7%"></span>
+      <ConfidenceCdf style="width: 45.8%" ref="confidenceCdf"></ConfidenceCdf>
+      <span style="width: 2.5%"></span>
     </div>
   </div>
 </template>
@@ -39,7 +46,7 @@ import screenfull from "screenfull";
 import ConfidenceCdf from "../components/confidenceCdf";
 import Cdf from "../components/Cdf"
 import {state} from "../store/state";
-import ErrorBar from "../components/errorBar";
+import ErrorBar from "../components/confidenceBar";
 import Route from "@/components/Route";
 import routeError from "../components/routeError";
 const cdf = require('cumulative-distribution-function');
@@ -88,8 +95,22 @@ export default {
       })
     },
     toShow(){
+      state.atnPos={}
+      state.atnR=0
+      state.error=[]
+      state.confidence={}
+      state.truthError=[]
+      state.truthConfidence=[]
+      state.cdfIndex=[]
+      state.ccdfIndex=[]
+      state.truthArray=[]
+      state.groundTruth={}
+      state.round={}
+      state.roundp=[]
+      state.oneMeterRound=[]
+      state.atnRound=[]
       router.push({
-        name: 'Show'
+        name: 'dataList'
       })
     },
     updateChart(){

@@ -67,7 +67,7 @@ export default {
   position: relative;
   min-height: 250px;
   height: auto !important;
-  aspect-ratio:1.5/1;
+  aspect-ratio:2/0.8;
   width: 100%;
   border: 1px solid #999999;
   background-color: rgba(153,153,153,0.17);

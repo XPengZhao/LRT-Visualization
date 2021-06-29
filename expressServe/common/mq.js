@@ -12,7 +12,7 @@ class RabbitMQ{
                     throw error1;
                 }
 
-                var queue = 'replay';
+                var queue = 'oss.url_test';
 
                 channel.assertQueue(queue, {durable:true});
                 for(let i = 0;i<data.length;i++){
@@ -22,8 +22,8 @@ class RabbitMQ{
                             logTime:data[i].logTime,
                             phyTime:data[i].phyTime,
                             savedTime:data[i].savedTime,
-                            position: data[i].position,
-                            truth:data[i].truth,
+                            position: [data[i].position[0]*100,data[i].position[2]*100,data[i].position[1]*100],
+                            truth:[data[i].truth[0]*100,data[i].truth[2]*100,data[i].truth[1]*100],
                             xServer: data[i].xServer,
                             spectrum:data[i].spectrum,
                             end: i===data.length-1

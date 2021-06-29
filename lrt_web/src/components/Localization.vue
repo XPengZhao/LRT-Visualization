@@ -52,43 +52,23 @@ name: "Localization",
         state.gatewayChoose = params.seriesName
       })
 
-      this.oneMeterRound=this.comp8p(1)
-      this.atnRound=this.comp8p(5)
     },
     antColor(key){
       return key === state.gatewayChoose?"red":"white"
     },
-    comp8p(r) {
-      let roundp = []
-      for(let i = 0;i<360;i++){
-        let hudu = 2*Math.PI/360*i
-        let x1 = Math.sin(hudu)*r
-        let y1 = 0 - Math.cos(hudu)*r
-        roundp.push([x1,y1])
-        if(i===0){
-          this.atnPos['gateway1'] = [x1,y1]
-        }
-        if(i===120){
-          this.atnPos['gateway2'] = [x1,y1]
-        }
-        if(i===240){
-          this.atnPos['gateway3'] = [x1,y1]
-        }
-      }
-      return roundp
-    },
+
     upDateLocalization(data,tag,truth){
       let posData = [{
         type: 'line',
         symbol:'none',
         symbolSize:0,
-        data: this.oneMeterRound,
+        data: state.oneMeterRound,
         smooth:true,
       },{
         type: 'line',
         symbol:'none',
         symbolSize:0,
-        data: this.atnRound,
+        data: state.atnRound,
         smooth:true,
       }]
       if(tag in this.tagList){
@@ -118,7 +98,7 @@ name: "Localization",
         posData.push({
           name:key,
           type: 'scatter',
-          data: [this.atnPos[key]],
+          data: [state.atnPos[key]],
           symbol: this.pic,
           itemStyle:{
             color: this.antColor(key)

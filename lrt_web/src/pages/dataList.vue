@@ -183,7 +183,6 @@ export default {
        state.routeOpition.yAxis.data = errorBarData(res.data.truthMinY,res.data.truthMaxY)
        state.routeErrorOpition.xAxis.data = errorBarData(res.data.truthMinX,res.data.truthMaxX)
        state.routeErrorOpition.yAxis.data = errorBarData(res.data.truthMinY,res.data.truthMaxY)
-
        state.truthArray = res.data.truthArray
        state.groundTruth = res.data.groundTruth
        state.round = res.data.round

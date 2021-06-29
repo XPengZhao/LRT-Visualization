@@ -1,27 +1,25 @@
 <template>
-  <div class="panels mr-3">
-    <div style="width:100%;height:100%" ref="errorbarchart"></div>
+  <div class="panels">
+    <div style="width:100%;height:100%" ref="confidenceBarchart"></div>
     <div class="panels-foot"></div>
   </div>
 </template>
 
 <script>
 import {state} from "@/store/state";
+import {BarChart, EffectScatterChart} from 'echarts/charts';
+import {CalendarComponent, GridComponent, LegendComponent, TimelineComponent} from 'echarts/components'
+
 let echarts = require("echarts/lib/echarts");
-require('echarts/lib/chart/scatter')
 require('echarts/lib/component/title')
 require('echarts/lib/component/toolbox')
 require('echarts/lib/component/tooltip')
 require('echarts/lib/component/dataZoom')
-import { GridComponent } from 'echarts/components'
+echarts.use([BarChart]);
 echarts.use([GridComponent])
-import { LegendComponent } from 'echarts/components';
 echarts.use([LegendComponent]);
-import { CalendarComponent } from 'echarts/components';
 echarts.use([CalendarComponent]);
-import { EffectScatterChart } from 'echarts/charts';
 echarts.use([EffectScatterChart]);
-import { TimelineComponent } from 'echarts/components';
 echarts.use([TimelineComponent]);
 
 export default {
@@ -33,16 +31,30 @@ export default {
   },
   methods: {
     initErrorBarCharts() {
-      this.errorBarChart = echarts.init(this.$refs.errorbarchart, 'dark');
-      this.errorBarChart.setOption(state.errorBarOpition)
+      this.confidenceBarChart = echarts.init(this.$refs.confidenceBarchart, 'dark');
+      this.confidenceBarChart.setOption(state.confidenceBarOpition)
       window.addEventListener("resize", () => {
-        this.errorBarChart.resize()
+        this.confidenceBarChart.resize()
       })
     },
+    compBar(){
+      let data = []
+      for (let key in state.confidence){
+        if(key!=='0'){
+          data.push(state.confidence[key].length)
+        }
+      }
+      return data
+    },
+    compLine(){
+      let data = this.compBar()
+      let wholeData = data[0]+data[1]+data[2]
+      return [parseInt((data[0]/wholeData)*100),parseInt((data[1]/wholeData)*100),parseInt((data[2]/wholeData)*100)]
+    },
     updateChart(){
-      console.log(state.truthArray)
-      state.errorBarOpition.series[0].data = state.truthArray
-      this.errorBarChart.setOption(state.errorBarOpition)
+      state.confidenceBarOpition.series[0].data = this.compBar()
+      state.confidenceBarOpition.series[1].data = this.compLine()
+      this.confidenceBarChart.setOption(state.confidenceBarOpition)
     }
 
   }

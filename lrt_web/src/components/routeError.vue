@@ -1,5 +1,5 @@
 <template>
-  <div class="panels mr-3">
+  <div class="panels">
     <div style="width:100%;height:100%" ref="routerrorchart"></div>
     <div class="panels-foot"></div>
   </div>
@@ -64,7 +64,7 @@ export default {
   min-height: 250px;
   height: auto !important;
   aspect-ratio:1/1;
-  width: 100%;
+  width: 80%;
   border: 1px solid #999999;
   background-color: rgba(153,153,153,0.17);
 }

@@ -26,10 +26,6 @@
                     id = "timeSlider"
 
         />
-<!--        <button type="button" id="stopButton" class="ml-3 btn" style="background-color: #04254E;color: white;min-width: 160px"  data-toggle="button" aria-pressed="false" @click="stopConnect()">-->
-<!--          <img :src="stopimg" style="height: 20px">-->
-<!--          Stop-->
-<!--        </button>-->
       </div>
     </div>
     <button type="button" id="fullButton" class="btn" style="background-color: #04254E;color: white;min-width: 20px;position: relative;right: 0"  data-toggle="button" aria-pressed="false" @click="changeScreen()">
@@ -47,7 +43,8 @@
         <div style="color: white"><h2>R2: 5</h2></div>
       </div>
 
-      <Localization ref="localization"></Localization>
+<!--      <Localization ref="localization"></Localization>-->
+      <Localization3D ref="local3D"></Localization3D>
     </div>
     <div class="col-4">
       <div class="mt-2"><h2><span><br></span></h2></div>
@@ -103,6 +100,7 @@ import {CalendarComponent, GridComponent, LegendComponent, TimelineComponent} fr
 import {CustomChart, EffectScatterChart} from 'echarts/charts';
 import axios from "axios";
 import Localization from "@/components/Localization";
+import Localization3D from "../components/Localization3D";
 import Phase from "@/components/Phase";
 import RSS from "@/components/Rss";
 import Spectrum from "@/components/Spectrum";
@@ -111,7 +109,6 @@ import RSSLine from "@/components/rssLine";
 import Radar from "@/components/Radar";
 import {router} from "@/router";
 import screenfull from 'screenfull';
-
 let echarts = require("echarts/lib/echarts");
 import  bootbox from 'bootbox'
 require("echarts/lib/chart/heatmap")
@@ -130,8 +127,8 @@ echarts.use([TimelineComponent]);
 
 
 export default {
-name: "DrawPictrue",
-  components: {Radar, RSSLine, Panel, Spectrum, RSS, Phase, Localization,VueSlider: window['vue-slider-component']},
+  name: "dataVisualization",
+  components: {Radar, RSSLine, Panel, Spectrum, RSS, Phase, Localization, Localization3D,VueSlider: window['vue-slider-component']},
   data(){
     return{
       recordimg:require('@/assets/recordWhite.png'),
@@ -153,9 +150,6 @@ name: "DrawPictrue",
     windowSizeImg(){
       return this.isFullscreen?require('@/assets/window.png'):require('@/assets/fullScreen.png')
     },
-    // timeArrayLength(){
-    //   return
-    // }
   },
   mounted () {
     this.init()
@@ -166,11 +160,10 @@ name: "DrawPictrue",
   this.replayDataLength=state.replayLength
   },
   methods:{
-  test(){
-    console.log(this.indexValue)
-  },
+
     init(){
-      this.$refs.localization.initLocalizationCharts()
+      // this.$refs.localization.initLocalizationCharts()
+      this.$refs.local3D.initLocalizationCharts()
       this.$refs.phase.initPhaseCharts()
       this.$refs.rss.initRSSCharts()
       this.$refs.spectrum.initSpectrumCharts()
@@ -180,7 +173,29 @@ name: "DrawPictrue",
       sessionStorage.setItem('createTable',0)
       $('#createTable').hide()
       $('#recordButton').prop('disabled',true)
-
+      state.oneMeterRound = this.comp8p(1)
+      state.atnRound = this.comp8p(5)
+    },
+    comp8p(r) {
+      let roundp = []
+      for(let i = 0;i<360;i++){
+        let hudu = 2*Math.PI/360*i
+        let x1 = Math.sin(hudu)*r
+        let y1 = 0 - Math.cos(hudu)*r
+        roundp.push([x1,y1])
+        if(r!==1){
+          if(i===0){
+            state.atnPos['gateway1'] = [x1,y1]
+          }
+          if(i===120){
+            state.atnPos['gateway2'] = [x1,y1]
+          }
+          if(i===240){
+            state.atnPos['gateway3'] = [x1,y1]
+          }
+        }
+      }
+      return roundp
     },
     changeScreen(){
       if (!screenfull.isEnabled) return alert(`Error`);
@@ -211,6 +226,10 @@ name: "DrawPictrue",
         "zRange":localData.spectrum.zRange, //searched range. If z1=z2, the searching is taken on a single plane.
         "createdTime": localData.spectrum.createdTime,
       }
+      for(let key in localData.xServer.gateways){
+        localData.xServer.gateways[key].position = state.atnPos[key]
+      }
+
       axios.post(this.BackendUrl+'/insert', {
         table: sessionStorage.getItem('tableName'),
         tagId:localData.tagId,
@@ -225,15 +244,15 @@ name: "DrawPictrue",
       })
     },
     realTimeProcessing(data) {
-          const that = this
+      const that = this
       let rss =that.$refs.rss
-      let local = that.$refs.localization
+      // let local = that.$refs.localization
+      let local3d = that.$refs.local3D
       let phase = that.$refs.phase
       let spectrum = that.$refs.spectrum
       let rssLine = that.$refs.rssline
       // let radar = this.$refs.radar
       let word = data.body
-      console.log(data.body)
       if (word) {
         let localData = parse(word).value
         // console.log(localData)
@@ -244,11 +263,6 @@ name: "DrawPictrue",
           if(state.error.length>1000){
             state.error.shift()
           }
-        //   let dayTime = localData.phyTime.split(' ')
-        //   state.dayTime.push(dayTime)
-        //   if(state.dayTime.length>1000){
-        //     state.dayTime.shift()
-        //   }
 
           if (sessionStorage.getItem('record') === '1') {
             that.recordMessageSend(localData)
@@ -277,10 +291,10 @@ name: "DrawPictrue",
           phase.upDatePhase()
           rssLine.upDateRSSline()
           // radar.upDateRadar()
-          let x = localData.position[0]
-          let y = localData.position[2]
-          local.upDateLocalization([x, y], localData.tagId, localData.truth)
-
+          // let x = localData.position[0]
+          // let y = localData.position[2]
+          // local.upDateLocalization([x, y], localData.tagId, localData.truth)
+          local3d.upDateLocalization(localData.position,localData.truth)
           if(localData.spectrum.data){
             let spectrumList =[]
             for(let i =0;i<100;i++){
@@ -386,9 +400,6 @@ name: "DrawPictrue",
       })
 
     },
-    showTimeslider(){
-      $("#timeSlider").show()
-    },
     replayUpdate(){
       this.$refs.phase.replayChart(this.indexValue)
       this.$refs.localization.replayChart(this.indexValue)
@@ -400,9 +411,6 @@ name: "DrawPictrue",
       let b = Math.pow((y1-y2),2)
       return Number(Math.sqrt(a+b).toFixed(2))
     },
-    hideDialog(){
-      this.dialog.modal('toggle')
-    },
     onconnect(){
         this.subclient = this.client.subscribe('/queue/oss.url_test',this.realTimeProcessing)
       // this.subclient = this.client.subscribe('/queue/heartbeat',function (data) {
@@ -410,6 +418,7 @@ name: "DrawPictrue",
       // },{durable:true,'auto-delete':false,'x-message-ttl':5000,'message-ttl':1000})
     },
     recording(){
+      this.changeScreen()
       if(sessionStorage.getItem('record')==='1'){
         $('#recordButton').css({
           'background-color':'#04254E',
@@ -500,12 +509,6 @@ name: "DrawPictrue",
       state.queue='oss.url_test'
       router.push({
         name: 'home'
-      })
-    },
-    toAnalysis(){
-      // window.open("http://158.132.255.171:5000/#/analysis","_blank")
-      router.push({
-        name: 'Analysis'
       })
     },
   }
