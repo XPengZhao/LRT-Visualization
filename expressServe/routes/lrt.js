@@ -129,11 +129,23 @@ router.post('/deleteTable',function (req,res,next){
 })
 router.post('/replay',function (req,res,next){
     let lrtDataModel = mongoose.model(req.body.table,lrtModel)
-
+    let position = []
+    let truth = []
        lrtDataModel.findAll(async function (err,data) {
-           mq.create(data)
+           for(let i = 0;i<data.length;i++){
+               position.push(data[i].position)
+               truth.push(data[i].truth)
+           }
+           let xRange=data[0].spectrum[0].xRange
+           let zRange=data[0].spectrum[0].xRange
            res.json({
-               message:data.length
+               len:data.length,
+               message:{
+                   position:position,
+                   truth:truth,
+                   xRange:xRange,
+                   zRange:zRange
+               }
            })
        })
 
@@ -155,7 +167,12 @@ router.post('/analysis',function (req,res,next) {
         for(let i = 0;i<data.length;i++){
             for(let key in data[i].xServer[0].gateways){
                 if(!groundTruth[key]){
-                    groundTruth[key]=[parseInt(data[i].xServer[0].gateways[key].position[0][0].toFixed(2)*100),parseInt(data[i].xServer[0].gateways[key].position[0][2].toFixed(2))*100]
+                    if(data[i].xServer[0].gateways[key].position[0][2]){
+                        groundTruth[key]=[parseInt(data[i].xServer[0].gateways[key].position[0][0].toFixed(2)*100),parseInt(data[i].xServer[0].gateways[key].position[0][2].toFixed(2))*100]
+                    }else {
+                        groundTruth[key]=[parseInt(data[i].xServer[0].gateways[key].position[0].toFixed(2)*100),parseInt(data[i].xServer[0].gateways[key].position[1].toFixed(2))*100]
+                    }
+
                 }
             }
 

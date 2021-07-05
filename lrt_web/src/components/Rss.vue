@@ -51,7 +51,12 @@ name: "RSS",
         for (let i = 0; i < 16; i++) {
           state.rssOpition.series[i].data = [state.rss[state.gatewayChoose][i]]
         }
-        this.RSSChart.setOption(state.rssOpition,true, 10)
+        const that = this
+        setTimeout(function () {
+          that.RSSChart.setOption({
+            series:state.rssOpition.series
+          })
+        },100)
       }
     },
     refreshCharts(){

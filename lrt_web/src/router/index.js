@@ -3,6 +3,7 @@ const dataList = () => import('@/pages/dataList')
 const show = () => import('@/pages/dataVisualization')
 const home = () => import('@/pages/index')
 const analysis = () => import('@/pages/distanceError')
+const replay = () => import('@/pages/replay')
 const routes = [
     {
         path: "/",
@@ -34,6 +35,14 @@ const routes = [
         component: analysis,
         meta:{
             title:'Analysis'
+        }
+    },
+    {
+        path:'/replay',
+        name:'Replay',
+        component: replay,
+        meta:{
+            title:'Replay'
         }
     },
 

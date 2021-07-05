@@ -25,6 +25,10 @@ import { TimelineComponent } from 'echarts/components';
 echarts.use([TimelineComponent]);
 import { GraphChart } from 'echarts/charts';
 echarts.use([GraphChart]);
+import { LineChart } from 'echarts/charts';
+echarts.use([LineChart]);
+import { VisualMapComponent } from 'echarts/components';
+echarts.use([VisualMapComponent]);
 export default {
 
 name: "Localization",
@@ -56,8 +60,10 @@ name: "Localization",
     antColor(key){
       return key === state.gatewayChoose?"red":"white"
     },
-
-    upDateLocalization(data,tag,truth){
+    borderStyle(key,gateway){
+      return key in gateway?'white':'black'
+    },
+    upDateLocalization(data,tag,truth,gateway){
       let posData = [{
         type: 'line',
         symbol:'none',
@@ -72,13 +78,13 @@ name: "Localization",
         smooth:true,
       }]
       if(tag in this.tagList){
-        this.pos[tag].push(data)
+        this.pos[tag].push(truth)
       }else{
-        this.pos[tag] = [data]
+        this.pos[tag] = [truth]
         this.tagList.push('Tag'+tag)
       }
       for(let i in this.pos){
-        if(this.pos[i].length>10){
+        if(this.pos[i].length>20000){
           this.pos[i].shift()
         }
         posData.push({
@@ -94,14 +100,15 @@ name: "Localization",
           symbolSize:30,
         })
       }
-      for(let key in this.atnPos){
+      for(let key in state.atnPos){
         posData.push({
           name:key,
           type: 'scatter',
           data: [state.atnPos[key]],
           symbol: this.pic,
           itemStyle:{
-            color: this.antColor(key)
+            color: this.antColor(key),
+            border:this.borderStyle(key,gateway)
           },
           symbolSize:[35,50],
           showAllSymbol:true,
@@ -110,7 +117,7 @@ name: "Localization",
       posData.push({
         name:'Truth',
         type: 'scatter',
-        data: [[truth[0],truth[2]]],
+        data: [truth],
         symbol: this.star,
         itemStyle:{
           color: 'yellow'
@@ -118,16 +125,27 @@ name: "Localization",
         symbolSize:[20,20],
         showAllSymbol:true,
       })
-      state.localOpition.series=posData
       // if(state.localOpition.xAxis.min !== xRange[0]*2){
       //   state.localOpition.xAxis.min = xRange[0]*2
       //   state.localOpition.xAxis.max = xRange[1]*2
       //   state.localOpition.yAxis.min = yRange[0]*2
       //   state.localOpition.yAxis.max = yRange[1]*2
       // }
-
       state.localOpition.legend.data = this.tagList
-      this.LocalizationChart.setOption(state.localOpition,true,10)
+      const that = this
+      setTimeout(function () {
+        that.LocalizationChart.setOption({
+          legend:{
+            type: 'scroll',
+            data: that.tagList,
+            orient: 'vertical',
+            y: '10%',
+            x: 'right',
+            selectedMode: false,
+          },
+          series:posData
+        })
+      },100)
     },
     refreshChart(){
       state.localOpition.series=[]
@@ -140,7 +158,7 @@ name: "Localization",
       let posData = []
       let data = state.replay.position.slice(index[0],index[1])
       data = data.map(function (val) {
-        return [val[0],val[1]]
+        return [val[0],val[2]]
       })
       posData.push({
         name: "Tag1",
@@ -148,30 +166,14 @@ name: "Localization",
         symbolSize:10,
         data: data
       })
-      // posData.push({
-      //   name:'Tag1',
-      //   type: 'effectScatter',
-      //   data: [state.replay.position[index[1]]],
-      //   symbolSize:30,
-      // })
-      for(let key in state.atnpos) {
-        posData.push({
-          name: key,
-          type: 'scatter',
-          data: [[state.atnpos[key][0], state.atnpos[key][2]]],
-          symbol: this.pic,
-          itemStyle: {
-            color: 'white'
-          },
-          symbolSize: [15, 30],
-          showAllSymbol: true,
-        })
-      }
       let truth = state.replay.truth.slice(index[0],index[1])
+      let truthData = truth.map(function (val) {
+        return [val[0],val[2]]
+      })
       posData.push({
         name:'Truth',
         type: 'line',
-        data: truth,
+        data: truthData,
         symbol: this.star,
         itemStyle:{
           color: 'yellow'
@@ -179,10 +181,20 @@ name: "Localization",
         symbolSize:[5,5],
         showAllSymbol:true,
       })
-      state.localOpition.series=posData
       state.localOpition.legend.data = ["Tag1"]
-      this.LocalizationChart.setOption(state.localOpition,true,10)
-
+      state.localOpition.xAxis.min = state.replay.xRange[0]
+      state.localOpition.xAxis.max = state.replay.xRange[1]
+      state.localOpition.yAxis.min = state.replay.zRange[0]
+      state.localOpition.yAxis.max = state.replay.zRange[1]
+      const that = this
+      setTimeout(function () {
+        that.LocalizationChart.setOption({
+          series:posData,
+          legend:state.localOpition.legend,
+          xAxis:state.localOpition.xAxis,
+          yAxis:state.localOpition.yAxis
+        })
+      },100)
     }
   }
 }

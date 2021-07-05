@@ -41,7 +41,6 @@ export default {
     },
     upDatePhase(){
       if(state.phase[state.gatewayChoose]){
-
         for(let key in state.phase){
           if(state.phase[key][0].length>200){
             for(let i=0;i<16;i++){
@@ -69,8 +68,18 @@ export default {
             }
           }
         }
-        state.phaseOpition.xAxis.data=timeArray
-        this.PhaseChart.setOption(state.phaseOpition,true,10)
+        const that = this
+        setTimeout(function () {
+          that.PhaseChart.setOption({
+            xAxis:{
+              type: 'category',
+              boundaryGap: false,
+              data: timeArray,
+              show:false
+            },
+            series:state.phaseOpition.series
+          })
+        },100)
       }
     },
     refreshChart(){

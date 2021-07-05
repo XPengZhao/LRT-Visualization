@@ -41,9 +41,8 @@ name: "RSSLine",
         this.RSSLineChart.resize()
       })
     },
-    upDateRSSline(time){
+    upDateRSSline(){
       if(state.rssLine[state.gatewayChoose]) {
-        this.timeArray.push(time)
         for (let key in state.rss) {
           if (state.rssLine[key][0].length > 200) {
             for (let i = 0; i < 16; i++) {
@@ -72,7 +71,20 @@ name: "RSSLine",
         }
 
         state.rsslineOpition.xAxis.data = timeArray
-        this.RSSLineChart.setOption(state.rsslineOpition,true, 10)
+        // console.log(state.rsslineOpition.series)
+        // const that = this
+        // setTimeout(function () {
+        //   that.RSSLineChart.setOption({
+        //     xAxis:{
+        //       type: 'category',
+        //       boundaryGap: false,
+        //       data: timeArray,
+        //       show:false
+        //     },
+        //     series:state.rsslineOpition.series
+        //   },true)
+        // },100)
+        this.RSSLineChart.setOption(state.rsslineOpition,true,100)
       }
     },
     randArray(len) {

@@ -155,14 +155,12 @@ export default {
       window.analysis= analysis
     })
     const replay=((e)=>{
-
-      state.queue = 'replay'
       axios.post(BackendUrl+'/replay',{
         table:e
       }).then(function (res) {
-        state.replayLength = Number(res.data.message)
-        console.log(res)
-        setTimeout(goDraw,50)
+        state.replayLength = Number(res.data.len)
+        state.replay = res.data.message
+        setTimeout(goReplay,100)
       })
 
     })
@@ -235,8 +233,13 @@ export default {
         name: 'Analysis'
       })
     })
+    const goReplay=(()=>{
+      router.push({
+        name: 'Replay'
+      })
+    })
     return{
-      create,getTable,deleteTable,updateTable,toHome,callUpImg,uploadImg,sendTable,closeImg,closeDiv,replay,goDraw,BackendUrl,goAnalysis,analysis,errorBarData
+      create,getTable,deleteTable,updateTable,toHome,callUpImg,uploadImg,sendTable,closeImg,closeDiv,replay,goDraw,BackendUrl,goAnalysis,analysis,errorBarData,goReplay
     }
   },
 

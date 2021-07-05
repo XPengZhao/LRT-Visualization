@@ -13,21 +13,9 @@
           <img :src="recordimg" style="height: 20px">
           Recording
         </button>
-        <vue-slider v-model="indexValue"
-                    :width="1000"
-                    :lazy="true"
-                    @change="replayUpdate"
-                    :min-range="10"
-                    :max-range="replayDataLength"
-                    :max = "replayDataLength"
-                    :tooltip = "'always'"
-                    :tooltip-placement="'bottom'"
-                    ref="timeSlider"
-                    id = "timeSlider"
-
-        />
       </div>
     </div>
+<!--    <button type="button" id="analysisButton" class="btn" style="background-color: #04254E;color: white;min-width: 20px;position: relative;right: 0" @click="toAnalysis()">Analysis</button>-->
     <button type="button" id="fullButton" class="btn" style="background-color: #04254E;color: white;min-width: 20px;position: relative;right: 0"  data-toggle="button" aria-pressed="false" @click="changeScreen()">
       <img :src="windowSizeImg" style="height: 20px">
     </button>
@@ -40,14 +28,19 @@
         <span class="ml-3"></span>
         <div style="color: white"><h2>R1: 1</h2></div>
         <span class="ml-3"></span>
-        <div style="color: white"><h2>R2: 5</h2></div>
+        <div style="color: white"><h2>R2: 25</h2></div>
+        <span class="ml-3"></span>
+        <div style="color: white"><h2>Confidence: {{confidence}}</h2></div>
       </div>
 
-<!--      <Localization ref="localization"></Localization>-->
-      <Localization3D ref="local3D"></Localization3D>
+      <Localization ref="localization"></Localization>
+<!--      <Localization3D ref="local3D"></Localization3D>-->
     </div>
     <div class="col-4">
-      <div class="mt-2"><h2><span><br></span></h2></div>
+      <div class="mt-2">
+        <div style="color: white"><h2>RecordNum: {{receiveNum}}</h2></div>
+      </div>
+
       <div class="row mt-2">
         <Phase ref="phase"></Phase>
       </div>
@@ -110,7 +103,6 @@ import Radar from "@/components/Radar";
 import {router} from "@/router";
 import screenfull from 'screenfull';
 let echarts = require("echarts/lib/echarts");
-import  bootbox from 'bootbox'
 require("echarts/lib/chart/heatmap")
 require('echarts/lib/chart/scatter')
 require('echarts/lib/chart/line')
@@ -128,7 +120,7 @@ echarts.use([TimelineComponent]);
 
 export default {
   name: "dataVisualization",
-  components: {Radar, RSSLine, Panel, Spectrum, RSS, Phase, Localization, Localization3D,VueSlider: window['vue-slider-component']},
+  components: {Radar, RSSLine, Panel, Spectrum, RSS, Phase, Localization, Localization3D},
   data(){
     return{
       recordimg:require('@/assets/recordWhite.png'),
@@ -142,7 +134,8 @@ export default {
       indexValue:[0,200],
       replayDataLength:1000,
       errorNum:0,
-      BackendUrl:localStorage.getItem("BackendUrl")
+      BackendUrl:localStorage.getItem("BackendUrl"),
+      confidence:0,
     }
 
   },
@@ -153,17 +146,13 @@ export default {
   },
   mounted () {
     this.init()
-    this.isReplay()
     this.uploader_online()
     },
-  created() {
-  this.replayDataLength=state.replayLength
-  },
   methods:{
 
     init(){
-      // this.$refs.localization.initLocalizationCharts()
-      this.$refs.local3D.initLocalizationCharts()
+      this.$refs.localization.initLocalizationCharts()
+      // this.$refs.local3D.initLocalizationCharts()
       this.$refs.phase.initPhaseCharts()
       this.$refs.rss.initRSSCharts()
       this.$refs.spectrum.initSpectrumCharts()
@@ -174,7 +163,7 @@ export default {
       $('#createTable').hide()
       $('#recordButton').prop('disabled',true)
       state.oneMeterRound = this.comp8p(1)
-      state.atnRound = this.comp8p(5)
+      state.atnRound = this.comp8p(25)
     },
     comp8p(r) {
       let roundp = []
@@ -202,21 +191,8 @@ export default {
       this.isFullscreen = !this.isFullscreen
       screenfull.toggle();
     },
-    isReplay(){
-      if(state.queue==='replay'){
-        $('#stopButton').hide()
-        $('#onlineButton').hide()
-        $('#recordButton').hide()
-      }else {
-        $('#timeSlider').hide()
-      }
-    },
-    recordAble(){
-      if(state.queue==='replay'){
-        $('#recordButton').addClass('disable')
-      }
-    },
     recordMessageSend(localData){
+      this.receiveNum++
       let myDate = new Date()
       let spectrumSave = {
         "algorithm": localData.spectrum.algorithm, // which algorithm is used.
@@ -246,8 +222,8 @@ export default {
     realTimeProcessing(data) {
       const that = this
       let rss =that.$refs.rss
-      // let local = that.$refs.localization
-      let local3d = that.$refs.local3D
+      let local = that.$refs.localization
+      // let local3d = that.$refs.local3D
       let phase = that.$refs.phase
       let spectrum = that.$refs.spectrum
       let rssLine = that.$refs.rssline
@@ -267,10 +243,12 @@ export default {
           if (sessionStorage.getItem('record') === '1') {
             that.recordMessageSend(localData)
           }
+          let gateway=[]
           for (let key in localData.xServer.gateways) {
             // if(!state.atnpos[key]){
             //   state.atnpos[key]=localData.xServer.gateways[key].position[0]
             // }
+            gateway.push(key)
             state.rss[key] = localData.xServer.gateways[key].rss
             // state.aoa[key] = localData.xServer.gateways[key].aoa[0]
             if (key in state.phase) {
@@ -288,13 +266,14 @@ export default {
               })
             }
           }
+          that.confidence = localData.spectrum.confidence
           phase.upDatePhase()
           rssLine.upDateRSSline()
           // radar.upDateRadar()
-          // let x = localData.position[0]
-          // let y = localData.position[2]
-          // local.upDateLocalization([x, y], localData.tagId, localData.truth)
-          local3d.upDateLocalization(localData.position,localData.truth)
+          let x = localData.position[0]
+          let y = localData.position[2]
+          local.upDateLocalization([x, y], localData.tagId, [localData.truth[0],localData.truth[2]],gateway)
+          // local3d.upDateLocalization(localData.position,localData.truth)
           if(localData.spectrum.data){
             let spectrumList =[]
             for(let i =0;i<100;i++){
@@ -318,93 +297,13 @@ export default {
       this.client.heartbeat.incoming = 1000
       this.client.heartbeat.outgoing = 1000
       // this.client.connect('admin','admin',this.onconnect,this.disconnect,'/')
-      if(state.queue==='replay'){
-        this.client.connect('admin','admin',this.onreplay,this.disconnect,'/')
-      }
-      else {
-        this.client.connect('admin','admin',this.onconnect,this.disconnect,'/')
-      }
+      this.client.connect('admin','admin',this.onconnect,this.disconnect,'/')
+
     },
     disconnect(e){
       this.uploader_online()
       console.log(e)
       // console.log('Reconnect')
-    },
-    onreplay: function () {
-    $("#panel").hide()
-      $("#spectrum").hide()
-      // $("#timeSlider").hide()
-      state.rsslineOpition.legend.selectedMode = true
-      state.phaseOpition.legend.selectedMode = true
-      const that = this
-      let rss =that.$refs.rss
-      let local = that.$refs.localization
-      let phase = that.$refs.phase
-      let rssLine = that.$refs.rssline
-      // if(!this.dialog){
-      //   this.dialog = bootbox.dialog({
-      //     message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i> Please wait while we do something...</p>',
-      //     closeButton: false
-      //   });
-      // }
-      this.subclient = this.client.subscribe('/queue/replay', function (data) {
-        let word = data.body
-        let localData = parse(word).value
-        // console.log(localData)
-        that.errorNum = that.distanceCompute(localData.truth[0],localData.position[0],localData.truth[2],localData.position[2])
-        state.error.push(that.errorNum)
-        state.replay.truth.push([localData.truth[0],localData.truth[2]])
-        state.replay.position.push([localData.position[0],localData.position[2]])
-        if(localData.spectrum[0].confidence in state.confidence){
-          state.confidence[localData.spectrum[0].confidence].push(that.errorNum)
-        }else {
-          state.confidence[localData.spectrum[0].confidence] = [that.errorNum]
-        }
-        for (let key in localData.xServer[0].gateways) {
-          if(!state.atnpos[key]){
-            state.atnpos[key]=localData.xServer[0].gateways[key].position[0]
-          }
-          if (key in state.rssLine) {
-            state.rss[key].push(localData.xServer[0].gateways[key].rss)
-            // state.aoa[key].push(localData.spectrum.aoa)
-            for (let i = 0; i < 16; i++) {
-              state.rssLine[key][i].push(localData.xServer[0].gateways[key].rss[i])
-              state.phase[key][i].push(localData.xServer[0].gateways[key].phase[i])
-            }
-          } else {
-            state.rss[key] = [localData.xServer[0].gateways[key].rss]
-            // state.aoa[key] = [localData.spectrum.aoa]
-            state.rssLine[key] = localData.xServer[0].gateways[key].rss.map(function (item) {
-              return [item]
-            })
-            state.phase[key] = localData.xServer[0].gateways[key].phase.map(function (item) {
-              return [item]
-            })
-          }
-          data.ack()
-        }
-        phase.upDatePhase()
-        rssLine.upDateRSSline()
-        let x = localData.position[0]
-        let y = localData.position[2]
-        local.upDateLocalization([x, y], localData.tagId, localData.truth, localData.spectrum[0].xRange, localData.spectrum[0].zRange)
-        // console.log(state.rss)
-        rss.upDateRSS()
-        if (localData.end) {
-          that.subclient.unsubscribe()
-          // that.hideDialog()
-          that.replayUpdate()
-         // that.showTimeslider()
-        }
-
-      })
-
-    },
-    replayUpdate(){
-      this.$refs.phase.replayChart(this.indexValue)
-      this.$refs.localization.replayChart(this.indexValue)
-      this.$refs.rssline.replayChart(this.indexValue)
-      this.$refs.rss.replayChart(this.indexValue[0])
     },
     distanceCompute(x1,x2,y1,y2){
       let a = Math.pow((x1-x2),2)
@@ -441,6 +340,7 @@ export default {
       }
     },
     sendTable(){
+      this.receiveNum = 0
       let d = String($('#describeWord').val())
       let v = String(this.valueURL)
       let t = String(sessionStorage.getItem('tableName'))
@@ -463,6 +363,7 @@ export default {
       $('#stopButton').prop('disabled',true)
       $('#recordButton').prop('disabled',true)
       $('#onlineButton').removeClass('disabled')
+
       state.rss={}
       state.phase={}
       state.rssLine={}
@@ -498,6 +399,7 @@ export default {
       this.$refs.rss.refreshCharts()
       this.$refs.rssline.refreshRssline()
       this.$refs.spectrum.refreshSpectrum()
+      // window.location.reload()
     },
     toHome(){
       this.stopConnect()
@@ -511,6 +413,32 @@ export default {
         name: 'home'
       })
     },
+    toAnalysis(){
+       axios.post(BackendUrl+'/analysis',{
+        table:String(sessionStorage.getItem('tableName'))
+      }).then(function (res) {
+        state.error = res.data.error
+        state.confidence = res.data.confidence
+        state.truthError = res.data.truthError
+        state.truthConfidence = res.data.truthConfidence
+        state.cdfIndex = res.data.index
+        state.ccdfIndex = res.data.ccdfIndex
+        // console.log(state.ccdfIndex)
+        // console.log(state.confidence)
+        state.routeOpition.xAxis.data = errorBarData(res.data.truthMinX,res.data.truthMaxX)
+        state.routeOpition.yAxis.data = errorBarData(res.data.truthMinY,res.data.truthMaxY)
+        state.routeErrorOpition.xAxis.data = errorBarData(res.data.truthMinX,res.data.truthMaxX)
+        state.routeErrorOpition.yAxis.data = errorBarData(res.data.truthMinY,res.data.truthMaxY)
+        state.truthArray = res.data.truthArray
+        state.groundTruth = res.data.groundTruth
+        state.round = res.data.round
+        state.roundp = res.data.roundp
+        state.roundr1 = res.data.roundr1
+         router.push({
+           name: 'Analysis'
+         })
+      })
+    }
   }
 }
 
