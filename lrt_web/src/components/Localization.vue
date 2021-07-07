@@ -42,7 +42,7 @@ name: "Localization",
     atnRound:[],
     oneMeterRound:[],
     atnPos:{},
-
+    truth:[]
   }
   },
   methods:{
@@ -60,9 +60,6 @@ name: "Localization",
     antColor(key){
       return key === state.gatewayChoose?"red":"white"
     },
-    borderStyle(key,gateway){
-      return key in gateway?'white':'black'
-    },
     upDateLocalization(data,tag,truth,gateway){
       // console.log(gateway)
       let posData = [{
@@ -78,29 +75,56 @@ name: "Localization",
         data: state.atnRound,
         smooth:true,
       }]
-      if(tag in this.tagList){
-        this.pos[tag].push(truth)
-      }else{
-        this.pos[tag] = [truth]
-        this.tagList.push('Tag'+tag)
+      // if(tag in this.tagList){
+      //   this.pos[tag].push(truth)
+      // }else{
+      //   this.pos[tag] = [truth]
+      //   this.tagList.push('Tag'+tag)
+      // }
+      this.truth.push(truth)
+      if(this.truth.length>10){
+        this.truth.shift()
       }
-      for(let i in this.pos){
-        if(this.pos[i].length>10){
-          this.pos[i].shift()
-        }
-        posData.push({
-          name: i,
-          type: 'scatter',
-          symbolSize:10,
-          data: this.pos[i]
-        })
-        posData.push({
-          name:'Tag'+i,
-          type: 'effectScatter',
-          data: [data],
-          symbolSize:30,
-        })
-      }
+      // for(let i in this.pos){
+      //   if(this.pos[i].length>10){
+      //     this.pos[i].shift()
+      //   }
+      //   posData.push({
+      //     name: i,
+      //     type: 'scatter',
+      //     data: this.pos[i],
+      //   })
+      //   posData.push({
+      //     name:'Tag'+i,
+      //     type: 'effectScatter',
+      //     data: [data],
+      //     symbolSize:30,
+      //   })
+      // }
+
+      // posData.push({
+      //   name:'Truth',
+      //   type: 'scatter',
+      //   data: [truth],
+      //   symbol: 'pin',
+      //   itemStyle:{
+      //     color: 'yellow'
+      //   },
+      //   symbolSize:[20,20],
+      // })
+      posData.push({
+        name: 'Tag1 Truth',
+        type: 'scatter',
+        data: this.truth,
+      })
+      console.log(truth)
+      console.log(this.truth)
+      posData.push({
+        name:'Tag1',
+        type: 'effectScatter',
+        data: [data],
+        symbolSize:30,
+      })
       for(let key in state.atnPos){
           posData.push({
             name:key,
@@ -116,6 +140,7 @@ name: "Localization",
         if(gateway[key]){
           posData.push({
             type: 'line',
+            name:key+'connect',
             data: [
               state.atnPos[key],
               data
@@ -125,18 +150,15 @@ name: "Localization",
               color:'rgba(198,180,206,0.2)'
             }
           })
+        }else {
+          posData.push({
+            type: 'line',
+            name:key+'connect',
+            data: []
+          })
         }
       }
-      posData.push({
-        name:'Truth',
-        type: 'scatter',
-        data: [truth],
-        symbol: this.star,
-        itemStyle:{
-          color: 'yellow'
-        },
-        symbolSize:[20,20],
-      })
+
       // if(state.localOpition.xAxis.min !== xRange[0]*2){
       //   state.localOpition.xAxis.min = xRange[0]*2
       //   state.localOpition.xAxis.max = xRange[1]*2
@@ -190,6 +212,7 @@ name: "Localization",
         itemStyle:{
           color: 'yellow'
         },
+
         symbolSize:[5,5],
         showAllSymbol:true,
       })

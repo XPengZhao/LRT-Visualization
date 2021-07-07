@@ -277,15 +277,15 @@ export default {
           // console.log(gateway)
           local.upDateLocalization([x, y], localData.tagId, [localData.truth[0],localData.truth[2]],gateway)
           // local3d.upDateLocalization(localData.position,localData.truth)
-          if(localData.spectrum.data){
-            let spectrumList =[]
-            for(let i =0;i<100;i++){
-              for(let j=0;j<100;j++){
-                spectrumList.push([i,j,localData.spectrum.data[i][j]])
-              }
-            }
-            spectrum.upDateSpectrum(spectrumList)
-          }
+          // if(localData.spectrum.data){
+          //   let spectrumList =[]
+          //   for(let i =0;i<100;i++){
+          //     for(let j=0;j<100;j++){
+          //       spectrumList.push([i,j,localData.spectrum.data[i][j]])
+          //     }
+          //   }
+          //   spectrum.upDateSpectrum(spectrumList)
+          // }
 
           rss.upDateRSS()
     }

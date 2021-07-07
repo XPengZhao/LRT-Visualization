@@ -56,7 +56,8 @@ function comp8p(x,y,r,truthMinX,truthMinY) {
 
 
 router.get('/', function(req, res, next) {
-    let lrtDataModel = mongoose.model('2021/7/2 01:17:16',lrtModel)
+    let lrtDataModel = mongoose.model('2021/7/2 24:16:00',lrtModel)
+    let result = res
     lrtDataModel.findAll(function (err,data) {
         mq.create(data)
         res.json({
