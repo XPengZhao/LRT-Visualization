@@ -31,7 +31,7 @@
     </div>
     <div class="row mt-2" style="width: 100%;  margin:0 auto;">
       <span style="width: 2.5%;z-index: -50"></span>
-      <Cdf style="width: 45.8%" ref="cdf"></Cdf>
+      <Cdf style="width: 45.8%" ref="cdfChart"></Cdf>
       <span style="width: 2.7%"></span>
       <ConfidenceCdf style="width: 45.8%" ref="confidenceCdf"></ConfidenceCdf>
       <span style="width: 2.5%"></span>
@@ -49,7 +49,10 @@ import {state} from "../store/state";
 import ErrorBar from "../components/confidenceBar";
 import Route from "@/components/Route";
 import routeError from "../components/routeError";
-const cdf = require('cumulative-distribution-function');
+import axios from "axios";
+import {onMounted,ref} from "vue";
+
+
 export default {
   name: "distanceError",
   components: {Route, ErrorBar, ConfidenceCdf, Cdf, routeError},
@@ -61,7 +64,7 @@ export default {
       isUpdate:true,
       errorBarData:[],
       groundTruth:[],
-      BackendUrl:localStorage.getItem("BackendUrl")
+
     }
   },
   computed: {
@@ -69,32 +72,74 @@ export default {
       return this.isFullscreen ? require('@/assets/window.png') : require('@/assets/fullScreen.png')
     },
   },
-
-  mounted() {
-    this.$refs.confidenceCdf.initConfidenceCdfCharts()
-    this.$refs.cdf.initCdfCharts()
-    this.$refs.errorBar.initErrorBarCharts()
-    this.$refs.route.initRouteCharts()
-    this.$refs.routeError.initRouteErrorCharts()
-    this.updateChart()
-  },
-  methods:{
-    distanceCompute(x1,x2,y1,y2){
+  setup(){
+    const cdf = require('cumulative-distribution-function');
+    const BackendUrl=localStorage.getItem("BackendUrl")
+    const cdfChart = ref()
+    const confidenceCdf = ref()
+    const errorBar = ref()
+    const route = ref()
+    const routeError = ref()
+    onMounted(()=>{
+      confidenceCdf.value.initConfidenceCdfCharts()
+      cdfChart.value.initCdfCharts()
+      errorBar.value.initErrorBarCharts()
+      route.value.initRouteCharts()
+      routeError.value.initRouteErrorCharts()
+      init()
+      setInterval(init,10000)
+    })
+    const errorBarData=((min,max)=>{
+      let arr = []
+      for(let i=min-10;i<max+10;i++){
+        arr.push(i)
+      }
+      return arr
+    })
+    const init=(()=>{
+      if(sessionStorage.getItem('tableName')){
+        const that = this
+        axios.post(BackendUrl+'/analysis',{
+          table:sessionStorage.getItem('tableName')
+        }).then(function (res) {
+          state.error = res.data.error
+          state.confidence = res.data.confidence
+          state.truthError = res.data.truthError
+          state.truthConfidence = res.data.truthConfidence
+          state.cdfIndex = res.data.index
+          state.ccdfIndex = res.data.ccdfIndex
+          // console.log(state.ccdfIndex)
+          // console.log(state.confidence)
+          state.routeOpition.xAxis.data = errorBarData(res.data.truthMinX,res.data.truthMaxX)
+          state.routeOpition.yAxis.data = errorBarData(res.data.truthMinY,res.data.truthMaxY)
+          state.routeErrorOpition.xAxis.data = errorBarData(res.data.truthMinX,res.data.truthMaxX)
+          state.routeErrorOpition.yAxis.data = errorBarData(res.data.truthMinY,res.data.truthMaxY)
+          state.truthArray = res.data.truthArray
+          state.groundTruth = res.data.groundTruth
+          state.round = res.data.round
+          state.roundp = res.data.roundp
+          state.roundr1 = res.data.roundr1
+          updateChart()
+        })
+      }
+    })
+    const distanceCompute=((x1,x2,y1,y2)=>{
       let a = Math.pow((x1-x2),2)
       let b = Math.pow((y1-y2),2)
       return Number(Math.sqrt(a+b).toFixed(2))
-    },
-    changeScreen(){
+    })
+    const changeScreen=(()=>{
       if (!screenfull.isEnabled) return alert(`Error`);
       this.isFullscreen = !this.isFullscreen
       screenfull.toggle();
-    },
-    toHome(){
+    })
+    const toHome=(()=>{
+      sessionStorage.setItem('tableName','')
       router.push({
         name: 'home'
       })
-    },
-    toShow(){
+    })
+    const toShow=(()=>{
       state.atnPos={}
       state.atnR=0
       state.error=[]
@@ -112,23 +157,24 @@ export default {
       router.push({
         name: 'dataList'
       })
-    },
-    updateChart(){
+    })
+    const updateChart=(()=>{
       let mycdf = cdf(state.error)
-      this.$refs.cdf.updateChart(mycdf)
+      cdfChart.value.updateChart(mycdf)
       let ccdf = {}
       for(let key in state.confidence){
         if(key!=='0'){
           ccdf[key] = cdf(state.confidence[key])
         }
       }
-      this.$refs.confidenceCdf.updateCharts(ccdf)
-      this.$refs.errorBar.updateChart()
-      this.$refs.route.updateChart()
-      this.$refs.routeError.updateChart()
-    },
-    },
+      confidenceCdf.value.updateCharts(ccdf)
+      errorBar.value.updateChart()
+      route.value.updateChart()
+      routeError.value.updateChart()
+    })
 
+    return { init,errorBarData,BackendUrl,distanceCompute,changeScreen,toHome,toShow,cdfChart,confidenceCdf,route,routeError,errorBar,updateChart}
+  },
 }
 </script>
 

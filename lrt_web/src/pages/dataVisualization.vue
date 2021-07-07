@@ -22,24 +22,24 @@
   </nav>
   <div class="mainBox row mt-3">
     <div class="col-6 mt-2">
-      <div class="row">
-        <span class="ml-3"></span>
-        <div style="color: white"><h2>Error: {{errorNum}}</h2></div>
-        <span class="ml-3"></span>
-        <div style="color: white"><h2>R1: 1</h2></div>
-        <span class="ml-3"></span>
-        <div style="color: white"><h2>R2: 25</h2></div>
-        <span class="ml-3"></span>
-        <div style="color: white"><h2>Confidence: {{confidence}}</h2></div>
-      </div>
+<!--      <div class="row">-->
+<!--        <span class="ml-3"></span>-->
+<!--        <div style="color: white"><h2>Error: {{errorNum}}</h2></div>-->
+<!--        <span class="ml-3"></span>-->
+<!--        <div style="color: white"><h2>R1: 1</h2></div>-->
+<!--        <span class="ml-3"></span>-->
+<!--        <div style="color: white"><h2>R2: 25</h2></div>-->
+<!--        <span class="ml-3"></span>-->
+<!--        <div style="color: white"><h2>Confidence: {{confidence}}</h2></div>-->
+<!--      </div>-->
 
       <Localization ref="localization"></Localization>
 <!--      <Localization3D ref="local3D"></Localization3D>-->
     </div>
     <div class="col-4">
-      <div class="mt-2">
-        <div style="color: white"><h2>RecordNum: {{receiveNum}}</h2></div>
-      </div>
+<!--      <div class="mt-2">-->
+<!--        <div style="color: white"><h2>RecordNum: {{receiveNum}}</h2></div>-->
+<!--      </div>-->
 
       <div class="row mt-2">
         <Phase ref="phase"></Phase>
@@ -48,13 +48,14 @@
         <RSSLine ref="rssline"></RSSLine>
       </div>
       <div class="row mt-2">
-        <Spectrum id="spectrum" ref="spectrum"></Spectrum>
+<!--        <Spectrum id="spectrum" ref="spectrum"></Spectrum>-->
       </div>
     </div>
     <div class="col-2 ">
-      <div class="mt-2"><h2><span><br></span></h2></div>
+<!--      <div class="mt-2"><h2><span><br></span></h2></div>-->
       <Panel ref="panel" id = "panel"></Panel>
       <RSS class="mt-2" ref="rss"></RSS>
+      <div><h2 style="color: white">{{receiveNum}}</h2></div>
 
     </div>
 
@@ -155,7 +156,7 @@ export default {
       // this.$refs.local3D.initLocalizationCharts()
       this.$refs.phase.initPhaseCharts()
       this.$refs.rss.initRSSCharts()
-      this.$refs.spectrum.initSpectrumCharts()
+      // this.$refs.spectrum.initSpectrumCharts()
       this.$refs.rssline.initRSSLineCharts()
       // this.$refs.radar.initRadarCharts()
       sessionStorage.setItem('record',0)
@@ -243,16 +244,17 @@ export default {
           if (sessionStorage.getItem('record') === '1') {
             that.recordMessageSend(localData)
           }
-          let gateway=[]
+          let gateway={'gateway1':false,'gateway2':false,'gateway3':false}
           for (let key in localData.xServer.gateways) {
             // if(!state.atnpos[key]){
             //   state.atnpos[key]=localData.xServer.gateways[key].position[0]
             // }
-            gateway.push(key)
+            // console.log(key)
+            gateway[key] = true
+
             state.rss[key] = localData.xServer.gateways[key].rss
             // state.aoa[key] = localData.xServer.gateways[key].aoa[0]
             if (key in state.phase) {
-
               for (let i = 0; i < 16; i++) {
                 state.rssLine[key][i].push(localData.xServer.gateways[key].rss[i])
                 state.phase[key][i].push(localData.xServer.gateways[key].phase[i])
@@ -272,6 +274,7 @@ export default {
           // radar.upDateRadar()
           let x = localData.position[0]
           let y = localData.position[2]
+          // console.log(gateway)
           local.upDateLocalization([x, y], localData.tagId, [localData.truth[0],localData.truth[2]],gateway)
           // local3d.upDateLocalization(localData.position,localData.truth)
           if(localData.spectrum.data){
@@ -317,26 +320,24 @@ export default {
       // },{durable:true,'auto-delete':false,'x-message-ttl':5000,'message-ttl':1000})
     },
     recording(){
-      this.changeScreen()
+      // this.changeScreen()
       if(sessionStorage.getItem('record')==='1'){
         $('#recordButton').css({
           'background-color':'#04254E',
           'border':''
         })
         sessionStorage.setItem('record','0')
-        $('#experimentID').html('Experiment ID: '+sessionStorage.getItem('tableName'))
-        // $('#createTable').addClass('animate__animated','animate__backInLeft')
-        $('#tableCard').removeClass('animate__backOutDown')
-       $('#createTable').show()
       }else {
         $('#recordButton').css({
           'background-color':'red',
           'border':'2px solid white'
         })
-        $("#analysis").addClass("disabled")
         let time = new Date()
         sessionStorage.setItem('tableName',time.toLocaleString('chinese', { hour12: false }))
         sessionStorage.setItem('record','1')
+        $('#experimentID').html('Experiment ID: '+sessionStorage.getItem('tableName'))
+        $('#tableCard').removeClass('animate__backOutDown')
+        $('#createTable').show()
       }
     },
     sendTable(){
@@ -357,7 +358,6 @@ export default {
         console.log(err)
       })
         $('#tableCard').addClass('animate__backOutDown')
-      $("#analysis").removeClass("disabled")
     },
     stopConnect(){
       $('#stopButton').prop('disabled',true)
@@ -398,7 +398,7 @@ export default {
       // this.$refs.radar.refreshChart()
       this.$refs.rss.refreshCharts()
       this.$refs.rssline.refreshRssline()
-      this.$refs.spectrum.refreshSpectrum()
+      // this.$refs.spectrum.refreshSpectrum()
       // window.location.reload()
     },
     toHome(){

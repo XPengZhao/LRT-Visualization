@@ -64,6 +64,7 @@ name: "Localization",
       return key in gateway?'white':'black'
     },
     upDateLocalization(data,tag,truth,gateway){
+      // console.log(gateway)
       let posData = [{
         type: 'line',
         symbol:'none',
@@ -84,7 +85,7 @@ name: "Localization",
         this.tagList.push('Tag'+tag)
       }
       for(let i in this.pos){
-        if(this.pos[i].length>20000){
+        if(this.pos[i].length>10){
           this.pos[i].shift()
         }
         posData.push({
@@ -101,18 +102,30 @@ name: "Localization",
         })
       }
       for(let key in state.atnPos){
-        posData.push({
-          name:key,
-          type: 'scatter',
-          data: [state.atnPos[key]],
-          symbol: this.pic,
-          itemStyle:{
-            color: this.antColor(key),
-            border:this.borderStyle(key,gateway)
-          },
-          symbolSize:[35,50],
-          showAllSymbol:true,
-        })
+          posData.push({
+            name:key,
+            type: 'scatter',
+            data: [state.atnPos[key]],
+            symbol: this.pic,
+            itemStyle:{
+              color: this.antColor(key),
+            },
+            symbolSize:[35,50],
+            showAllSymbol:true,
+          })
+        if(gateway[key]){
+          posData.push({
+            type: 'line',
+            data: [
+              state.atnPos[key],
+              data
+            ],
+            connectNulls:false,
+            lineStyle:{
+              color:'rgba(198,180,206,0.2)'
+            }
+          })
+        }
       }
       posData.push({
         name:'Truth',
@@ -123,7 +136,6 @@ name: "Localization",
           color: 'yellow'
         },
         symbolSize:[20,20],
-        showAllSymbol:true,
       })
       // if(state.localOpition.xAxis.min !== xRange[0]*2){
       //   state.localOpition.xAxis.min = xRange[0]*2
@@ -193,7 +205,7 @@ name: "Localization",
           legend:state.localOpition.legend,
           xAxis:state.localOpition.xAxis,
           yAxis:state.localOpition.yAxis
-        })
+        },true)
       },100)
     }
   }

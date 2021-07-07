@@ -22,10 +22,10 @@ class RabbitMQ{
                             logTime:data[i].logTime,
                             phyTime:data[i].phyTime,
                             savedTime:data[i].savedTime,
-                            position: [data[i].position[0]*100,data[i].position[2]*100,data[i].position[1]*100],
-                            truth:[data[i].truth[0]*100,data[i].truth[2]*100,data[i].truth[1]*100],
-                            xServer: data[i].xServer,
-                            spectrum:data[i].spectrum,
+                            position:data[i].position,
+                            truth:data[i].truth,
+                            xServer: data[i].xServer[0],
+                            spectrum:data[i].spectrum[0],
                             end: i===data.length-1
                         }
                         channel.sendToQueue(queue,Buffer.from(JSON.stringify(msg)))

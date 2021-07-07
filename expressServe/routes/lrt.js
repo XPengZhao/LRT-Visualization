@@ -56,19 +56,12 @@ function comp8p(x,y,r,truthMinX,truthMinY) {
 
 
 router.get('/', function(req, res, next) {
-    let lrtDataModel = mongoose.model('test111',lrtModel)
-    let LrtData = new lrtDataModel({
-        time: 'req.body.time',
-        tagid: 1,
-        atnid:1,
-        atnpos:[2,2],
-        phase: {'gateway1':[1,1,1,1,1,1],'gateway2':[1,1,1,1,1,1]},
-        rss: {'gateway1':[1,1,1,1,1,1],'gateway2':[1,1,1,1,1,1]},
-        pos: [2,2],
-        // rn16:Array,
-    })
-    LrtData.save(function () {
-        res.json({status: 0, message: 'Successful'})
+    let lrtDataModel = mongoose.model('2021/7/2 01:17:16',lrtModel)
+    lrtDataModel.findAll(function (err,data) {
+        mq.create(data)
+        res.json({
+            message:'success'
+        })
     })
 });
 router.post('/insert', function(req, res, next) {
