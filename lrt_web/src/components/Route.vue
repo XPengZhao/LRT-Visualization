@@ -36,23 +36,30 @@ export default {
       })
     },
     updateChart(){
-      for(let key in state.groundTruth){
-        state.routeOpition.series.push({
-          name:key,
-          type: 'scatter',
-          data: [state.groundTruth[key]],
-          symbol: state.atnPic,
-          itemStyle: {
-            color: 'white'
-          },
-          symbolSize: [15,15],
-          showAllSymbol: true,
+      // for(let key in state.groundTruth){
+      //   state.routeOpition.series.push({
+      //     name:key,
+      //     type: 'scatter',
+      //     data: [state.groundTruth[key]],
+      //     symbol: state.atnPic,
+      //     itemStyle: {
+      //       color: 'white'
+      //     },
+      //     symbolSize: [15,15],
+      //     showAllSymbol: true,
+      //   })
+      // }
+      // console.log(state.confidenceTruth)
+      state.routeOpition.series[1].data = state.confidenceTruth[2]
+      state.routeOpition.series[2].data = state.confidenceTruth[3]
+      state.routeOpition.series[0].data = state.confidenceTruth[1]
+      // this.routeChart.setOption(state.routeOpition,10)
+      const that = this
+      setTimeout(function (){
+        that.routeChart.setOption({
+          series:state.routeOpition.series
         })
-      }
-      state.routeOpition.series[1].data = state.roundp
-      state.routeOpition.series[2].data = state.roundr1
-      state.routeOpition.series[0].data = state.truthConfidence
-      this.routeChart.setOption(state.routeOpition,10)
+      },10)
     }
 
   }

@@ -56,7 +56,7 @@ name: "RSS",
           that.RSSChart.setOption({
             series:state.rssOpition.series
           })
-        },100)
+        },10)
       }
     },
     refreshCharts(){

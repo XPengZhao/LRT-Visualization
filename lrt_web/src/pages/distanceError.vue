@@ -73,6 +73,7 @@ export default {
     },
   },
   setup(){
+    var isFullscreen = false
     const cdf = require('cumulative-distribution-function');
     const BackendUrl=localStorage.getItem("BackendUrl")
     const cdfChart = ref()
@@ -87,7 +88,7 @@ export default {
       route.value.initRouteCharts()
       routeError.value.initRouteErrorCharts()
       init()
-      setInterval(init,10000)
+      // setInterval(init,10000)
     })
     const errorBarData=((min,max)=>{
       let arr = []
@@ -97,6 +98,7 @@ export default {
       return arr
     })
     const init=(()=>{
+      console.log()
       if(sessionStorage.getItem('tableName')){
         const that = this
         axios.post(BackendUrl+'/analysis',{
@@ -119,6 +121,7 @@ export default {
           state.round = res.data.round
           state.roundp = res.data.roundp
           state.roundr1 = res.data.roundr1
+          state.confidenceTruth = res.data.confidenceTruth
           updateChart()
         })
       }
@@ -173,7 +176,7 @@ export default {
       routeError.value.updateChart()
     })
 
-    return { init,errorBarData,BackendUrl,distanceCompute,changeScreen,toHome,toShow,cdfChart,confidenceCdf,route,routeError,errorBar,updateChart}
+    return { init,errorBarData,BackendUrl,distanceCompute,changeScreen,toHome,toShow,cdfChart,confidenceCdf,route,routeError,errorBar,updateChart,isFullscreen}
   },
 }
 </script>

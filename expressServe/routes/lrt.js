@@ -56,7 +56,7 @@ function comp8p(x,y,r,truthMinX,truthMinY) {
 
 
 router.get('/', function(req, res, next) {
-    let lrtDataModel = mongoose.model('2021/7/2 24:16:00',lrtModel)
+    let lrtDataModel = mongoose.model('2021/7/7 21:32:14',lrtModel)
     let result = res
     lrtDataModel.findAll(function (err,data) {
         mq.create(data)
@@ -149,14 +149,15 @@ router.post('/analysis',function (req,res,next) {
     let lrtDataModel = mongoose.model(req.body.table,lrtModel)
     var errorNumArray = []
     var truthError = []
-    var truthConfidence = []
-    var confidence = []
+    // var truthConfidence = []
+    var confidence = {}
     var truthMaxX = 0
     var truthMinX = 0
     var truthMaxY = 0
     var truthMinY = 0
     var truthArray = []
     var groundTruth = {}
+    var condifenceTruth = {}
     lrtDataModel.findAll(async function (err,data) {
         for(let i = 0;i<data.length;i++){
             for(let key in data[i].xServer[0].gateways){
@@ -174,9 +175,12 @@ router.post('/analysis',function (req,res,next) {
             errorNumArray.push(errorNum)
             let truthX = parseInt(Number(data[i].truth[0].toFixed(2))*100)
             let truthY = parseInt(Number(data[i].truth[2].toFixed(2))*100)
+            let truthPosition = [data[i].truth[0],data[i].truth[2]]
             if(data[i].spectrum[0].confidence in confidence){
+                condifenceTruth[data[i].spectrum[0].confidence].push(truthPosition)
                 confidence[data[i].spectrum[0].confidence].push(errorNum)
             }else {
+                condifenceTruth[data[i].spectrum[0].confidence]=[truthPosition]
                 confidence[data[i].spectrum[0].confidence] = [errorNum]
             }
 
@@ -195,7 +199,7 @@ router.post('/analysis',function (req,res,next) {
 
             truthArray.push([truthX,truthY])
             truthError.push([truthX,truthY,errorNum])
-            truthConfidence.push([truthX,truthY,data[i].spectrum[0].confidence])
+            // truthConfidence.push([truthX,truthY,data[i].spectrum[0].confidence])
         }
         let ccdfIndex = {}
         for(let key in confidence){
@@ -231,9 +235,9 @@ router.post('/analysis',function (req,res,next) {
         truthMaxY=round.y+round.r
         truthMinX=round.x-round.r
         truthMinY=round.y-round.r
-        truthConfidence = truthConfidence.map(function (num) {
-            return[num[0]+Math.abs(truthMinX),num[1]+Math.abs(truthMinY),num[2]]
-        })
+        // truthConfidence = truthConfidence.map(function (num) {
+        //     return[num[0]+Math.abs(truthMinX),num[1]+Math.abs(truthMinY),num[2]]
+        // })
         truthError = truthError.map(function (num) {
             return[num[0]+Math.abs(truthMinX),num[1]+Math.abs(truthMinY),num[2]]
         })
@@ -247,8 +251,9 @@ router.post('/analysis',function (req,res,next) {
         res.json({
             error:errorNumArray,
             confidence:confidence,
+            confidenceTruth:condifenceTruth,
             truthError:truthError,
-            truthConfidence:truthConfidence,
+            // truthConfidence:truthConfidence,
             index:index,
             ccdfIndex:ccdfIndex,
             truthMaxX:round.x+round.r,

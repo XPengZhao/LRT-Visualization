@@ -31,6 +31,7 @@ name: "RSSLine",
     return{
       selected : Array(),
       timeArray:[],
+      showif:false
     }
   },
   methods:{
@@ -84,7 +85,15 @@ name: "RSSLine",
         //     series:state.rsslineOpition.series
         //   },true)
         // },100)
-        this.RSSLineChart.setOption(state.rsslineOpition,true,100)
+        for(let i=0;i<16;i++){
+          if(state.antselect[i]){
+            this.showif = true
+          }
+        }
+        if(this.showif){
+          this.RSSLineChart.setOption(state.rsslineOpition,true,10)
+        }
+
       }
     },
     randArray(len) {

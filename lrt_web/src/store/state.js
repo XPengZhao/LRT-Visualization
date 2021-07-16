@@ -1338,50 +1338,81 @@ export const state = reactive({
             yAxisIndex:[0]
         }],
         tooltip: {},
+        //################scatter##############
+        legend: {
+            type: 'scroll',
+            data: ['confidence1','confidence2','confidence3'],
+            orient: 'vertical',
+            y: 'center',
+            x: 'right',
+            // selectedMode: false,
+            // textStyle:{color:"#fff"},
+        },
         xAxis: {
-            type: 'category',
-            data: []
+            type:'value'
         },
         yAxis: {
-            type: 'category',
-            data: []
+            type:'value'
         },
-        visualMap: {
-            seriesIndex:[0],
-            min: 1,
-            max: 3,
-            calculable: true,
-            realtime: false,
-            inRange: {
-                color: ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026']
-            }
-        },
-        series: [{
-            name: 'Gaussian',
-            type: 'heatmap',
+        series:[{
+            type: 'scatter',
+            name: 'confidence1',
             data: [],
-            emphasis: {
-                itemStyle: {
-                    borderColor: '#333',
-                    borderWidth: 1
-                }
-            },
-            progressive: 1000,
-            animation: false
+        },{
+            type: 'scatter',
+            name: 'confidence2',
+            data: [],
+        },{
+            type: 'scatter',
+            name: 'confidence3',
+            data: [],
         },
-            {
-                type: 'line',
-                symbol:'none',
-                symbolSize:0,
-                data: [],
-                smooth:true,
-            },{
-                type: 'line',
-                symbol:'none',
-                symbolSize:0,
-                data: [],
-                smooth:true,
-            }]
+        ]
+        //###############heatmap###############
+        // xAxis: {
+        //     type: 'category',
+        //     data: []
+        // },
+        // yAxis: {
+        //     type: 'category',
+        //     data: []
+        // },
+        // visualMap: {
+        //     seriesIndex:[0],
+        //     min: 1,
+        //     max: 3,
+        //     calculable: true,
+        //     realtime: false,
+        //     inRange: {
+        //         color: ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026']
+        //     }
+        // },
+        // series: [{
+        //     name: 'Gaussian',
+        //     type: 'heatmap',
+        //     data: [],
+        //     emphasis: {
+        //         itemStyle: {
+        //             borderColor: '#333',
+        //             borderWidth: 1
+        //         }
+        //     },
+        //     progressive: 1000,
+        //     animation: false
+        // },
+        //     {
+        //         type: 'line',
+        //         symbol:'none',
+        //         symbolSize:0,
+        //         data: [],
+        //         smooth:true,
+        //     },{
+        //         type: 'line',
+        //         symbol:'none',
+        //         symbolSize:0,
+        //         data: [],
+        //         smooth:true,
+        //     }]
     },
     routeErrorOpition:{
         title: {
@@ -1525,6 +1556,7 @@ export const state = reactive({
     atnRound:[],
     replayLength:1000,
     dayTime:[],
+    confidenceTruth:{},
     replay:{
         truth:[],
         position:[],

@@ -56,14 +56,24 @@ export default {
               type: 'line',
             smooth: true
         })
-        state.confidenceCdfOpition.series.push({
-          type: 'scatter',
-          symbolSize:20,
-          data: [posData[state.ccdfIndex[key][0]]]
-        })
+        if(state.ccdfIndex[key]){
+          state.confidenceCdfOpition.series.push({
+            type: 'scatter',
+            symbolSize:20,
+            data: [posData[state.ccdfIndex[key][0]]]
+          })
+        }
+
 
         state.confidenceCdfOpition.legend.data.push('Confidence '+key)
       }
+      const that = this
+      setTimeout(function (){
+        that.confidenceCdfChart.setOption({
+          legend:state.confidenceCdfOpition.legend,
+          series:state.confidenceCdfOpition.series
+        })
+      },10)
       this.confidenceCdfChart.setOption(state.confidenceCdfOpition,true,100)
     },
   }

@@ -54,7 +54,13 @@ export default {
     updateChart(){
       state.confidenceBarOpition.series[0].data = this.compBar()
       state.confidenceBarOpition.series[1].data = this.compLine()
-      this.confidenceBarChart.setOption(state.confidenceBarOpition)
+      const that = this
+      setTimeout(function (){
+        that.confidenceBarChart.setOption({
+          series:state.confidenceBarOpition.series
+        })
+      },10)
+      // this.confidenceBarChart.setOption(state.confidenceBarOpition)
     }
 
   }

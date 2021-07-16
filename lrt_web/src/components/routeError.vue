@@ -53,6 +53,13 @@ export default {
       state.routeErrorOpition.series[2].data = state.roundr1
       state.routeErrorOpition.series[0].data = state.truthError
       this.routeErrorChart.setOption(state.routeErrorOpition,10)
+      // const that = this
+      // setTimeout(function (){
+      //   console.log(111)
+      //   that.routeErrorChart.setOption({
+      //     series:state.routeErrorOpition.series
+      //   })
+      // },10)
     }
   }
 }

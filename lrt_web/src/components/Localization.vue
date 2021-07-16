@@ -147,7 +147,7 @@ name: "Localization",
             ],
             connectNulls:false,
             lineStyle:{
-              color:'rgba(198,180,206,0.2)'
+              color:'yellow'
             }
           })
         }else {
@@ -179,7 +179,7 @@ name: "Localization",
           },
           series:posData
         })
-      },100)
+      },10)
     },
     refreshChart(){
       state.localOpition.series=[]
@@ -229,7 +229,7 @@ name: "Localization",
           xAxis:state.localOpition.xAxis,
           yAxis:state.localOpition.yAxis
         },true)
-      },100)
+      },10)
     }
   }
 }

@@ -28,6 +28,7 @@ export default {
     return{
       selected : Array(),
       timeArray:[],
+      showif:false,
     }
   },
   methods: {
@@ -68,18 +69,26 @@ export default {
             }
           }
         }
-        const that = this
-        setTimeout(function () {
-          that.PhaseChart.setOption({
-            xAxis:{
-              type: 'category',
-              boundaryGap: false,
-              data: timeArray,
-              show:false
-            },
-            series:state.phaseOpition.series
-          })
-        },100)
+        for(let i=0;i<16;i++){
+          if(state.antselect[i]){
+            this.showif = true
+          }
+        }
+        if(this.showif){
+          const that = this
+          setTimeout(function () {
+            that.PhaseChart.setOption({
+              xAxis:{
+                type: 'category',
+                boundaryGap: false,
+                data: timeArray,
+                show:false
+              },
+              series:state.phaseOpition.series
+            })
+          },10)
+        }
+
       }
     },
     refreshChart(){

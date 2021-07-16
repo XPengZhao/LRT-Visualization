@@ -20,6 +20,7 @@
       </thead>
       <tbody style="color: black" id='table'>
       </tbody>
+
     </table>
   </div>
   <div id="updateTable" class="updateTable">
@@ -80,6 +81,11 @@ export default {
     const closeImg = require('@/assets/close.png')
     const router = useRouter()
     const BackendUrl=localStorage.getItem("BackendUrl")
+    const updateimg=require('@/assets/update.png'),
+        deleteimg=require('@/assets/delete.png'),
+        playimg = require('@/assets/play.png'),
+        analysisimg = require("@/assets/analysis.png")
+    var dataListRes = []
     const toHome=(()=>{
       router.push({
         name: 'home'
@@ -111,10 +117,6 @@ export default {
       });
     })
     const getTable=(()=>{
-      const updateimg=require('@/assets/update.png'),
-          deleteimg=require('@/assets/delete.png'),
-          playimg = require('@/assets/play.png'),
-          analysisimg = require("@/assets/analysis.png")
       axios.post(BackendUrl+'/searchData', {
         mes: 0
       }).then(function (res) {
@@ -211,7 +213,7 @@ export default {
       })
     })
     return{
-      create,getTable,deleteTable,updateTable,toHome,callUpImg,uploadImg,sendTable,closeImg,closeDiv,replay,goDraw,BackendUrl,goAnalysis,analysis,goReplay
+      create,getTable,deleteTable,updateTable,toHome,callUpImg,uploadImg,sendTable,closeImg,closeDiv,replay,goDraw,BackendUrl,goAnalysis,analysis,goReplay,updateimg,analysisimg,playimg,dataListRes
     }
   },
 

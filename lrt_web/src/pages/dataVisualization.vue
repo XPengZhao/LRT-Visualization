@@ -221,6 +221,7 @@ export default {
       })
     },
     realTimeProcessing(data) {
+      console.log(data)
       const that = this
       let rss =that.$refs.rss
       let local = that.$refs.localization
@@ -327,6 +328,8 @@ export default {
           'border':''
         })
         sessionStorage.setItem('record','0')
+        this.receiveNum = 0
+        sessionStorage.setItem('tableName','')
       }else {
         $('#recordButton').css({
           'background-color':'red',
@@ -341,7 +344,7 @@ export default {
       }
     },
     sendTable(){
-      this.receiveNum = 0
+      // this.receiveNum = 0
       let d = String($('#describeWord').val())
       let v = String(this.valueURL)
       let t = String(sessionStorage.getItem('tableName'))
@@ -353,7 +356,7 @@ export default {
       }).then(function (){
         that.valueURL = 'null'
         $('#describeWord').val('')
-        sessionStorage.setItem('tableName','')
+        // sessionStorage.setItem('tableName','')
       }).catch(function (err) {
         console.log(err)
       })

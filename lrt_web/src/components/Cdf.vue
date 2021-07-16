@@ -53,10 +53,13 @@ export default {
           symbolSize:20,
           data: [posData[state.cdfIndex[0]]]
         })
-
-
-
-      this.cdfChart.setOption(state.cdfOpition)
+      const that = this
+      setTimeout(function (){
+        that.cdfChart.setOption({
+          series:state.cdfOpition.series
+        })
+      },10)
+      // this.cdfChart.setOption(state.cdfOpition)
     }
   }
 }
