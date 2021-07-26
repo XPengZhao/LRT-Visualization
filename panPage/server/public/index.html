@@ -1,0 +1,249 @@
+<!--
+    THIS EXAMPLE WAS DOWNLOADED FROM https://echarts.apache.org/examples/zh/editor.html?c=parallel-nutrients
+-->
+<!DOCTYPE html>
+<html style="height: 100%">
+    <head>
+        <meta charset="utf-8">
+        <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+    </head>
+    <body style="height: 100%; margin: 0">
+        <div id="container" style="min-height: 5000px;max-width: 2000px"></div>
+
+        <!-- Uncomment this line if you want to dataTool extension
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@5/dist/extension/dataTool.min.js"></script>
+        -->
+        <!-- Uncomment this line if you want to use gl extension
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-gl@2/dist/echarts-gl.min.js"></script>
+        -->
+        <!-- Uncomment this line if you want to echarts-stat extension
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-stat@latest/dist/ecStat.min.js"></script>
+        -->
+        <!-- Uncomment this line if you want to use map
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@5/map/js/china.js"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@5/map/js/world.js"></script>
+        -->
+        <!-- Uncomment these two lines if you want to use bmap extension
+        <script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=<Your Key Here>"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@5/dist/extension/bmap.min.js"></script>
+        -->
+<script src="./src/jquery.js"></script>
+<script src="./src/zrender/lib/svg/svg.js"></script>
+<script type="module">
+var dom = document.getElementById("container");
+var myChart = echarts.init(dom,null,{renderer:'svg'});
+window.onresize = myChart.resize
+var app = {};
+var option;
+var indices = {
+group: 0,
+};
+var schema = [];
+for(let i=1;i<91;i++){
+schema.push({
+    name:i,
+    index:i
+})
+}
+//     {name: 'name', index: 0},
+//     {name: 'group', index: 1},
+//     {name: 'protein', index: 2},
+//     {name: 'calcium', index: 3},
+//     {name: 'sodium', index: 4},
+//     {name: 'fiber', index: 5},
+//     {name: 'vitaminc', index: 6},
+//     {name: 'potassium', index: 7},
+//     {name: 'carbohydrate', index: 8},
+//     {name: 'sugars', index: 9},
+//     {name: 'fat', index: 10},
+//     {name: 'water', index: 11},
+//     {name: 'calories', index: 12},
+//     {name: 'saturated', index: 13},
+//     {name: 'monounsat', index: 14},
+//     {name: 'polyunsat', index: 15},
+//     {name: 'id', index: 16}
+// ];
+
+var groupCategories = [];
+var groupColors = [];
+$.get('/echart_tag.json', function (data) {
+normalizeData(data);
+myChart.setOption(option = getOption(data));
+
+});
+
+
+function normalizeData(originData) {
+var groupMap = {};
+originData.forEach(function (row) {
+    var groupName = row[indices.group];
+    if (!groupMap.hasOwnProperty(groupName)) {
+        groupMap[groupName] = 1;
+    }
+});
+
+originData.forEach(function (row) {
+    row.forEach(function (item, index) {
+        if (index !== indices.group
+            // && index !== indices.name
+            // && index !== indices.id
+        ) {
+            // Convert null to zero, as all of them under unit "g".
+            row[index] = parseFloat(item) || 0;
+        }
+    });
+});
+
+for (var groupName in groupMap) {
+    if (groupMap.hasOwnProperty(groupName)) {
+        groupCategories.push(groupName);
+    }
+}
+var hStep = Math.round(300 / 15);
+let midColor = []
+for (var i = 0; i < 16; i++) {
+    midColor.push(echarts.color.modifyHSL('#5A94DF', hStep * i));
+}
+groupColors = [midColor[0],midColor[4],midColor[10]]
+}
+
+function getOption(data) {
+
+var lineStyle = {
+    normal: {
+        width: 0.5,
+        opacity: 0.05
+    }
+};
+let palData = []
+for(let i=1;i<91;i++){
+    palData.push({
+        dim:i,
+        name:schema[i-1].name,
+        nameLocation: 'end'
+    })
+}
+palData[89].scale=true;
+return {
+    backgroundColor: '#333',
+    tooltip: {
+        padding: 10,
+        backgroundColor: '#222',
+        borderColor: '#777',
+        borderWidth: 1
+    },
+    title: [
+        {
+            text: 'Groups',
+            top: 0,
+            left: 0,
+            textStyle: {
+                color: '#fff'
+            }
+        }
+    ],
+    toolbox:{
+        feature:{
+            saveAsImage:{
+                show:true,
+                type:'svg'
+            }
+        },
+        iconStyle:{
+            color:'white',
+            borderColor: 'white'
+        }
+    },
+    visualMap: {
+        show: true,
+        type: 'piecewise',
+        categories: groupCategories,
+        dimension: indices.group,
+        inRange: {
+            color: groupColors //['#d94e5d','#eac736','#50a3ba']
+        },
+        outOfRange: {
+            color: ['#ccc'] //['#d94e5d','#eac736','#50a3ba']
+        },
+        top: 20,
+        textStyle: {
+            color: '#fff'
+        },
+        realtime: false
+    },
+    parallelAxis:palData,
+    // parallelAxis: [
+    //     {dim: 16, name: schema[16].name, scale: true, nameLocation: 'end'},
+    //     {dim: 2, name: schema[2].name, nameLocation: 'end'},
+    //     {dim: 4, name: schema[4].name, nameLocation: 'end'},
+    //     {dim: 3, name: schema[3].name, nameLocation: 'end'},
+    //     {dim: 5, name: schema[5].name, nameLocation: 'end'},
+    //     {dim: 6, name: schema[6].name, nameLocation: 'end'},
+    //     {dim: 7, name: schema[7].name, nameLocation: 'end'},
+    //     {dim: 8, name: schema[8].name, nameLocation: 'end'},
+    //     {dim: 9, name: schema[9].name, nameLocation: 'end'},
+    //     {dim: 10, name: schema[10].name, nameLocation: 'end'},
+    //     {dim: 11, name: schema[11].name, nameLocation: 'end'},
+    //     {dim: 12, name: schema[12].name, nameLocation: 'end'},
+    //     {dim: 13, name: schema[13].name, nameLocation: 'end'},
+    //     {dim: 14, name: schema[14].name, nameLocation: 'end'},
+    //     {dim: 15, name: schema[15].name, nameLocation: 'end'}
+    // ],
+    parallel: {
+        left: 280,
+        top: 20,
+        // top: 150,
+        // height: 300,
+        width: 1500,
+        layout: 'vertical',
+        parallelAxisDefault: {
+            type: 'value',
+            name: 'nutrients',
+            nameLocation: 'end',
+            nameGap: 20,
+            nameTextStyle: {
+                color: '#fff',
+                fontSize: 14
+            },
+            axisLine: {
+                lineStyle: {
+                    color: '#aaa'
+                }
+            },
+            axisTick: {
+                lineStyle: {
+                    color: '#777'
+                }
+            },
+            splitLine: {
+                show: false
+            },
+            axisLabel: {
+                color: '#fff'
+            },
+            realtime: false
+        }
+    },
+    animation: false,
+    series: [
+        {
+            name: 'nutrients',
+            type: 'parallel',
+            lineStyle: lineStyle,
+            inactiveOpacity: 0,
+            activeOpacity: 0.01,
+            progressive: 1000,
+            smooth: true,
+            data: data
+        }
+    ]
+};
+}
+
+if (option && typeof option === 'object') {
+myChart.setOption(option);
+}
+
+        </script>
+    </body>
+</html>
