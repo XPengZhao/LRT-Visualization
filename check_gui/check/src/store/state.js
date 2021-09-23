@@ -15,10 +15,10 @@ export const state = reactive({
             left:'5%',
             show: true,
             min: 1,
-            max: 10,
-            text: ['10', '1'],
+            max: 1000,
+            text: ['1000', '1'],
             inRange: {
-                symbolSize: [25, 1],
+                symbolSize: [30, 10],
                 color: ['#a50026','#d73027','#f46d43','#fdae61','#fee090','#ffffbf','#e0f3f8','#abd9e9','#74add1','#4575b4','#313695'],
             }
         },

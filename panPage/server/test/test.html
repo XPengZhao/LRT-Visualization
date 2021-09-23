@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Todolist</title>
+    <link rel="stylesheet" href="./src/test.css">
+</head>
+<body>
+    <header>
+        <section>
+            <label for="add_list">My todolist</label>
+            <input type="text" id="add_list" name="add_list" placeholder="type here" required>
+        </section>
+    </header>
+
+    <div class="content">
+        <h1><span id="todocount"></span></h1>
+        <ol id="todolist">
+        </ol>
+
+        <h1><span id="donecount"></span></h1>
+        <ol id="donelist">
+        </ol>
+    </div>
+    <div id="clear">
+        <button id="clearbutton"><h3>全部清除</h3></button>
+    </div>
+<script src="./src/test.js"></script>
+</body>
+</html>

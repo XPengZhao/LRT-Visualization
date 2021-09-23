@@ -18,10 +18,6 @@
             <img :src="stopimg" style="height: 20px;">
             Stop
           </button>
-          <button class="btn" style="background-color: #04254E;color: white;min-width: 160px" type="button" v-on:click="testPhase()" >
-            <img :src="stopimg" style="height: 20px;">
-            test
-          </button>
         </div>
       </div>
     </div>
@@ -48,22 +44,10 @@
         <div class="panels-foot"></div>
       </div>
       <div class="row" style="position: absolute">
-        <div class="panels ml-3" style="height: 500px; min-width: 700px">
-          <div style="width:100%;height:100%" ref="spectrumchart"></div>
-          <div class="panels-foot"></div>
-        </div>
-        <div class="panels" style="height: 500px; width: 300px;  left: 128px;position: relative;background-color:#100C2A;">
+        <div class="panels ml-3" style="background-color: #100C2A;height: 500px; width: 650px">
           <div class="mt-5" style="color: #b4a5a5;height: 100%;">
             <h5  class="ml-5">Total Tags: {{getTags()}}</h5>
             <h5  class="ml-5">Total Time: {{getTimes()}}</h5>
-            <h5  class="ml-5">Phase1: {{phaseData[0]}}</h5>
-            <h5  class="ml-5">Phase2: {{phaseData[1]}}</h5>
-            <h5  class="ml-5">Phase3: {{phaseData[2]}}</h5>
-            <h5  class="ml-5">Phase4: {{phaseData[3]}}</h5>
-            <h5  class="ml-5">Phase5: {{phaseData[4]}}</h5>
-            <h5  class="ml-5">Phase6: {{phaseData[5]}}</h5>
-            <h5  class="ml-5">Phase7: {{phaseData[6]}}</h5>
-            <h5  class="ml-5">Phase8: {{phaseData[7]}}</h5>
           </div>
           <div class="panels-foot"></div>
         </div>
@@ -125,7 +109,6 @@ export default {
   },
   mounted() {
     this.initCheckChart()
-    this.initSpectrumCharts()
     this.phaseData.fill(0)
     $('#stopBtn').prop('disabled',true)
   },
@@ -133,17 +116,6 @@ export default {
     AgGridVue
   },
   methods: {
-    initSpectrumCharts () {
-      this.SpectrumChart = echarts.init(this.$refs.spectrumchart,'dark');
-      this.SpectrumChart.setOption(state.spectrumOpition)
-      window.addEventListener("resize",()=>{
-        this.SpectrumChart.resize()
-      })
-    },
-    upDateSpectrum(data){
-      state.spectrumOpition.series[0].data = data
-      this.SpectrumChart.setOption(state.spectrumOpition,500)
-    },
     onGridReady(){
       this.gridOptions.api.sizeColumnsToFit();
       // this.gridOptions.columnApi.autoSizeAllColumns();
@@ -153,15 +125,6 @@ export default {
     },
     getTimes(){
       return this.AllTimes
-    },
-    getPhase0(){
-      return this.phaseData[0]
-    },
-    getPhaseA(){
-      return this.phaseData[1]
-    },
-    getPhaseB(){
-      return this.phaseData[2]
     },
     initCheckChart() {
       this.checkChart = echarts.init(this.$refs.checkdiv, 'dark')
@@ -191,9 +154,9 @@ export default {
     uploader_online(){
       $('#connectBtn').prop('disabled',true)
       $('#stopBtn').prop('disabled',false)
-      // const API = localStorage.getItem('ApiUrl')
-      // this.ws = new WebSocket(API)
-      this.ws = new WebSocket('ws://158.132.255.178:15674/ws')
+      const API = localStorage.getItem('ApiUrl')
+      this.ws = new WebSocket(API)
+      // this.ws = new WebSocket('ws://158.132.255.178:15674/ws')
       // this.ws = new WebSocket('ws://127.0.0.1:15674/ws')
       this.client = stomp.over(this.ws)
       this.client.heartbeat.incoming = 0
@@ -249,8 +212,6 @@ export default {
         let word = data.body
         let loadData = parse(word).value
         that.phaseData = convPhase(loadData.phase0,loadData.phaseA,loadData.phaseB)
-        let spectrumData = compSpectrum(loadData.phase0,loadData.phaseA,loadData.phaseB)
-        that.upDateSpectrum(spectrumData)
       })
 
     },
